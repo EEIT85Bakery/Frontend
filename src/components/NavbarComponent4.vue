@@ -39,7 +39,7 @@
                         </RouterLink>
                         <ul class="dropdownMenuContainer dropdown-menu">
                             <li>
-                                <RouterLink class="dropdownItem" to="/">蛋糕專區</RouterLink>
+                                <RouterLink class="dropdownItem" to="/products">蛋糕專區</RouterLink>
                             </li>
                             <div class="lineContainer">
                                 <div class="line"></div>
