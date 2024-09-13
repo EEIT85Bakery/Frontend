@@ -1,6 +1,8 @@
 <script setup>
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
+import axios from 'axios';
 
+const products = ref({})
 let field = ref("蛋糕專區");
 let rank = ref("由新到舊");
 
@@ -19,53 +21,18 @@ let citems = [
     }
 ];
 
-let pitems = [
-  {
-    Image: '/imgZip/Sample/cheeseCake.jpg', // 確保這是 public 目錄下的正確路徑
-    pname: 'Cake 1',
-    price: '100元'
-  },
-  {
-    Image: '/imgZip/Sample/cheeseCake.jpg',
-    pname: 'Cake 2',
-    price: '100元'
-  },
-  {
-    Image: '/imgZip/Sample/cheeseCake.jpg',
-    pname: 'Cake 3',
-    price: '100元'
-  },
-  {
-    Image: '/imgZip/Sample/cheeseCake.jpg',
-    pname: 'Cake 4',
-    price: '100元'
-  },
-  {
-    Image: '/imgZip/Sample/cheeseCake.jpg',
-    pname: 'Cake 5',
-    price: '100元'
-  },
-  {
-    Image: '/imgZip/Sample/cheeseCake.jpg',
-    pname: 'Cake 6',
-    price: '100元'
-  },
-  {
-    Image: '/imgZip/Sample/cheeseCake.jpg',
-    pname: 'Cake 7',
-    price: '100元'
-  },
-  {
-    Image: '/imgZip/Sample/cheeseCake.jpg',
-    pname: 'Cake 8',
-    price: '100元'
-  },
-  {
-    Image: '/imgZip/Sample/cheeseCake.jpg',
-    pname: 'Cake 9',
-    price: '100元'
-  }
-];
+onMounted(() => {
+  axios.get('/products').then((res) => {
+    
+    
+    products.value = res.data.data
+    console.log(products.value);
+    
+  }).catch((err) => {
+    console.log(err);
+    
+  })
+})
 
 
 </script>
@@ -101,11 +68,11 @@ let pitems = [
             <div class="categoryText2">商品排序 >> {{ rank }}</div>
             <div>
                 <div class="ProductsContainer">
-                    <div v-for="(item, index) in pitems" :key="index" class="products-item">
+                    <div v-for="(item, index) in products" :key="'products' + index" class="products-item">
                         
-                        <img :src="item.Image" :alt="item.pname" class="products-image" />
+                        <img :src="item.imageUrl" :alt="item.name" class="products-image" />
                        
-                        <div class="products-name">{{ item.pname }}</div>
+                        <div class="products-name">{{ item.name }}</div>
                         <div class="products-price">{{ item.price }}</div>
                     </div>
                 </div>

@@ -61,7 +61,6 @@
 </template>
 
 <style>
-
 .registerPage {
     display: flex;
     justify-content: center;
