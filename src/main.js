@@ -4,11 +4,16 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap/dist/js/bootstrap.min.js'
 import 'bootstrap-icons/font/bootstrap-icons.css'
 
+// import { VueDatePicker } from 'vue3-datepicker';
+
+
 import router from './router'
 
 const app = createApp(App)
 
+
 app.use(router)
+
 
 app.mount('#app')
 

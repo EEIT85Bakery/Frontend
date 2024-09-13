@@ -29,13 +29,9 @@
                 </form>
             </div>
 
-
-
-
-
             <div class="thirdLogin">
-                <span>或使用社群帳號登入</span>
-                <div class="thridLoginIcon">
+                <span class="thirdLoginText">或使用社群帳號登入</span>
+                <div class="thirdLoginIcon">
                     <img class="loginImg" src="../../public/imgZip/Icon/FB.png" alt=".">
                     <img class="loginImg" src="../../public/imgZip/Icon/GOOGLE.png" alt=".">
                 </div>
@@ -72,7 +68,7 @@
     background-color: white;
     text-align: center;
     border-radius: 5%;
-    width: 40%;
+    width: 45%;
     height: 100%;
     margin-top: 2%;
     margin-bottom: 2%;
@@ -123,8 +119,8 @@
 }
 
 .loginInputContainer {
-    padding-left: 100px;
-    padding-right: 100px;
+    padding-left: 15%;
+    padding-right: 15%;
     margin-bottom: 10px;
 }
 
@@ -144,11 +140,11 @@
     color: white;
     background-color: #a67f78;
     border: 0;
-    border-radius: 5px;
+    border-radius: 10px;
     width: 100%;
-    padding: 5px 10px;
+    padding: 2%;
     margin-top: 5px;
-    height: 3vw;
+    height: 5%;
     box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
 }
 
@@ -159,9 +155,8 @@
     margin-bottom: 10px;
 }
 
-.thridLoginIcon {
+.thirdLoginIcon {
     width: 100%;
-    height: 10%;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -179,12 +174,51 @@
     color: #a67f78;
     background-color: white;
     border: #a67f78 solid 1px;
-    border-radius: 5px;
+    border-radius: 10px;
     width: 100%;
-    height: 3vw;
-    padding: 5px 10px;
+    height: 5%;
+    padding: 2%;
     margin-top: 5px;
     margin-bottom: 10%;
     box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+}
+
+@media (max-width: 768px) {
+    .loginContainer {
+        width: 60%;
+        margin-top: 3%;
+        margin-bottom: 3%;
+    }
+
+    .loginInputContainer {
+        margin-bottom: 10px;
+    }
+
+    .loginText,
+    .forgetPasswd,
+    .thirdLoginText {
+        font-size: small;
+    }
+
+    .loginImg {
+        width: 15%;
+    }
+
+}
+
+@media (max-width: 576px) {
+    .loginContainer {
+        width: 70%;
+        margin-top: 4%;
+        margin-bottom: 4%;
+    }
+
+    .loginInputContainer {
+        margin-bottom: 10px;
+    }
+
+    .thirdLoginIcon {
+        height: 20%;
+    }
 }
 </style>

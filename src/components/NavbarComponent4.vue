@@ -32,34 +32,17 @@
                     <li class="navItem">
                         <RouterLink class="navLink" to="/">最新消息</RouterLink>
                     </li>
-                    <li class="navItem dropdown">
-                        <RouterLink class="navLink dropdown-toggle" to="/" data-bs-toggle="dropdown"
-                            aria-expanded="false">
-                            商品列表
-                        </RouterLink>
-                        <ul class="dropdownMenuContainer dropdown-menu">
-                            <li>
-                                <RouterLink class="dropdownItem" to="/">蛋糕專區</RouterLink>
-                            </li>
-                            <div class="lineContainer">
-                                <div class="line"></div>
-                            </div>
-                            <li>
-                                <RouterLink class="dropdownItem" to="/">餅乾專區</RouterLink>
-                            </li>
-                            <div class="lineContainer">
-                                <div class="line"></div>
-                            </div>
-                            <li>
-                                <RouterLink class="dropdownItem" to="/">其他專區</RouterLink>
-                            </li>
-                        </ul>
+                    <li class="navItem">
+                        <RouterLink class="navLink" to="products">商品列表</RouterLink>
                     </li>
                     <li class="navItem">
                         <RouterLink class="navLink" to="/">門市資訊</RouterLink>
                     </li>
                     <li class="navItem">
                         <RouterLink class="navLink" to="/">常見問題</RouterLink>
+                    </li>
+                    <li class="navItem">
+                        <RouterLink class="navLink" to="/">我的收藏</RouterLink>
                     </li>
                 </ul>
                 <div class="lineContainer">
@@ -83,8 +66,6 @@
 
             </div>
 
-
-
         </div>
     </nav>
 
@@ -93,32 +74,10 @@
 
 
 <style scoped>
-.navbarAd {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 20px;
-    padding: 0.5% 1%;
-    background-color: rgba(143, 134, 129, 1);
-    color: white;
-    text-align: center;
-    font-size: small;
-}
-
-.navbarAdText {
-    margin: auto;
-    padding-left: 5%;
-}
-
-.navbarCloseAd {
-    width: 1.5%;
-    object-fit: contain;
-    cursor: pointer;
-}
-
 
 .navbarContainer {
-    padding: 1% 2%;
+    margin-top: -8px;
+    padding: 2.5% 2% 1% 2%;
     align-items: stretch;
     background-color: rgba(255, 255, 255, 0.9);
     box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);

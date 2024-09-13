@@ -44,6 +44,11 @@ const routes = [
         path: '/register',
         name: '註冊頁面',
         component: () => import('../views/RegisterView.vue')
+      },
+      {
+        path: '/registerForm',
+        name: '註冊表單頁面',
+        component: () => import('../views/RegisterformView.vue')
       }
     ]
   },

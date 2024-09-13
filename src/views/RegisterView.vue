@@ -22,8 +22,14 @@
                     <br /><br>
                     <div class="registerText">電子信箱</div>
                     <input type="email" placeholder="請輸入電子信箱" class="registerInput" />
-                    <div class="h-100">
-                        <RouterLink to="/"><button class="validButton" type="submit">發送驗證碼到信箱</button></RouterLink>
+                    <div class="validContainer">
+                        <!-- <RouterLink class="toFillInfo" to="/"> -->
+                            <button class="validButton d-flex" type="submit">
+                                <div class="validSendText">發送驗證碼到信箱</div>
+                                <div class="validSendIcon"><i class="bi bi-send"></i></div>
+                            </button>
+                        <!-- </RouterLink> -->
+                        
                     </div>
                     <div class="validArrived"><span class="validArrived">已發送驗證碼</span></div>
                     <div class="registerText">驗證碼</div>
@@ -35,18 +41,18 @@
                 <div class="registerLine"></div>
             </div>
 
-            <div class="thirdLogin">
-                <span>或使用社群帳號登入</span>
-                <div class="thridLoginIcon">
-                    <img class="loginImg" src="../../public/imgZip/Icon/FB.png" alt=".">
-                    <img class="loginImg" src="../../public/imgZip/Icon/GOOGLE.png" alt=".">
+            <div class="thirdregister">
+                <span class="thirdregisterText">或使用社群帳號註冊</span>
+                <div class="thridregisterIcon">
+                    <img class="registerImg" src="../../public/imgZip/Icon/FB.png" alt=".">
+                    <img class="registerImg" src="../../public/imgZip/Icon/GOOGLE.png" alt=".">
                 </div>
             </div>
 
             <div class="registerInputContainer">
-                <div>
-                    <button class="registerButton" type="submit">註冊會員</button>
-                </div>
+                <RouterLink to="registerForm">
+                    <button class="registerNextPageButton" type="submit">下一步</button>
+                </RouterLink>
             </div>
         </div>
     </div>
@@ -55,6 +61,7 @@
 </template>
 
 <style>
+
 .registerPage {
     display: flex;
     justify-content: center;
@@ -67,7 +74,7 @@
     background-color: white;
     text-align: center;
     border-radius: 5%;
-    width: 40%;
+    width: 45%;
     height: 100%;
     margin-top: 2%;
     margin-bottom: 2%;
@@ -118,8 +125,8 @@
 }
 
 .registerInputContainer {
-    padding-left: 100px;
-    padding-right: 100px;
+    padding-left: 15%;
+    padding-right: 15%;
     margin-bottom: 10px;
 }
 
@@ -136,14 +143,16 @@
 }
 
 .validButton {
+    position: relative;
     color: white;
     background-color: #a67f78;
+    justify-content: center;
     border: 0;
-    border-radius: 5px;
+    border-radius: 10px;
     width: 100%;
-    padding: 5px 10px;
+    padding: 2% 5% 2% 2%;
     margin-top: 8%;
-    height: 3vw;
+    height: 2%;
     box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
 }
 
@@ -155,10 +164,19 @@
     font-weight: bold;
     margin-right: 1%;
     margin-top: 1.5%;
-    margin-bottom: 10px;
+    margin-bottom: 1%;
+
 }
 
-.thridLoginIcon {
+.validSendIcon {
+   color: white;
+   position: absolute;
+   padding-left: 85%;
+   text-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+}
+
+
+.thridregisterIcon {
     width: 100%;
     height: 10%;
     display: flex;
@@ -167,23 +185,72 @@
     cursor: pointer;
 }
 
-.loginImg {
+.registerImg {
     height: 10%;
     width: 10%;
     object-fit: contain;
     padding: 10px 5px;
 }
 
-.registerButton {
-    color: #a67f78;
-    background-color: white;
+.registerNextPageButton {
+    color: white;
+    background-color: #a67f78;
     border: #a67f78 solid 1px;
-    border-radius: 5px;
+    border-radius: 10px;
     width: 100%;
-    height: 3vw;
-    padding: 5px 10px;
-    margin-top: 5px;
+    height: 5%;
+    padding: 2%;
+    margin-top: 5%;
     margin-bottom: 10%;
     box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+}
+
+@media (max-width: 768px) {
+    .registerContainer {
+        width: 60%;
+        margin-top: 3%;
+        margin-bottom: 3%;
+    }
+
+    .registerInputContainer {
+        margin-bottom: 10px;
+    }
+
+    .registerText,
+    .forgetPasswd,
+    .thirdregisterText {
+        font-size: small;
+    }
+
+    .registerImg {
+        width: 15%;
+    }
+
+    .validButton {
+        padding: 2% 5% 2% 25%;
+    }
+
+}
+
+@media (max-width: 576px) {
+    .registerContainer {
+        width: 70%;
+        margin-top: 4%;
+        margin-bottom: 4%;
+    }
+
+    .registerInputContainer {
+        margin-bottom: 10px;
+    }
+
+    .thirdregisterIcon {
+        height: 20%;
+    }
+
+    .validButton {
+        /* font-size: small; */
+        padding: 2% 5% 2% 18%;
+    }
+
 }
 </style>

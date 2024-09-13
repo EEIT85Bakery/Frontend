@@ -19,10 +19,10 @@ import FooterComponent from '@/components/FooterComponent.vue'
   .BG {
     background-color: rgba(225, 220, 217, 0.3);
   }
-
+/* 
   * {
     margin: 0;
     padding: 0;
-  }
+  } */
 
 </style>
