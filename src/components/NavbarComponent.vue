@@ -33,7 +33,7 @@ let closeAd = function () {
         <div class="container-fluid">
             <div class="body w-100 fixed-top">
                 <RouterLink class="nav-item nav-link" to="/">
-                    <img src="../../public/img/Logo/logo.png" alt="Logo" class="logo">
+                    <img src="../../public/imgZip/Logo/logo.png" alt="Logo" class="logo">
                 </RouterLink>
             </div>
             <div class="head w-100">

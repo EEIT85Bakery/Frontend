@@ -9,17 +9,20 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@devindex/vue-mask": "^2.0.3",
     "@popperjs/core": "^2.11.8",
+    "@ssibrahimbas/v-mask": "^1.0.0",
     "@vuepic/vue-datepicker": "^9.0.3",
     "axios": "^1.7.7",
     "bootstrap": "^5.3.3",
     "bootstrap-icons": "^1.11.3",
     "pinia": "^2.1.7",
     "sass": "^1.78.0",
+    "v-mask": "^2.3.0",
     "vue": "^3.4.29",
+    "vue-axios": "^3.5.2",
     "vue-router": "^4.3.3",
-    "vue3-datepicker": "^0.4.0",
-    "vue-axios": "^3.5.2"
+    "vue3-datepicker": "^0.4.0"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.0.5",

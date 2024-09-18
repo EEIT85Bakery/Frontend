@@ -6,10 +6,18 @@
 
 <template>
 
+
+
+<div class="nabarAd">
+    我是廣告我是廣告我是廣告我是廣告我是廣告我是廣告我是廣告我是廣告
+</div>
+
     <nav class="navbar navbar-expand-lg sticky-top">
         <!-- <div class="" style="background: black;height: 50px;">1</div> -->
 
         <div class="navbarContainer container-fluid d-flex">
+
+
             <RouterLink class="navbarBrand" to="/">
                 <img src="../../public/imgZip/Logo/logo.png" alt="navbarLogo" class="navbarLogo">
             </RouterLink>
@@ -27,7 +35,7 @@
                         <div class="line"></div>
                     </div>
                     <li class="navItem">
-                        <RouterLink class="navLink" to="/">關於我們</RouterLink>
+                        <RouterLink class="navLink" to="product">關於我們</RouterLink>
                     </li>
                     <li class="navItem">
                         <RouterLink class="navLink" to="/">最新消息</RouterLink>
@@ -61,7 +69,9 @@
                     <RouterLink to="login">
                         <i class="navbarIcon bi bi-person-fill"></i>
                     </RouterLink>
-                    <div><i class="navbarIcon bi bi-cart4"></i></div>
+                    <RouterLink to="cart">
+                        <i class="navbarIcon bi bi-cart4"></i>
+                    </RouterLink>
                 </div>
 
             </div>
@@ -69,11 +79,35 @@
         </div>
     </nav>
 
+    <RouterLink to="game">
+        <div class="gameContainer">
+            <i class="bi bi-controller"></i>
+        </div>
+    </RouterLink>
+
+    <a href="#">
+    <div class="goTopContainer">
+            <i class="bi bi-arrow-up-circle-fill goTopIcon"></i>
+    </div>    
+    </a>
+    
 
 </template>
 
 
 <style scoped>
+
+.nabarAd {
+    font-size: small;
+    padding: 0.2%;
+    text-align: center;
+    width: 100%;
+    position: fixed;
+    z-index: 2000;
+    color: white;
+    background-color: rgba(143, 134, 129, 0.8);
+}
+
 
 .navbarContainer {
     margin-top: -8px;
@@ -157,6 +191,28 @@
     border: 0;
 }
 
+.gameContainer {
+    position: fixed;
+    bottom: 10%;
+    right: 2%;
+    /* color: #A67F78; */
+    color: rgba(255, 255, 255, 1);
+    z-index: 2000;
+    font-size: 3vw;
+    text-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+}
+
+.goTopContainer {
+    position: fixed;
+    bottom: 2%;
+    right: 2%;
+    color: rgba(255, 255, 255, 0.8);
+    /* color: rgba(143, 134, 129, 0.5); */
+    z-index: 2000;
+    font-size: 3vw;
+    text-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+}
+
 @media (max-width: 768px) {
     .navbarBrand {
         width: 30%;
@@ -182,7 +238,20 @@
         width: 100%;
         margin: 10px 0;
     }
+
+    .gameContainer,
+    .goTopContainer {
+        font-size: 5vw;
+        right: 3%;
+    }
 }
 
-@media (max-width: 576px) {}
+@media (max-width: 576px) {
+
+    .gameContainer,
+    .goTopContainer {
+        font-size: 7vw;
+        right: 3%;
+    }
+}
 </style>

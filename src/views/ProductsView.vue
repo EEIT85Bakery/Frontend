@@ -3,10 +3,10 @@ import { onMounted, ref } from 'vue';
 import axios from 'axios';
 
 const products = ref({})
-let field = ref("蛋糕專區");
-let rank = ref("由新到舊");
+const field = ref("蛋糕專區");
+const rank = ref("由新到舊");
 
-let citems = [
+const citems = [
     {
         title: '蛋糕專區',
         products: ['戚風蛋糕', '戚風蛋糕', '戚風蛋糕', '戚風蛋糕']

@@ -15,7 +15,7 @@ import { onMounted, ref, watch } from 'vue';
             service@bunnysugar.com
         </div>
         <div class="d-flexbox bottom-item">
-            <div>
+            <div class="bottomLogo" >
                 <img src="../../public/imgZip/Logo/logo.png" alt="Bunny" class="bunny-bottom">
             </div>
             <div class="flex bottom-socialMedia">
@@ -23,8 +23,6 @@ import { onMounted, ref, watch } from 'vue';
                 <i class="bi bi-instagram socialMedia"></i>
                 <i class="bi bi-line socialMedia"></i>
             </div>
-
-
         </div>
         <div class="bottom-item">
             營業時間<br />
@@ -50,7 +48,6 @@ import { onMounted, ref, watch } from 'vue';
     width: 100%;
     position: relative;
     bottom: 0;
-    /* margin-top: 50px; */
     padding: 30px;
     background-color: white;
 }
@@ -89,5 +86,28 @@ import { onMounted, ref, watch } from 'vue';
     font-size: 3vw;
     padding: 10px;
     cursor: pointer;
+}
+
+@media (max-width: 576px) {
+    .bottom-info {
+        flex-direction: column;
+        font-size: smaller;
+    }
+
+    .bottom-socialMedia {
+        margin: 5%;
+    }
+
+    .socialMedia {
+        font-size: 7vw;
+    }
+
+    .bottomLogo {
+        display: none;
+    }
+
+    .bottom-warn {
+        font-size: smaller;
+    }
 }
 </style>

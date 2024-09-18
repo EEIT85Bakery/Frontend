@@ -15,8 +15,14 @@ const routes = [
         name: '產品頁面',
         component: () => import('../views/ProductsView.vue')
       },
+      // {
+      //   path: 'product/:id',
+      //   name: '單一產品頁面',
+      //   component: () => import('../views/ProductView.vue')
+      // },
       {
-        path: 'product/:id',
+        // test
+        path: 'product',
         name: '單一產品頁面',
         component: () => import('../views/ProductView.vue')
       },
@@ -49,6 +55,11 @@ const routes = [
         path: '/registerForm',
         name: '註冊表單頁面',
         component: () => import('../views/RegisterformView.vue')
+      },
+      {
+        path: '/game',
+        name: '遊戲頁面',
+        component: () => import('../components/Game.vue')
       }
     ]
   },
