@@ -12,7 +12,7 @@ import VueAxios from 'vue-axios';
 import router from './router'
 
 
-axios.defaults.baseURL = 'http://localhost:8080/bonnySugar';
+axios.defaults.baseURL = 'http://localhost:8080';
 
 const app = createApp(App)
 app.use(VueAxios, axios)
