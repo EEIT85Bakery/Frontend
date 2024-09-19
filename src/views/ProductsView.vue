@@ -6,6 +6,7 @@ const products = ref({})
 const field = ref("蛋糕專區");
 const rank = ref("由新到舊");
 
+//之後抓資料庫分類 再改刪掉下面的citems
 const citems = [
     {
         title: '蛋糕專區',
@@ -23,10 +24,9 @@ const citems = [
 
 onMounted(() => {
   axios.get('/products').then((res) => {
-    
-    
-    products.value = res.data.data
-    console.log(products.value);
+     
+    products.value = res.data
+
     
   }).catch((err) => {
     console.log(err);
@@ -52,6 +52,7 @@ onMounted(() => {
                     <div class="categoryTitle">
                         <div>
                             <img src="../../public/imgZip/Logo/bunnyBlue.png" alt="bunnyBlue" class="categoryImg">
+                            
                         </div>
                         <div>{{ item.title }}</div>
                     </div>
@@ -69,9 +70,9 @@ onMounted(() => {
             <div>
                 <div class="ProductsContainer">
                     <div v-for="(item, index) in products" :key="'products' + index" class="products-item">
-                        
+                        <!-- <img src="/public/imgZip/Sample/cake1.jpg" alt=""> -->
                         <img :src="item.imageUrl" :alt="item.name" class="products-image" />
-                       
+                        <!-- <img src="/public/imgZip/Sample/cake1.jpg" alt=""> -->
                         <div class="products-name">{{ item.name }}</div>
                         <div class="products-price">{{ item.price }}</div>
                     </div>
