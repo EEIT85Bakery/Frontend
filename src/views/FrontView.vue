@@ -1,12 +1,13 @@
 <script setup>
-import NavbarComponent from '@/components/NavbarComponent4.vue'
+import NavbarComponent4 from '@/components/NavbarComponent4.vue';
 import FooterComponent from '@/components/FooterComponent.vue'
+
 </script>
 
 <template>
   <div class="BG">
     <div class="wrapper">
-      <NavbarComponent />
+      <NavbarComponent4 />
       <div>
         <RouterView />
       </div>
@@ -19,10 +20,5 @@ import FooterComponent from '@/components/FooterComponent.vue'
   .BG {
     background-color: rgba(225, 220, 217, 0.3);
   }
-/* 
-  * {
-    margin: 0;
-    padding: 0;
-  } */
 
 </style>

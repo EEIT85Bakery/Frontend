@@ -13,7 +13,6 @@
 </div>
 
     <nav class="navbar navbar-expand-lg sticky-top">
-        <!-- <div class="" style="background: black;height: 50px;">1</div> -->
 
         <div class="navbarContainer container-fluid d-flex">
 
@@ -38,7 +37,7 @@
                         <RouterLink class="navLink" to="product">關於我們</RouterLink>
                     </li>
                     <li class="navItem">
-                        <RouterLink class="navLink" to="/">最新消息</RouterLink>
+                        <RouterLink class="navLink" to="customerInformation">最新消息</RouterLink>
                     </li>
                     <li class="navItem">
                         <RouterLink class="navLink" to="products">商品列表</RouterLink>
@@ -78,6 +77,12 @@
 
         </div>
     </nav>
+
+    <RouterLink to="backProducts">
+        <div class="mangerContainer">
+            <i class="bi bi-gear-fill"></i>
+        </div>
+    </RouterLink>
 
     <RouterLink to="game">
         <div class="gameContainer">
@@ -147,6 +152,11 @@
     text-decoration: none;
 }
 
+.navLink:focus {
+    color: rgba(166, 127, 120, 1);
+    text-decoration:underline;
+}
+
 .dropdownMenuContainer {
     text-align: center;
     border: rgba(143, 134, 129, 0.1) solid 1px;
@@ -195,11 +205,28 @@
     position: fixed;
     bottom: 10%;
     right: 2%;
-    /* color: #A67F78; */
     color: rgba(255, 255, 255, 1);
+    /* color: rgba(166, 127, 120, 1); */
     z-index: 2000;
     font-size: 3vw;
     text-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+    /* background-color: rgba(255, 255, 255, 0.8); */
+    border-radius: 50px;
+    /* padding: 0 0.8%; */
+}
+
+.mangerContainer {
+    position: fixed;
+    bottom: 18%;
+    right: 2%;
+    color: rgba(255, 255, 255, 1);
+    /* color: rgba(166, 127, 120, 1); */
+    z-index: 2000;
+    font-size: 3vw;
+    text-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+    /* background-color: rgba(255, 255, 255, 0.8); */
+    border-radius: 50px;
+    /* padding: 0 0.8%; */
 }
 
 .goTopContainer {

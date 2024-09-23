@@ -2,14 +2,29 @@
 import { ref, computed } from 'vue';
 import CartTopComponent1 from '@/components/CartTopComponent1.vue';
 
-const productimg = { imageUrl: '../../public/imgZip/Sample/cake1.jpg' };
-const productname = "雙重莓果饗宴蛋糕";
-const productprice = ref(360);
-
-const quantity = ref(1);
+const items = ref([
+    {
+        imageUrl:'../../public/imgZip/Sample/cake1.jpg',
+        productname:'雙重莓果饗宴蛋糕',
+        productprice: 360,
+        quantity: 1
+    },
+    {
+        imageUrl:'../../public/imgZip/Sample/cake1.jpg',
+        productname:'雙重莓果饗宴蛋糕',
+        productprice: 360,
+        quantity: 1
+    },
+    {
+        imageUrl:'../../public/imgZip/Sample/cake1.jpg',
+        productname:'雙重莓果饗宴蛋糕',
+        productprice: 360,
+        quantity: 1
+    }
+])
 
 const totalprice = computed(() => {
-    return productprice.value * quantity.value;
+    return items.value.reduce((total, item) => total + item.productprice * item.quantity, 0);
 });
 
 const discountExp = "2024/11/30";
@@ -78,17 +93,17 @@ const finaltotal = computed(() => {
                 <div class="delTitle"></div>
             </div>
             <div class="cartLine"></div>
-            <div class="itemContainer">
+            <div class="itemContainer" v-for="(item, index) in items" :key="index">
                 <div class="items">
                     <div class="productImg">
-                        <img :src="productimg.imageUrl" alt="" class="itemImg">
+                        <img :src="item.imageUrl" alt="" class="itemImg">
                     </div>
-                    <div class="productInfo">{{ productname }}</div>
-                    <div class="priceInfo">{{ productprice }} 元</div>
+                    <div class="productInfo">{{ item.productname }}</div>
+                    <div class="priceInfo">{{ item.productprice }} 元</div>
                     <div class="quantityInfo">
-                        <input type="number" min="1" v-model.number="quantity" class="quantityInput" />
+                        <input type="number" min="1" v-model.number="item.quantity" class="quantityInput" />
                     </div>
-                    <div class="totalInfo">{{ totalprice }} 元</div>
+                    <div class="totalInfo">{{ item.productprice * item.quantity }} 元</div>
                     <div class="delInfo"><i class="bi bi-x-circle"></i></div>
                 </div>
                 <div class="cartLine"></div>
@@ -114,7 +129,7 @@ const finaltotal = computed(() => {
             <div class="top">訂單資訊</div>
             <div class="detailContainer">
                 <div class="total">
-                    <span class="leftText">小計:</span>
+                    <span class="leftText">總計:</span>
                     <span>{{ totalprice }} 元</span>
                 </div>
                 <div class="allDiscount" :style="discountStyle">

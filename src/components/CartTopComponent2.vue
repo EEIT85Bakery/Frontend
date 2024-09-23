@@ -5,10 +5,10 @@
     <!-- 流程圖 -->
     <div class="flowContainer">
         <div class="flow">
-            <div class="stepIcon stepActive">
+            <RouterLink to="cart" class="stepIcon stepActive">
                 <div class="num1">1</div>
-            </div>
-            <div class="flowText">購物車</div>
+            </RouterLink>
+            <RouterLink to="cart" class="flowText">購物車</RouterLink>
             <div class="flowLine"></div>
             <div class="stepIcon stepActive">
                 <div class="num2">2</div>
@@ -43,6 +43,7 @@
 }
 
 .stepIcon {
+    text-decoration: none;
     flex: 0 0 5%;
     height: 80%;
     text-align: center;
@@ -67,6 +68,7 @@
     text-align: center;
     align-content: center;
     font-weight: bold;
+    text-decoration: none;
     color: rgba(143, 134, 129, 0.8);
 } 
 

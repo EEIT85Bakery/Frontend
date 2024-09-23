@@ -15,6 +15,7 @@ const imgArray = ref([
 </script>
 
 <template>
+
   <!-- Carousel -->
   <div id="demo" class="carousel slide" data-bs-ride="carousel">
 

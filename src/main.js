@@ -3,6 +3,7 @@ import App from './App.vue'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap/dist/js/bootstrap.min.js'
 import 'bootstrap-icons/font/bootstrap-icons.css'
+import 'bootstrap';
 
 
 import axios from 'axios';
@@ -14,7 +15,6 @@ import router from './router'
 axios.defaults.baseURL = 'http://localhost:8080/bonnySugar';
 
 const app = createApp(App)
-
 app.use(VueAxios, axios)
 app.use(router)
 

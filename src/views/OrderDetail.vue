@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed } from 'vue';
-import CartTopComponent2 from '@/components/CartTopComponent2.vue';
+import CartTopComponent3 from '@/components/CartTopComponent3.vue';
 
 
 const productimg = { imageUrl: '../../public/imgZip/Sample/cake1.jpg' };
@@ -52,45 +52,23 @@ const finaltotal = computed(() => {
     }
 })
 
-const isClicked = ref(true);
-
-function toggleArrow() {
-    isClicked.value = !isClicked.value;
-}
-
-const topStyle = computed(() => ({
-    borderRadius: isClicked.value
-        ? '10px 10px 0px 0px'
-        : '10px 10px 0px 0px',
-    borderBottomLeftRadius: isClicked.value ? '10px' : '0',
-    borderBottomRightRadius: isClicked.value ? '10px' : '0'
-}));
-
-
 </script>
 
 <template>
 
-    <CartTopComponent2 />
-
-    <div class="priceBigText">合計:
-        <span class="finalTotalPrice">{{ finaltotal }}</span> 元
-    </div>
+    <CartTopComponent3 />
 
     <!-- 購物車 -->
     <div class="cartContainer">
         <div class="cart">
-            <div class="top" :style="topStyle">購物車
-                <i class="bi bi-caret-down-fill ms-2" v-if="!isClicked" @click="toggleArrow"></i>
-                <i class="bi bi-caret-up-fill ms-2" v-if="isClicked" @click="toggleArrow"></i>
-            </div>
-            <div class="content" :class="{ 'collapsed': isClicked }">
+            <div class="cartTop">購物車</div>
+            <div class="content">
                 <div class="titleContainer">
                     <div class="productTitle">商品資料</div>
                     <div class="priceTitle">單件價格</div>
                     <div class="quantityTitle">數量</div>
                     <div class="totalTitle">小計</div>
-                    <div class="delTitle"></div>
+                    <!-- <div class="delTitle"></div> -->
                 </div>
                 <div class="cartLine"></div>
                 <div class="itemContainer">
@@ -129,6 +107,19 @@ const topStyle = computed(() => ({
                     <div class="finalPrice">合計:
                         <span class="finalTotalPrice">{{ finaltotal }}</span> 元
                     </div>
+                    <div class="cartLine"></div>
+                    <div class="promotion">
+                        <div class="productDiscount">
+                            <div class="mb-1">
+                                <i class="bi bi-caret-right-fill"></i>
+                                此筆訂單可獲得2次遊戲機會，已匯入您的遊玩次數中，記得前往賺取Bunny Coin呦~
+                            </div>
+                            <div>
+                                <i class="bi bi-caret-right-fill"></i>
+                                感謝您的購買，您的支持是我們最大的動力
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -139,82 +130,48 @@ const topStyle = computed(() => ({
             <div class="customerInfo">
                 <div class="top">顧客資訊</div>
                 <div class="InfoContainer bg-white">
-                    <form>
-                        <div class="inputText">顧客姓名</div>
-                        <input type="text" name="customerName" placeholder="直接帶入會員姓名" disabled class="infoInput">  
-                        <div class="inputText">電子信箱</div>
-                        <input type="email" name="mail" placeholder="直接帶入會員信箱" disabled class="infoInput">
-                        <div class="inputText">電話號碼</div>
-                        <input type="tel" name="mail" placeholder="直接帶入會員電話" disabled class="infoInput">
-                    </form>
+
+                    <div class="inputText"><span class="info">顧客姓名:</span><span>VickyJhan</span></div>
+                    <div class="inputText"><span class="info">電話號碼:</span><span>0912-345-678</span></div>
+                    <div class="inputText"><span class="info">電子信箱:</span><span>BunnySugar@service.com</span></div>
+
+
                 </div>
 
-            </div>
-            <!-- <div class="payInfo">
-                <div class="top">付款資訊</div>
-                <div class="InfoContainer bg-white">
-                    <form>
-                        <div class="inputText">付款方式</div>
-                        <select name="payment" class="payWay infoInput" >
-                            <option value="cash">門市付款</option>
-                            <option value="creditCard">信用卡付款</option>
-                        </select>
-                    </form>
-                </div>
-                <div></div>
-            </div> -->
-        </div>
-        <div class="pickupAndCreditInfo">
-            <div class="pickupInfo">
-                <div class="top">取貨資訊</div>
-                <div class="InfoContainer bg-white">
-                    <form>
-                        <div class="inputText">取貨方式</div>
-                        <input type="text" name="pickupWay" placeholder="門市取貨" disabled class="infoInput">
-                        <div class="inputText">取貨日期</div>
-                        <input type="date" name="pickupDate" placeholder="請選擇取貨日期" class="infoInput">
-                    </form>
-                </div>
             </div>
             <div class="payInfo">
                 <div class="top">付款資訊</div>
                 <div class="InfoContainer bg-white">
-                    <form>
-                        <div class="inputText">付款方式</div>
-                        <select name="payment" class="payWay infoInput" >
-                            <option value="cash">門市付款</option>
-                            <option value="creditCard">信用卡付款</option>
-                        </select>
-                    </form>
+
+                    <div class="inputText"><span class="info">付款方式:</span><span>信用卡付款</span></div>
+
+                    <div class="inputText"><span class="info">付款狀態:</span><span>已付款</span></div>
+
                 </div>
                 <div></div>
             </div>
-            <!-- <div class="creditInfo">
-                <div class="top">信用卡資訊</div>
+        </div>
+        <div class="pickupAndCreditInfo">
+            <div class="pickupInfo">
+                <div class="top">訂單資訊</div>
                 <div class="InfoContainer bg-white">
-                    <form>
-                        <div class="inputText">卡號</div>
-                        <input type="text" name="creditCardNum" placeholder="請輸入卡號" class="infoInput">
-                        <div class="inputText">持卡人姓名</div>
-                        <input type="text" name="creditCardName" placeholder="請輸入持卡人姓名" class="infoInput">
-                        <div class="inputText">有效期(YY/MM)</div>
-                        <input type="text" name="creditCardExp" placeholder="請輸入有效日期" class="infoInput">
-                        <div class="inputText">安全碼</div>
-                        <input type="text" name="creditCardSafeCode" placeholder="請輸入安全碼" class="infoInput">
-                    </form>
+
+                    <div class="inputText"><span class="info">訂單號碼:</span><span>2024091812345</span></div>
+                    <div class="inputText"><span class="info">訂單日期:</span><span>2024-09-18</span></div>
+                    <div class="inputText"><span class="info">訂單狀態:</span><span>已確認</span></div>
+                    <div class="inputText"><span class="info">取貨日期:</span><span>2024-10-18</span></div>
+
+
                 </div>
-            </div> -->
+            </div>
 
         </div>
 
     </div>
 
     <div class="btns">
-        <RouterLink to="Cart" class="continueBuyBtn">
-            <button class="btn1">上一步</button>
-        </RouterLink>
-        <RouterLink to="orderDetail" class="goToBuyBtn">
-            <button class="btn2">提交訂單</button>
+        <RouterLink to="/" class="goToBuyBtn">
+            <button class="btn2">返回首頁</button>
         </RouterLink>
     </div>
 
@@ -222,6 +179,8 @@ const topStyle = computed(() => ({
 </template>
 
 <style scoped>
+
+
 .container {
     width: 100%;
     display: flex;
@@ -246,9 +205,15 @@ const topStyle = computed(() => ({
 }
 
 .inputText {
-    margin-bottom: 0.5%;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 2%;
+    color: rgba(50, 67, 95, 1);
+}
+
+.info {
     font-weight: bold;
-    color: rgba(143, 134, 129, 1);
+    color: rgba(166, 127, 120, 1);
 }
 
 .infoInput {
@@ -288,14 +253,32 @@ const topStyle = computed(() => ({
     border: rgba(166, 127, 120, 0.7) solid 1px;
 }
 
-.top {
+.cartTop {
+    font-weight: bold;
     width: 100%;
-    padding: 1%;
+    padding: 1.5%;
     text-align: center;
     font-size: larger;
     border-radius: 10px 10px 0 0;
-    color: white;
-    background-color: rgba(166, 127, 120, 1);
+    color: rgba(166, 127, 120, 1);
+    background-color: white;
+    border-bottom: rgba(166, 127, 120, 0.7) solid 1.5px;
+}
+
+.top {
+    font-weight: bold;
+    width: 100%;
+    padding: 2%;
+    text-align: center;
+    font-size: larger;
+    border-radius: 10px 10px 0 0;
+    color: rgba(166, 127, 120, 1);
+    background-color: white;
+    border-top: rgba(166, 127, 120, 0.7) solid 0.5px;
+    border-left: rgba(166, 127, 120, 0.7) solid 0.5px;
+    border-right: rgba(166, 127, 120, 0.7) solid 0.5px;
+    border-bottom: rgba(166, 127, 120, 0.7) solid 1px;
+
 }
 
 .titleContainer {
@@ -311,7 +294,7 @@ const topStyle = computed(() => ({
 }
 
 .priceTitle {
-    flex: 0 0 15%;
+    flex: 0 0 20%;
 }
 
 .quantityTitle {
@@ -319,11 +302,7 @@ const topStyle = computed(() => ({
 }
 
 .totalTitle {
-    flex: 0 0 15%;
-}
-
-.delTitle {
-    flex: 0 0 10%;
+    flex: 0 0 20%;
 }
 
 .memberLevel {
@@ -367,7 +346,7 @@ const topStyle = computed(() => ({
 }
 
 .priceInfo {
-    flex: 0 0 15%;
+    flex: 0 0 20%;
 }
 
 .quantityInfo {
@@ -382,16 +361,17 @@ const topStyle = computed(() => ({
 }
 
 .totalInfo {
-    flex: 0 0 15%;
-}
-
-.delInfo {
-    flex: 0 0 10%;
+    flex: 0 0 20%;
 }
 
 .promotion {
-    padding: 1.5% 2%;
+    padding: 1.5% 0;
     border-radius: 0 0 10px 10px;
+}
+
+.productDiscount {
+    align-content: center;
+    color: rgba(50, 67, 95, 0.8);
 }
 
 
@@ -475,35 +455,18 @@ const topStyle = computed(() => ({
 
 .btns {
     padding: 1.5% 2%;
-    display: flex;
     margin-bottom: 3%;
-}
-
-.continueBuyBtn {
-    flex: 0 0 50%;
-    width: 90%;
     text-align: center;
 }
 
 .goToBuyBtn {
-    flex: 0 0 50%;
+    width: 50%;
     text-align: center;
 }
 
-.btn1 {
-    width: 85%;
-    padding: 1.5%;
-    color: rgba(143, 134, 129, 1);
-    background-color: white;
-    border-radius: 10px;
-    border: rgba(143, 134, 129, 0.3) solid 1px;
-    font-weight: bold;
-    box-shadow: 0 4px 4px rgba(0, 0, 0, 0.15);
-}
-
 .btn2 {
-    width: 85%;
-    padding: 1.5%;
+    width: 50%;
+    padding: 0.5%;
     color: white;
     background-color: rgba(143, 134, 129, 1);
     border-radius: 10px;
@@ -581,7 +544,7 @@ const topStyle = computed(() => ({
         padding: 0 5% 0 5%;
     }
 
-    
-    
+
+
 }
 </style>
