@@ -90,7 +90,7 @@ const items = ref([
 
         <div class="addBtnContainer">
         <button class="addBtn" @click="openModal">
-            <i class="bi bi-plus-square-dotted me-2"></i><span>建立新的優惠券</span>
+            <i class="bi bi-plus-square-dotted me-2"></i><span>建立新的折扣碼</span>
         </button>
     </div>
 

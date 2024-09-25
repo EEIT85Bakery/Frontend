@@ -35,7 +35,7 @@
                         <RouterLink class="navLink" to="order">訂單管理</RouterLink>
                     </li>
                     <li class="navItem">
-                        <RouterLink class="navLink" to="AdminCoupons">優惠券管理</RouterLink>
+                        <RouterLink class="navLink" to="AdminCoupons">折扣碼管理</RouterLink>
                     </li>
                     <li class="navItem">
                         <RouterLink class="navLink" to="AdminMembers">會員管理</RouterLink>
