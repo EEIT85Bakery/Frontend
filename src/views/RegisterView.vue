@@ -1,66 +1,129 @@
 <script setup>
+import { ref } from 'vue';
+import axios from 'axios';
+import router from "@/router/index.js";
+import Swal from 'sweetalert2'; // 直接導入 SweetAlert2
 
+const phone = ref('');
+const email = ref('');
+const verifyingToken = ref('');
+const verificationSent = ref(false);
+
+const sendVerificationCode = async () => {
+  try {
+    const response = await axios.post('http://localhost:8080/user/registerVerify', {
+      email: email.value,
+      phone: phone.value,
+    });
+    if (response.status === 200) {
+      Swal.fire({ // 直接使用 Swal
+        title: '成功!',
+        text: '驗證信發送成功',
+        icon: 'success',
+        confirmButtonText: '確認',
+        timer: 5000, // 5秒後自動關閉提示框
+      });
+      verificationSent.value = true;
+    }
+  } catch (error) {
+    console.error('發送驗證碼失敗', error);
+    Swal.fire({
+      title: '錯誤!',
+      text: '發送驗證信失敗',
+      icon: 'error',
+      confirmButtonText: '重新嘗試',
+    });
+  }
+};
+
+const verifyCode = async () => {
+  try {
+    const response = await axios.post('http://localhost:8080/user/verify', {
+      email: email.value,
+      verifyingToken: verifyingToken.value,
+    });
+    if (response.status === 200) {
+      Swal.fire({ // 直接使用 Swal
+        title: '成功!',
+        text: '驗證成功',
+        icon: 'success',
+        confirmButtonText: '確認',
+        timer: 2000,
+      });
+      console.log("跳轉到註冊表單頁面");
+      router.push({
+        name: '註冊表單頁面',
+        query: {
+          email: email.value,
+        },
+      });
+    }
+  } catch (error) {
+    console.error('驗證碼驗證失敗', error);
+    Swal.fire({
+      title: '失敗!',
+      text: '驗證碼驗證失敗',
+      icon: 'error',
+      confirmButtonText: '確認',
+      timer: 2000,
+    });
+  }
+};
 </script>
 
 <template>
-    <div class="registerPage">
-        <div class="registerContainer">
-            <div class="registerLogo">
-                <img src="../../public/imgZip/Logo/bunny2.png" alt="bunny" class="registerBunny">
-            </div>
+  <div class="registerPage">
+    <div class="registerContainer">
+      <div class="registerLogo">
+        <img src="../../public/imgZip/Logo/bunny2.png" alt="bunny" class="registerBunny">
+      </div>
 
-            <div class="lineContainer">
-                <div class="registerLine"></div>
-            </div>
+      <div class="lineContainer">
+        <div class="registerLine"></div>
+      </div>
 
-            <h3 class="registerTitle">註冊</h3>
+      <h3 class="registerTitle">註冊</h3>
 
-            <div class="registerInputContainer">
-                <form>
-                    <div class="registerText">手機號碼</div>
-                    <input type="tel" placeholder="請輸入手機號碼" class="registerInput" />
-                    <br /><br>
-                    <div class="registerText">電子信箱</div>
-                    <input type="email" placeholder="請輸入電子信箱" class="registerInput" />
-                    <div class="validContainer">
-                        <!-- <RouterLink class="toFillInfo" to="/"> -->
-                            <button class="validButton d-flex" type="submit">
-                                <div class="validSendText">發送驗證碼到信箱</div>
-                                <div class="validSendIcon"><i class="bi bi-send"></i></div>
-                            </button>
-                        <!-- </RouterLink> -->
-                        
-                    </div>
-                    <div class="validArrived"><span class="validArrived">已發送驗證碼</span></div>
-                    <div class="registerText">驗證碼</div>
-                    <input type="text" placeholder="請輸入驗證碼" class="registerInput" />
-                </form>
-            </div>
+      <div class="registerInputContainer">
+        <form @submit.prevent="sendVerificationCode">
+          <div class="registerText">手機號碼</div>
+          <input type="tel" v-model="phone" placeholder="請輸入手機號碼" class="registerInput" />
+          <br /><br>
+          <div class="registerText">電子信箱</div>
+          <input type="email" v-model="email" placeholder="請輸入電子信箱" class="registerInput" />
+          <div class="validContainer">
+            <button class="validButton d-flex" type="submit">
+              <div class="validSendText">發送驗證碼到信箱</div>
+              <div class="validSendIcon"><i class="bi bi-send"></i></div>
+            </button>
+          </div>
+          <div class="validArrived" v-if="verificationSent"><span class="validArrived">已發送驗證碼</span></div>
+          <div class="registerText">驗證碼</div>
+          <input type="text" v-model="verifyingToken" placeholder="請輸入驗證碼" class="registerInput" />
+        </form>
+      </div>
 
-            <div class="lineContainer">
-                <div class="registerLine"></div>
-            </div>
+      <div class="lineContainer">
+        <div class="registerLine"></div>
+      </div>
 
-            <div class="thirdregister">
-                <span class="thirdregisterText">或使用社群帳號註冊</span>
-                <div class="thridregisterIcon">
-                    <img class="registerImg" src="../../public/imgZip/Icon/FB.png" alt=".">
-                    <img class="registerImg" src="../../public/imgZip/Icon/GOOGLE.png" alt=".">
-                </div>
-            </div>
-
-            <div class="registerInputContainer">
-                <RouterLink to="registerForm">
-                    <button class="registerNextPageButton" type="submit">下一步</button>
-                </RouterLink>
-            </div>
+      <div class="thirdregister">
+        <span class="thirdregisterText">或使用社群帳號註冊</span>
+        <div class="thridregisterIcon">
+          <img class="registerImg" src="../../public/imgZip/Icon/FB.png" alt=".">
+          <img class="registerImg" src="../../public/imgZip/Icon/GOOGLE.png" alt=".">
         </div>
+      </div>
+
+      <div class="registerInputContainer">
+        <button class="registerNextPageButton" @click="verifyCode">下一步</button>
+      </div>
     </div>
-
-
+  </div>
 </template>
 
 <style>
+
 .registerPage {
     display: flex;
     justify-content: center;
@@ -252,4 +315,5 @@
     }
 
 }
+
 </style>
