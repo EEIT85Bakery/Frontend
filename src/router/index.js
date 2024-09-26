@@ -72,6 +72,16 @@ const routes = [
         component: () => import('../views/WishListView.vue')
       },
       {
+        path: '/cartTest',
+        name: '購物車測試',
+        component: () => import('../views/cartTest.vue')
+      },
+      {
+        path: '/addTest',
+        name: '加商品測試',
+        component: () => import('../views/addProductToCartTest.vue')
+      },
+      {
         path: '/discount',
         name: '優惠專區頁面',
         component: () => import('../views/DiscountView.vue')

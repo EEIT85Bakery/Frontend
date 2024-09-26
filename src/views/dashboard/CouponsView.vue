@@ -1,85 +1,113 @@
-<script>
+<script setup>
 import { ref } from 'vue';
 import PaginationComponent from '@/components/PaginationComponent.vue';
 import CouponModal from '@/components/CouponModal.vue';
 
-export default {
-  components: {
-    CouponModal,
-    PaginationComponent
-  },
-  setup() {
-    const CouponModal = ref(null); // 用來引用子組件
+import { SwalHandle } from '@/stores/sweetAlertStore';
 
-    const openModal = () => {
-      if (CouponModal.value) {
-        CouponModal.value.openModal(); // 調用子組件的 openModal 方法
-      }
-    };
+const couponModalRef = ref(null);
+const currentItem = ref(null); 
 
-    
-const items = ref([
-    {
-        name: '萬聖節活動優惠',
-        price: '1000 元',
-        discount: '50 元',
-        date: "2024-11-30",
-        use: '是'
-    },
-    {
-        name: '萬聖節活動優惠',
-        price: '1000 元',
-        discount: '50 元',
-        date: "2024-11-30",
-        use: '是'
-    },
-    {
-        name: '萬聖節活動優惠',
-        price: '1000 元',
-        discount: '50 元',
-        date: "2024-11-30",
-        use: '是'
-    },
-    {
-        name: '萬聖節活動優惠',
-        price: '1000 元',
-        discount: '50 元',
-        date: "2024-11-30",
-        use: '是'
-    },
-    {
-        name: '萬聖節活動優惠',
-        price: '1000 元',
-        discount: '50 元',
-        date: "2024-11-30",
-        use: '是'
-    },
-    {
-        name: '萬聖節活動優惠',
-        price: '1000 元',
-        discount: '50 元',
-        date: "2024-11-30",
-        use: '是'
-    },
-    {
-        name: '萬聖節活動優惠',
-        price: '1000 元',
-        discount: '50 元',
-        date: "2024-11-30",
-        use: '是'
-    }
-    
-]);
-
-    return {
-      CouponModal,
-      openModal,
-      items
-    };
+// 打開新增 modal
+const openCouponModal = () => {
+  currentItem.value = null; // 清空當前選中的商品，表示新增
+  if (couponModalRef.value) {
+    couponModalRef.value.openModal();
   }
-}
+};
+
+// 打開編輯 modal
+const openEditCouponModal = (item) => {
+  currentItem.value = item; // 設置選中的商品
+  if (couponModalRef.value) {
+    couponModalRef.value.openModal();
+  }
+};
+
+// 調用子组件的 openModal 方法
+// const openCouponModal = () => {
+//   if (couponModalRef.value) {
+//     couponModalRef.value.openModal();
+//   } else {
+//     console.error('CouponModal component is not correctly referenced.');
+//   }
+// };
 
 
+
+
+// const showError = () => {
+//   SwalHandle.showErrorMsg('這是一條錯誤消息！');
+// };
+
+// const showSuccess = () => {
+//   SwalHandle.showSuccessMsg('操作成功！');
+// };
+
+// const confirmAction = () => {
+//   SwalHandle.confirm('確認操作', '您確定要執行此操作嗎？', () => {
+//     // 確認後執行的操作
+//     console.log('操作已確認！');
+//   });
+// };
+
+const deleteItem = (item) => {
+  SwalHandle.confirm(
+    '確認刪除',
+    `您確定要刪除 ${item.name} 嗎？`,
+    '刪除成功！', 
+    () => {
+      // 執行刪除操作，例如：
+      items.value = items.value.filter(i => i !== item);
+      SwalHandle.showSuccessMsg(`成功刪除 ${item.name}`);
+    }
+  );
+};
+
+const items = ref([
+  {
+    name: 'HappyHalloween',
+    price: 1000 ,
+    discount: 50 ,
+    date: '2024-11-30',
+    isEnable: '是',
+  },
+  {
+    name: 'HappyMomDay',
+    price: 1000,
+    discount: 50 ,
+    date: '2024-11-30',
+    isEnable: '是',
+  },
+  {
+    name: 'HappyDadDay',
+    price: 1000 ,
+    discount: 50 ,
+    date: '2024-11-30',
+    isEnable: '是',
+  },
+  {
+    name: 'MerryChristmas',
+    price: 1000 ,
+    discount: 50 ,
+    date: '2024-11-30',
+    isEnable: '是',
+  },
+  {
+    name: 'HappyNewYear',
+    price: 1000 ,
+    discount: 50,
+    date: '2024-11-30',
+    isEnable: '是',
+  },
+  {
+    name: 'HappyNewEve',
+    price: 1000,
+    discount: 50,
+    date: '2024-11-30',
+    isEnable: '是',
+  },
+]);
 
 
 </script>
@@ -93,7 +121,6 @@ const items = ref([
             <i class="bi bi-plus-square-dotted me-2"></i><span>建立新的折扣碼</span>
         </button>
     </div>
-
 
         <div class="contentContainer">
             <table class="contentTable">
@@ -111,12 +138,12 @@ const items = ref([
                 <tbody>
                     <tr v-for="(item, index) in items" :key="index">
                         <td>{{ item.name }}</td>
-                        <td>{{ item.price }}</td>
-                        <td>{{ item.discount }}</td>
+                        <td>{{ item.price }} 元</td>
+                        <td>{{ item.discount }} 元</td>
                         <td>{{ item.date }}</td>
-                        <td>{{ item.use }}</td>
-                        <td><i class="bi bi-pencil-square" style="color: darkgrey;" @click="openModal"></i></td>
-                        <td><i class="bi bi-trash3" style="color: darkred;"></i></td>
+                        <td>{{ item.isEnable }}</td>
+                        <td><i class="bi bi-pencil-square" style="color: darkgrey;" @click="openEditCouponModal(item)"></i></td>
+                        <td><i class="bi bi-trash3" style="color: darkred;" @click="deleteItem(item)"></i></td>
                     </tr>
                 </tbody>
             </table>
@@ -125,8 +152,8 @@ const items = ref([
 
         </div>
 
-        <CouponModal ref="CouponModal" />
-
+       <!-- <CouponModal ref="couponModalRef" /> -->
+       <CouponModal ref="couponModalRef" :product="currentItem" />
 
     </div>
 

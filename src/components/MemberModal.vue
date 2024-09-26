@@ -1,35 +1,78 @@
-<script>
+<script setup>
+import { ref, watch, defineProps } from 'vue';
 import useModal from '@/hooks/useModal';
-import { ref } from 'vue';
+import { SwalHandle } from '@/stores/sweetAlertStore';
 
-export default {
-    setup() {
-        const { modalRef, openModal, hideModal } = useModal();
-
-        const userInfo =ref([
-            {
-                userName: "吉伊卡哇",
-                gender: '女',
-                tel:"0912-345-678",
-                email:"BunnySugar@service.com",
-                birthday:"2024-01-01",
-                level1:"白兔會員",
-                level2:"金兔會員",
-                level3:"白金兔會員",
-                level4:"鑽石兔會員",
-
-            }
-        ]);
-
-
-        return {
-            modalRef,
-            openModal,
-            hideModal,
-            userInfo,
-        };
-    },
+const showSuccess = () => {
+    SwalHandle.showSuccessMsg('變更成功！');
 };
+
+const { openModal, hideModal, modalRef } = useModal()
+
+defineExpose({
+    openModal,
+    hideModal
+});
+
+const props = defineProps({
+  product: {
+    type: Object,
+    default: null
+  }
+})
+
+const isModalOpen = ref(false);
+
+const formData = ref({
+  level: ''
+});
+
+watch(
+  () => props.product,
+  (newProduct) => {
+    if (newProduct) {
+      // 如果是編輯模式，將 product 的數據填入表單
+      formData.value = { ...newProduct };
+    } else {
+      // 如果是新增模式，清空表單
+      formData.value = {
+        level: ''
+      };
+    }
+  },
+  { immediate: true }
+);
+
+// 表單提交
+const submitForm = () => {
+  if (props.product) {
+    console.log('編輯商品', formData.value);
+  } else {
+    console.log('新增商品', formData.value);
+  }
+  // 這裡可以觸發保存或新增的操作
+  showSuccess();
+  hideModal();
+  isModalOpen.value = false;
+};
+
+
+
+const userInfo = ref([
+    {
+        userName: "吉伊卡哇",
+        gender: '女',
+        tel: "0912-345-678",
+        email: "BunnySugar@service.com",
+        birthday: "2024-01-01",
+        level1: "白兔會員",
+        level2: "金兔會員",
+        level3: "白金兔會員",
+        level4: "鑽石兔會員",
+
+    }
+]);
+
 
 </script>
 
@@ -46,8 +89,8 @@ export default {
 
                     <div class="Container1">
 
-                       
-                        
+
+
                         <div class="Container2" v-for="(info, index) in userInfo" :key=index>
                             <div class="text"><span class="textName">會員姓名:</span><span>{{ info.userName }}</span></div>
                             <div class="text"><span class="textName">性別:</span><span>{{ info.gender }}</span></div>
@@ -55,7 +98,7 @@ export default {
                             <div class="text"><span class="textName">電子信箱:</span><span>{{ info.email }}</span></div>
                             <div class="text"><span class="textName">生日:</span><span>{{ info.birthday }}</span></div>
                             <div class="text content textName">會員等級:
-                                <select name="pay" class="payment">
+                                <select name="pay" class="payment" v-model="formData.level">
                                     <option value="unPaid">{{ info.level1 }}</option>
                                     <option value="paid">{{ info.level2 }}</option>
                                     <option value="paid">{{ info.level3 }}</option>
@@ -70,7 +113,7 @@ export default {
                 </div>
                 <div class="modal-footer modalFooter">
                     <button type="button" class="btn1" @click="hideModal">取消</button>
-                    <button type="button" class="btn2">儲存變更</button>
+                    <button type="submit" class="btn2" @click="submitForm">儲存變更</button>
                 </div>
             </div>
         </div>
@@ -79,7 +122,6 @@ export default {
 
 
 <style scoped>
-
 /* header */
 .modalHeader {
     color: white;

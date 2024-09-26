@@ -1,100 +1,103 @@
-<script>
+<script setup>
 import { ref } from 'vue';
 import PaginationComponent from '@/components/PaginationComponent.vue';
 import MemberModal from '@/components/MemberModal.vue';
 
-export default {
-    components: {
-        MemberModal,
-        PaginationComponent
-    },
-    setup() {
-        const MemberModal = ref(null); // 用來引用子組件
+import { SwalHandle } from '@/stores/sweetAlertStore';
 
-        const openModal = () => {
-            if (MemberModal.value) {
-                MemberModal.value.openModal(); // 調用子組件的 openModal 方法
-            }
-        };
+const memberModalRef = ref(null);
+const currentItem = ref(null); 
 
+// 打開新增 modal
+const openMemberModal = () => {
+  currentItem.value = null; // 清空當前選中的商品，表示新增
+  if (memberModalRef.value) {
+    memberModalRef.value.openModal();
+  }
+};
 
-        const items = ref([
-            {
-                name: '2024010101',
-                gender: '女',
-                tel: '0912-345-678',
-                email: 'BunnySugar@service.com',
-                birthday: '2024-01-01',
-                level: '白兔會員'
-            },
-            {
-                name: '2024010101',
-                gender: '女',
-                tel: '0912-345-678',
-                email: 'BunnySugar@service.com',
-                birthday: '2024-01-01',
-                level: '白兔會員'
-            },
-            {
-                name: '2024010101',
-                gender: '女',
-                tel: '0912-345-678',
-                email: 'BunnySugar@service.com',
-                birthday: '2024-01-01',
-                level: '白兔會員'
-            },
-            {
-                name: '2024010101',
-                gender: '女',
-                tel: '0912-345-678',
-                email: 'BunnySugar@service.com',
-                birthday: '2024-01-01',
-                level: '白兔會員'
-            },
-            {
-                name: '2024010101',
-                gender: '女',
-                tel: '0912-345-678',
-                email: 'BunnySugar@service.com',
-                birthday: '2024-01-01',
-                level: '白兔會員'
-            },
-            {
-                name: '2024010101',
-                gender: '女',
-                tel: '0912-345-678',
-                email: 'BunnySugar@service.com',
-                birthday: '2024-01-01',
-                level: '白兔會員'
-            },
-            {
-                name: '2024010101',
-                gender: '女',
-                tel: '0912-345-678',
-                email: 'BunnySugar@service.com',
-                birthday: '2024-01-01',
-                level: '白兔會員'
-            },
-            {
-                name: '2024010101',
-                gender: '女',
-                tel: '0912-345-678',
-                email: 'BunnySugar@service.com',
-                birthday: '2024-01-01',
-                level: '白兔會員'
-            },
-            
-        ]);
-
-        return {
-            MemberModal,
-            openModal,
-            items
-        };
+const deleteItem = (item) => {
+  SwalHandle.confirm(
+    '確認刪除',
+    `您確定要刪除 ${item.name} 嗎？`,
+    '刪除成功！', 
+    () => {
+      // 執行刪除操作，例如：
+      items.value = items.value.filter(i => i !== item);
+      SwalHandle.showSuccessMsg(`成功刪除 ${item.name}`);
     }
-}
+  );
+};
 
 
+
+const items = ref([
+    {
+        name: '吉伊卡哇',
+        gender: '女',
+        tel: '0912-345-678',
+        email: 'BunnySugar@service.com',
+        birthday: '2024-01-01',
+        level: '白兔會員'
+    },
+    {
+        name: '吉伊卡哇',
+        gender: '女',
+        tel: '0912-345-678',
+        email: 'BunnySugar@service.com',
+        birthday: '2024-01-01',
+        level: '白兔會員'
+    },
+    {
+        name: '吉伊卡哇',
+        gender: '女',
+        tel: '0912-345-678',
+        email: 'BunnySugar@service.com',
+        birthday: '2024-01-01',
+        level: '白兔會員'
+    },
+    {
+        name: '吉伊卡哇',
+        gender: '女',
+        tel: '0912-345-678',
+        email: 'BunnySugar@service.com',
+        birthday: '2024-01-01',
+        level: '白兔會員'
+    },
+    {
+        name: '吉伊卡哇',
+        gender: '女',
+        tel: '0912-345-678',
+        email: 'BunnySugar@service.com',
+        birthday: '2024-01-01',
+        level: '白兔會員'
+    },
+    {
+        name: '吉伊卡哇',
+        gender: '女',
+        tel: '0912-345-678',
+        email: 'BunnySugar@service.com',
+        birthday: '2024-01-01',
+        level: '白兔會員'
+    },
+    {
+        name: '吉伊卡哇',
+        gender: '女',
+        tel: '0912-345-678',
+        email: 'BunnySugar@service.com',
+        birthday: '2024-01-01',
+        level: '白兔會員'
+    },
+    {
+        name: '吉伊卡哇',
+        gender: '女',
+        tel: '0912-345-678',
+        email: 'BunnySugar@service.com',
+        birthday: '2024-01-01',
+        level: '白兔會員'
+    },
+
+]);
 
 
 </script>
@@ -102,13 +105,6 @@ export default {
 <template>
 
     <div class="pageContainer">
-
-        <!-- <div class="addBtnContainer">
-            <button class="addBtn" @click="openModal">
-                <i class="bi bi-plus-square-dotted me-2"></i><span>建立新的商品</span>
-            </button>
-        </div> -->
-
 
         <div class="contentContainer">
             <table class="contentTable">
@@ -132,8 +128,8 @@ export default {
                         <td>{{ item.email }}</td>
                         <td>{{ item.birthday }}</td>
                         <td>{{ item.level }}</td>
-                        <td><i class="bi bi-pencil-square" style="color: darkgrey;" @click="openModal"></i></td>
-                        <td><i class="bi bi-trash3" style="color: darkred;"></i></td>
+                        <td><i class="bi bi-pencil-square" style="color: darkgrey;" @click="openMemberModal(item)"></i></td>
+                        <td><i class="bi bi-trash3" style="color: darkred;" @click="deleteItem(item)"></i></td>
                     </tr>
                 </tbody>
             </table>
@@ -142,7 +138,7 @@ export default {
 
         </div>
 
-        <MemberModal ref="MemberModal" />
+        <MemberModal ref="memberModalRef" :product="currentItem" />
 
 
     </div>
@@ -150,7 +146,6 @@ export default {
 </template>
 
 <style scoped>
-
 .listContainer {
     display: flex;
     justify-items: center;

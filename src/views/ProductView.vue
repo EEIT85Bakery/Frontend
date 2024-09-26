@@ -1,5 +1,52 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted, watch, computed } from 'vue';
+import { useRoute } from 'vue-router';
+// import { useRouter } from 'vue-router';
+import Loading from '@/components/Loading.vue';
+// import { useCartStore } from '@/stores/cartStore';
+
+import Swiper from '@/components/Swiper.vue';
+import MemberLevelModal from '@/components/MemberLevelModal.vue';
+
+import { SwalHandle } from '@/stores/sweetAlertStore';
+
+const showSuccess = () => {
+  SwalHandle.showSuccessMsg('加入成功！');
+};
+
+const isIconA = ref(true);
+
+function toggleIcon() {
+  isIconA.value = !isIconA.value; // 切換狀態
+  
+}
+
+
+const modalRef = ref(null);
+
+// 用來觸發 modal 的打開方法
+function handleOpenModal() {
+  if (modalRef.value) {
+    modalRef.value.openModal(); // 調用 modal 的 openModal 方法
+  }
+}
+
+const isLoading = ref(true);
+
+const route = useRoute();
+
+const startLoading = () => {
+    setTimeout(() => {
+        isLoading.value = false;
+    }, 2100);
+};
+
+watch(route, () => {
+    isLoading.value = true;
+    startLoading();
+});
+
+
 
 const imgItems = ref([
     { imageUrl: '../../public/imgZip/Sample/apple pie.jpg' },
@@ -29,14 +76,17 @@ const moreItems = ref([
         imageUrl: '../../public/imgZip/Sample/cake2.jpg',
         name: '商品三號'
     },
-    
+
 ]);
-
-
 
 function selectImage(item) {
     selectedImage.value = item;
 }
+
+onMounted(() => {
+    isLoading.value = true;
+    startLoading();
+});
 
 </script>
 
@@ -46,13 +96,17 @@ function selectImage(item) {
 
         <div class="productImgContainer">
 
+            <Loading v-if="isLoading" />
+
             <!-- 產品小圖 -->
             <div class="productImgItems">
 
-                <div v-for="(item, index) in imgItems" :key="index" class="productImgItem" :class="'Item' + (index + 1)"
-                    @click="selectImage(item)">
+                <div v-for="(item, index) in imgItems" :key="index" class="productImgItem"
+                    :class="{ selected: selectedImage === item }" @click="selectImage(item)">
                     <img class="productImg" :src="item.imageUrl" alt="Product Image">
                 </div>
+
+                <!-- :class="'Item' + (index + 1)" -->
 
                 <!-- 下一張小圖按鈕 -->
                 <div class="nextOne"><i class="bi bi-chevron-compact-down"></i></div>
@@ -63,7 +117,11 @@ function selectImage(item) {
                 <div class="displayItem">
                     <img class="productImg" :src="selectedImage.imageUrl" alt="">
                 </div>
-                <div class="addWishList"><i class="bi bi-suit-heart heartIcon"></i>加入我的收藏</div>
+                <div class="addWishList" @click="toggleIcon">
+                    <i v-if="isIconA" class="bi bi-suit-heart heartIcon"></i>
+                    <i v-else class="bi bi-suit-heart-fill heartIcon"></i>
+                    加入我的收藏
+                </div>
             </div>
         </div>
 
@@ -93,7 +151,7 @@ function selectImage(item) {
                 <div>
                     <i class="bi bi-caret-right-fill"></i>
                     Bunny Sugar會員，滿額可依
-                    <RouterLink class="memberLevel">會員分級</RouterLink> 享優惠折扣
+                    <span @click="handleOpenModal" class="memberLevel">會員分級</span> 享優惠折扣
                 </div>
             </div>
 
@@ -110,7 +168,9 @@ function selectImage(item) {
 
             <div class="buttons">
                 <div class="AddCartBtn">
-                    <button class="btnCart">加入購物車</button>
+                    <button class="btnCart" @click="showSuccess">
+                        加入購物車
+                    </button>
                 </div>
                 <RouterLink class="buyBtn" to="cart">
                     <button class="btnBuy">直接購買</button>
@@ -120,27 +180,18 @@ function selectImage(item) {
     </div>
 
     <div class="moreProductTitle">推薦商品</div>
+    <div style="text-align: center;
+                color: rgba(143, 134, 129, 0.7);">(左右滑動可顯示更多商品)</div>
 
     <div class="lineContainer">
         <div class="Line"></div>
     </div>
 
-    <div class="moreProductsContainer">
-        <div class="moreProducts">
-            <div class="previousBtn">
-                <i class="bi bi-chevron-double-left switchBtn"></i>
-            </div>
+    
+    <Swiper />
 
-            <RouterLink v-for="(item, index) in moreItems" :key="index" class="moreProduct">
-                <img class="moreProductImg" :src="item.imageUrl" alt=".">
-                <div class="moreProductName">{{ item.name }}</div>
-            </RouterLink>
-
-            <div class="nextBtn">
-                <i class="bi bi-chevron-double-right switchBtn"></i>
-            </div>
-        </div>
-    </div>
+    <MemberLevelModal ref="modalRef" />
+    
 
 </template>
 
@@ -168,6 +219,11 @@ function selectImage(item) {
     flex: 1;
     display: flex;
     cursor: pointer;
+    margin: 4%;
+}
+
+.productImgItem.selected {
+    box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
 }
 
 .productImg {
@@ -194,7 +250,7 @@ function selectImage(item) {
 
 .nextOne {
     text-align: center;
-    color: rgba(166, 127, 120, 1);
+    color: rgba(225, 220, 217, 0.3);
     cursor: pointer;
     /* background-color: rgba(255, 255, 255, 0.5); */
 }
@@ -260,6 +316,8 @@ function selectImage(item) {
 
 .memberLevel {
     color: rgba(166, 127, 120, 1);
+    text-decoration: underline;
+    cursor: pointer;
 }
 
 .productPrice {
@@ -370,7 +428,7 @@ function selectImage(item) {
 
 .moreProductTitle {
     color: #8F8681;
-    margin: 3% 0 1% 0;
+    /* margin: 3% 0 0.5% 0; */
     font-weight: bold;
     font-size: 2vw;
     text-align: center;

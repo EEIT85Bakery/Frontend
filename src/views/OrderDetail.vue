@@ -1,7 +1,18 @@
 <script setup>
 import { ref, computed } from 'vue';
 import CartTopComponent3 from '@/components/CartTopComponent3.vue';
+import MemberLevelModal from '@/components/MemberLevelModal.vue';
 
+const modalRef = ref(null);
+
+// 用來觸發 modal 的打開方法
+function handleOpenModal() {
+  if (modalRef.value) {
+    modalRef.value.openModal(); // 調用 modal 的 openModal 方法
+  }
+}
+
+const discountCode = 'HappyHalloween'
 
 const productimg = { imageUrl: '../../public/imgZip/Sample/cake1.jpg' };
 const productname = "雙重莓果饗宴蛋糕";
@@ -90,12 +101,12 @@ const finaltotal = computed(() => {
                         <span>{{ totalprice }} 元</span>
                     </div>
                     <div class="allDiscount" :style="discountStyle">
-                        <span class="leftText">折扣:</span>
+                        <span class="leftText">折扣:<span style="font-size: small;"> (已使用折扣碼 {{ discountCode }} )</span></span>
                         <span>{{ discount }} 元</span>
                     </div>
                     <div class="ownDiscount" v-if="memberlevel != '白兔'">
                         <span class="leftText">{{ memberlevel }}會員專屬折扣:
-                            <span>(會員折扣詳見<RouterLink class="memberLevel">會員分級</RouterLink>)</span>
+                            <span>(會員折扣詳見<span @click="handleOpenModal" class="memberLevel">會員分級</span>)</span>
                         </span>
                         <span>{{ memberdiscount }} 元</span>
                     </div>
@@ -112,7 +123,9 @@ const finaltotal = computed(() => {
                         <div class="productDiscount">
                             <div class="mb-1">
                                 <i class="bi bi-caret-right-fill"></i>
-                                此筆訂單可獲得2次遊戲機會，已匯入您的遊玩次數中，記得前往賺取Bunny Coin呦~
+                                單筆訂單滿500可以獲得1次遊戲機會，
+                                此筆訂單可獲得<b style="color: rgba(166, 127, 120, 1); font-style: italic;"> 2 </b>次遊戲機會，已匯入您的遊玩次數中，
+                                記得前往賺取Bunny Coin呦~
                             </div>
                             <div>
                                 <i class="bi bi-caret-right-fill"></i>
@@ -175,6 +188,7 @@ const finaltotal = computed(() => {
         </RouterLink>
     </div>
 
+    <MemberLevelModal ref="modalRef" />
 
 </template>
 
@@ -307,6 +321,8 @@ const finaltotal = computed(() => {
 
 .memberLevel {
     color: rgba(166, 127, 120, 1);
+    text-decoration: underline;
+    cursor: pointer;
 }
 
 .cartLine {

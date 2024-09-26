@@ -1,6 +1,40 @@
 <script setup>
 import { ref, computed } from 'vue';
 import CartTopComponent1 from '@/components/CartTopComponent1.vue';
+import MemberLevelModal from '@/components/MemberLevelModal.vue';
+
+import { SwalHandle } from '@/stores/sweetAlertStore';
+
+const showSuccess = () => {
+  SwalHandle.showSuccessMsg('套用成功！');
+};
+
+const showError = () => {
+  SwalHandle.showErrorMsg('套用失敗');
+};
+
+const deleteItem = (item) => {
+  SwalHandle.confirm(
+    '確認移除',
+    `您確定要把 ${item.productname} 從購物車中移除嗎？`,
+    '移除成功！', // 自定義的成功消息
+    () => {
+      // 執行刪除操作，例如：
+      items.value = items.value.filter(i => i !== item);
+      SwalHandle.showSuccessMsg(`成功刪除 ${item.productname}`);
+    }
+  );
+};
+
+const modalRef = ref(null);
+
+// 用來觸發 modal 的打開方法
+function handleOpenModal() {
+  if (modalRef.value) {
+    modalRef.value.openModal(); // 調用 modal 的 openModal 方法
+  }
+}
+
 
 const items = ref([
     {
@@ -29,15 +63,45 @@ const totalprice = computed(() => {
 
 const discountExp = "2024/11/30";
 
+// 折扣相關變數
+const inputDiscountCode = ref(""); // 使用者輸入的折扣碼
+const validDiscountCode = ref(false); // 折扣碼是否有效
+const discountCode = "HappyHalloween"; // 正確的折扣碼
+const isDiscountApplied = ref(false); // 用來控制是否應用樣式變化
+
+const isDiscountCodeVisible = ref(false);
+
 const discount = computed(() => {
     const price = totalprice.value;
-    if (price >= 1000) {
+    if (validDiscountCode.value && price >= 1000) {
         // 每增加1000元折扣增加50元
         return Math.floor(price / 1000) * 50;
     } else {
         return 0;
     }
 });
+
+// 折扣樣式的計算屬性
+const discountStyle = computed(() => {
+  // 只有當折扣碼有效且會員不是白兔時才應用劃線樣式
+  if (isDiscountApplied.value && memberlevel.value !== '白兔') {
+    return { textDecoration: 'line-through' };
+  }
+  return {};
+});
+
+function applyDiscountCode() {
+    if (inputDiscountCode.value === discountCode) {
+        validDiscountCode.value = true;
+        isDiscountApplied.value = true;  // 設置樣式應用為 true
+        isDiscountCodeVisible.value = true;
+        showSuccess();
+    } else {
+        validDiscountCode.value = false;
+        isDiscountApplied.value = false;
+        showError();
+    }
+}
 
 const memberdiscount = ref(60);
 
@@ -48,6 +112,7 @@ const appliedBunnyQuantity = ref(0);
 
 function applyBunnyCoin() {
     appliedBunnyQuantity.value = Math.min(bunnyquantity.value, maxBunnyQuantity.value);
+    showSuccess();
 }
 
 const remainingBunnyQuantity = computed(() => {
@@ -55,14 +120,16 @@ const remainingBunnyQuantity = computed(() => {
 });
 
 
-const memberlevel = ref("金兔");
+const memberlevel = ref("白兔");
 
-const discountStyle = computed(() => {
-    if (memberlevel.value !== '白兔') {
-        return { textDecoration: 'line-through' };
-    }
-    return {};
-});
+// const discountStyle = computed(() => {
+//     if (memberlevel.value !== '白兔') {
+//         return { textDecoration: 'line-through' };
+//     }
+//     return {};
+// });
+
+
 
 const finaltotal = computed(() => {
     if (memberlevel.value !== '白兔') {
@@ -104,7 +171,7 @@ const finaltotal = computed(() => {
                         <input type="number" min="1" v-model.number="item.quantity" class="quantityInput" />
                     </div>
                     <div class="totalInfo">{{ item.productprice * item.quantity }} 元</div>
-                    <div class="delInfo"><i class="bi bi-x-circle"></i></div>
+                    <div class="delInfo"><i @click="deleteItem(item)" class="bi bi-x-circle"></i></div>
                 </div>
                 <div class="cartLine"></div>
             </div>
@@ -112,12 +179,13 @@ const finaltotal = computed(() => {
                 <div class="productDiscount">
                     <div class="mb-1">
                         <i class="bi bi-caret-right-fill"></i>
-                        即日起至<b class="discountExp">{{ discountExp }}</b>，全館商品滿1000折50
+                        即日起至<b class="discountExp">{{ discountExp }}</b>
+                        ，結帳輸入折扣碼「<b class="discountCode">HappyHalloween</b>」，即可享有全館商品滿1000折50之優惠 (滿2000折100，以此類推)
                     </div>
                     <div>
                         <i class="bi bi-caret-right-fill"></i>
                         Bunny Sugar會員，滿額可依
-                        <RouterLink class="memberLevel">會員分級</RouterLink> 享優惠折扣
+                        <span class="memberLevel" @click="handleOpenModal">會員分級</span> 享優惠折扣
                     </div>
                 </div>
             </div>
@@ -133,18 +201,26 @@ const finaltotal = computed(() => {
                     <span>{{ totalprice }} 元</span>
                 </div>
                 <div class="allDiscount" :style="discountStyle">
-                    <span class="leftText">折扣:</span>
+                    <span class="leftText">折扣:<span style="font-size: small;" v-if="isDiscountCodeVisible"> (已使用折扣碼 {{ discountCode }} )</span></span>
                     <span>{{ discount }} 元</span>
                 </div>
                 <div class="ownDiscount" v-if="memberlevel != '白兔'">
                     <span class="leftText">{{ memberlevel }}會員專屬折扣:
-                        <span>(會員折扣詳見<RouterLink class="memberLevel">會員分級</RouterLink>)</span>
+                        <span>(會員折扣詳見<span @click="handleOpenModal" class="memberLevel">會員分級</span>)</span>
                     </span>
                     <span>{{ memberdiscount }} 元</span>
                 </div>
                 <div class="bunnyCoinDiscount">
                     <span class="leftText">Bunny Coin折扣:</span>
                     <span>{{ appliedBunnyQuantity }} 元</span>
+                </div>
+                <div class="useBunnyCoin">
+                    <span class="leftText">使用折扣碼: </span>
+                </div>
+                <div class="bunnycoinNum">
+                    <input type="text"  placeholder="請輸入欲使用的折扣碼"
+                        class="bunnyCoinInput" v-model="inputDiscountCode">
+                    <button class="use" @click="applyDiscountCode">套用</button>
                 </div>
                 <div class="useBunnyCoin">
                     <span class="leftText">使用Bunny Coin: </span>
@@ -172,6 +248,8 @@ const finaltotal = computed(() => {
             <button class="btn2">前往結帳</button>
         </RouterLink>
     </div>
+
+    <MemberLevelModal ref="modalRef" />
 
 </template>
 
@@ -286,6 +364,11 @@ const finaltotal = computed(() => {
 
 .delInfo {
     flex: 0 0 10%;
+    cursor: pointer;
+}
+
+.delInfo:hover {
+    color: rgba(50, 67, 95, 0.3);
 }
 
 .promotion {
@@ -303,8 +386,15 @@ const finaltotal = computed(() => {
     font-style: italic;
 }
 
+.discountCode {
+    color: rgba(166, 127, 120, 0.8);
+    font-weight: bold;
+}
+
 .memberLevel {
     color: rgba(166, 127, 120, 1);
+    text-decoration: underline;
+    cursor: pointer;
 }
 
 

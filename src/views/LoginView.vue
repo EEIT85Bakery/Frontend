@@ -125,15 +125,15 @@ const usersLogin = async () => {
 }
 
 .loginBunny {
-  width: 15%;
-  height: 15%;
-  object-fit: contain;
-  border: #8f8681 solid 2px;
-  border-radius: 50px;
-  margin-left: 250px;
-  margin-right: 250px;
-  margin-top: 20px;
-  margin-bottom: 10px;
+    width: 15%;
+    height: 15%;
+    object-fit: contain;
+    border: #8f8681 solid 2px;
+    border-radius: 50%;
+    margin-left: 250px;
+    margin-right: 250px;
+    margin-top: 20px;
+    margin-bottom: 10px;
 }
 
 .lineContainer {

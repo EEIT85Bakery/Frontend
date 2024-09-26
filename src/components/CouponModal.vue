@@ -1,16 +1,71 @@
-<script>
+<script setup>
+import { ref, watch, defineProps } from 'vue';
 import useModal from '@/hooks/useModal';
+import { SwalHandle } from '@/stores/sweetAlertStore';
 
-export default {
-    setup() {
-        const { modalRef, openModal, hideModal } = useModal();
+const showSuccess = () => {
+  SwalHandle.showSuccessMsg('變更成功！');
+};
 
-        return {
-            modalRef,
-            openModal,
-            hideModal,
-        };
-    },
+const { openModal, hideModal, modalRef } = useModal()
+
+defineExpose({
+  openModal,
+  hideModal
+});
+
+// 獲取今天的日期並格式化為 YYYY-MM-DD
+const today = new Date().toISOString().split('T')[0]
+const minDate = ref(today)
+
+const props = defineProps({
+  product: {
+    type: Object,
+    default: null
+  }
+})
+
+const isModalOpen = ref(false);
+
+const formData = ref({
+  name: '',
+  price: '',
+  discount: '',
+  date: '',
+  isEnable: ''
+});
+
+watch(
+  () => props.product,
+  (newProduct) => {
+    if (newProduct) {
+      // 如果是編輯模式，將 product 的數據填入表單
+      formData.value = { ...newProduct };
+    } else {
+      // 如果是新增模式，清空表單
+      formData.value = {
+        name: '',
+        price: '',
+        discount: '',
+        date: '',
+        isEnable: ''
+      };
+    }
+  },
+  { immediate: true }
+);
+
+// 表單提交
+const submitForm = () => {
+  if (props.product) {
+    console.log('編輯商品', formData.value);
+  } else {
+    console.log('新增商品', formData.value);
+  }
+  // 這裡可以觸發保存或新增的操作
+  showSuccess();
+  hideModal();
+  isModalOpen.value = false;
 };
 
 </script>
@@ -20,7 +75,7 @@ export default {
         <div class="modal-dialog  modalContainer modal-md">
             <div class="modal-content">
                 <div class="modal-header modalHeader">
-                    <div class="modal-title modalTitle" id="exampleModalLabel">新增優惠</div>
+                    <div class="modal-title modalTitle" id="exampleModalLabel">{{ product ? '編輯優惠券' : '新增優惠券' }}</div>
                     <button type="button" class="btn-close closeBtn" @click="hideModal" aria-label="Close">
                     </button>
                 </div>
@@ -29,32 +84,33 @@ export default {
                     <div class="textContainer">
                         <div class="productTitle">
                             <div class="inputText">優惠名稱</div>
-                            <input type="text" name="productName" class="inputContent" placeholder="請輸入優惠名稱" />
+                            <input type="text"  v-model="formData.name" name="productName" class="inputContent" placeholder="請輸入優惠名稱" />
                            
                                 <div class="inputText">折扣滿額</div>
-                                <input type="number" name="category" class="inputContent" placeholder="請輸入折扣滿額"/>
+                                <input type="number" min="0" v-model="formData.price" name="category" class="inputContent" placeholder="請輸入折扣滿額"/>
                                 <div class="inputText">折扣金額</div>
-                                <input type="number" name="unit" class="inputContent" placeholder="請輸入折扣金額"/>
+                                <input type="number" min="0" v-model="formData.discount" name="unit" class="inputContent" placeholder="請輸入折扣金額"/>
                             
                             <div class="inputText">到期日</div>
-                            <input type="date" name="price" class="inputContent" placeholder="請輸入優惠到期日"/>
+                            <input type="date"
+                                 name="price" 
+                                 class="inputContent" 
+                                 placeholder="請輸入優惠到期日"
+                                  
+                                 :min="minDate"
+                                 v-model="formData.date" />
                             <div class="inputText">商品是否啟用: 
-                                <input type="radio" name="isUsed" class="inputRadio ms-3 md-3"  /> 是
-                                <input type="radio" name="isUsed" class="inputRadio ms-3"  /> 否
+                                <input type="radio" v-model="formData.isEnable" name="isUsed" class="inputRadio ms-3 md-3"  /> 是
+                                <input type="radio" v-model="formData.isEnable" name="isUsed" class="inputRadio ms-3"  /> 否
                             </div>
                             
                         </div>
     
                     </div>
-
-
-
-
-
                 </div>
                 <div class="modal-footer modalFooter">
                     <button type="button" class="btn1" @click="hideModal">取消</button>
-                    <button type="button" class="btn2">儲存變更</button>
+                    <button type="submit" class="btn2" @click="submitForm">儲存變更</button>
                 </div>
             </div>
         </div>

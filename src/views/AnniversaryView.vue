@@ -1,5 +1,6 @@
 <script setup>
 
+
 </script>
 
 <template>
@@ -7,15 +8,27 @@
         <div class="infoContainer">
             <div class="menuContainer">
                 <div class="menuOption">
-                    <div class="customerInfo"><RouterLink to="customerInformation" class="textColor">個人資訊</RouterLink></div>
-                    <div class="orderInfo"><RouterLink to="orderList" class="textColor">訂單</RouterLink></div>
-                    <div class="wishList"><RouterLink to="wishList" class="textColor">我的收藏</RouterLink></div>
-                    <div class="levelAndCoin"><RouterLink to="discount" class="textColor">優惠專區</RouterLink></div>
-                    <div class="myDay"><RouterLink to="anniversary" class="textColor">紀念日</RouterLink></div>
+                    <div class="customerInfo">
+                        <RouterLink to="customerInformation" class="textColor">個人資訊</RouterLink>
+                    </div>
+                    <div class="orderInfo">
+                        <RouterLink to="orderList" class="textColor">訂單</RouterLink>
+                    </div>
+                    <div class="wishList">
+                        <RouterLink to="wishList" class="textColor">我的收藏</RouterLink>
+                    </div>
+                    <div class="levelAndCoin">
+                        <RouterLink to="discount" class="textColor">優惠專區</RouterLink>
+                    </div>
+                    <div class="myDay">
+                        <RouterLink to="anniversary" class="textColor">紀念日</RouterLink>
+                    </div>
                 </div>
                 <div class="bottomOption">
                     <div class="line"></div>
-                    <div class="logoutOption"><RouterLink to="/" class="textColor">登出</RouterLink></div>
+                    <div class="logoutOption">
+                        <RouterLink to="/" class="textColor">登出</RouterLink>
+                    </div>
                 </div>
             </div>
             <div class="cutLine"></div>
@@ -26,10 +39,34 @@
                 </div>
                 <div class="insideContentContainer">
 
-                    
+                    <div class="introduction">
+                        <div class="introText">處在忙綠的生活步調中，您是否經常忘了許多紀念日是需要被好好慶祝的呢？</div>
+                        <div class="introText">不用擔心，<b>"您記不住的，BunnySugar幫您記住"</b></div>
+                        <hr>
+                    </div>
+                    <div>
+                        <i class="bi bi-caret-down-fill"></i>
+                        以下輸入「重要事項」以及「日期」，我們會於紀念日到來的前*天寄提醒信件到您的電子信箱
+                    </div>
+                   
+                    <div class="inputArea">
+                        <div class="area1">
+                            
+                            
+                        </div>
+                        <div class="area2">
+                            fjmlkdshv
+                        </div>
+                    </div>
 
 
-                    
+
+
+
+
+
+
+
                 </div>
             </div>
         </div>
@@ -38,6 +75,50 @@
 </template>
 
 <style scoped>
+
+.introduction {
+    text-align: center;
+    width: 100%;
+    background-color: lightblue;
+    color: rgba(143, 134, 129, 1);
+}
+
+.introText {
+    margin-bottom: 1%;
+    /* font-size: small; */
+}
+
+.inputArea {
+    display: flex;
+}
+
+.area1 {
+    flex: 30%;
+    background-color: lightpink;
+}
+
+.area2 {
+    flex: 40%;
+    background-color: lightgoldenrodyellow;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 .outsideContainer {
     width: 100%;
@@ -103,7 +184,7 @@
 
 .textColor:focus {
     color: rgba(50, 67, 95, 1);
-    text-decoration:underline;
+    text-decoration: underline;
 }
 
 .line {
@@ -131,8 +212,9 @@
 
 .insideContentContainer {
     display: flex;
+    flex-direction: column;
     width: 100%;
     height: 100%;
+    padding: 0 3%;
 }
-
 </style>

@@ -1,143 +1,97 @@
-<script>
+<script setup>
 import { ref } from 'vue';
 import PaginationComponent from '@/components/PaginationComponent.vue';
 import OrderModal from '@/components/OrderModal.vue';
 
-export default {
-    components: {
-        OrderModal,
-        PaginationComponent
-    },
-    setup() {
-        const OrderModal = ref(null); // 用來引用子組件
+import { SwalHandle } from '@/stores/sweetAlertStore';
 
-        const openModal = () => {
-            if (OrderModal.value) {
-                OrderModal.value.openModal(); // 調用子組件的 openModal 方法
-            }
-        };
+const orderModalRef = ref(null);
+const currentItem = ref(null); 
 
+// 打開新增 modal
+const openOrderModal = () => {
+  currentItem.value = null; // 清空當前選中的商品，表示新增
+  if (orderModalRef.value) {
+    orderModalRef.value.openModal();
+  }
+};
 
-        const items = ref([
-            {
-                orderNumber: '2024010101',
-                userName: '吉伊卡哇',
-                tel: '0912-345-678',
-                productNames: [
-                    '經典紐約起司蛋糕 (數量: 1 顆)',
-                    '經典抹茶起司蛋糕 (數量: 2 顆)',
-                    '季節草莓起司蛋糕 (數量: 3 顆)'
-                ],
-                price: '3600元',
-                orderStatus: '已付款'
-            },
-            {
-                orderNumber: '2024010101',
-                userName: '吉伊卡哇',
-                tel: '0912-345-678',
-                productNames: [
-                    '經典紐約起司蛋糕 (數量: 1 顆)',
-                    '經典抹茶起司蛋糕 (數量: 2 顆)',
-                    '季節草莓起司蛋糕 (數量: 3 顆)'
-                ],
-                price: '3600元',
-                orderStatus: '已付款'
-            },
-            {
-                orderNumber: '2024010101',
-                userName: '吉伊卡哇',
-                tel: '0912-345-678',
-                productNames: [
-                    '經典紐約起司蛋糕 (數量: 1 顆)',
-                    '經典抹茶起司蛋糕 (數量: 2 顆)',
-                    '季節草莓起司蛋糕 (數量: 3 顆)'
-                ],
-                price: '3600元',
-                orderStatus: '已付款'
-            },
-            {
-                orderNumber: '2024010101',
-                userName: '吉伊卡哇',
-                tel: '0912-345-678',
-                productNames: [
-                    '經典紐約起司蛋糕 (數量: 1 顆)',
-                    '經典抹茶起司蛋糕 (數量: 2 顆)',
-                    '季節草莓起司蛋糕 (數量: 3 顆)'
-                ],
-                price: '3600元',
-                orderStatus: '已付款'
-            },
-            {
-                orderNumber: '2024010101',
-                userName: '吉伊卡哇',
-                tel: '0912-345-678',
-                productNames: [
-                    '經典紐約起司蛋糕 (數量: 1 顆)',
-                    '經典抹茶起司蛋糕 (數量: 2 顆)',
-                    '季節草莓起司蛋糕 (數量: 3 顆)'
-                ],
-                price: '3600元',
-                orderStatus: '已付款'
-            },
-            {
-                orderNumber: '2024010101',
-                userName: '吉伊卡哇',
-                tel: '0912-345-678',
-                productNames: [
-                    '經典紐約起司蛋糕 (數量: 1 顆)',
-                    '經典抹茶起司蛋糕 (數量: 2 顆)',
-                    '季節草莓起司蛋糕 (數量: 3 顆)'
-                ],
-                price: '3600元',
-                orderStatus: '已付款'
-            },
-            {
-                orderNumber: '2024010101',
-                userName: '吉伊卡哇',
-                tel: '0912-345-678',
-                productNames: [
-                    '經典紐約起司蛋糕 (數量: 1 顆)',
-                    '經典抹茶起司蛋糕 (數量: 2 顆)',
-                    '季節草莓起司蛋糕 (數量: 3 顆)'
-                ],
-                price: '3600元',
-                orderStatus: '已付款'
-            },
-            {
-                orderNumber: '2024010101',
-                userName: '吉伊卡哇',
-                tel: '0912-345-678',
-                productNames: [
-                    '經典紐約起司蛋糕 (數量: 1 顆)',
-                    '經典抹茶起司蛋糕 (數量: 2 顆)',
-                    '季節草莓起司蛋糕 (數量: 3 顆)'
-                ],
-                price: '3600元',
-                orderStatus: '已付款'
-            },
-            {
-                orderNumber: '2024010101',
-                userName: '吉伊卡哇',
-                tel: '0912-345-678',
-                productNames: [
-                    '經典紐約起司蛋糕 (數量: 1 顆)',
-                    '經典抹茶起司蛋糕 (數量: 2 顆)',
-                    '季節草莓起司蛋糕 (數量: 3 顆)'
-                ],
-                price: '3600元',
-                orderStatus: '已付款'
-            }
-        ]);
+// 打開編輯 modal
+// const openEditCouponModal = (item) => {
+//   currentItem.value = item;
+//   if (orderModalRef.value) {
+//     orderModalRef.value.openModal();
+//   }
+// };
 
-        return {
-            OrderModal,
-            openModal,
-            items
-        };
+const deleteItem = (item) => {
+  SwalHandle.confirm(
+    '確認刪除',
+    `您確定要刪除訂單 ${item.orderNumber} 嗎？`,
+    '刪除成功！', 
+    () => {
+      // 執行刪除操作，例如：
+      items.value = items.value.filter(i => i !== item);
+      SwalHandle.showSuccessMsg(`成功刪除 ${item.orderNumber}`);
     }
-}
+  );
+};
 
 
+const items = ref([
+    {
+        orderNumber: '2024010101',
+        userName: '吉伊卡哇',
+        tel: '0912-345-678',
+        productNames: [
+            '經典紐約起司蛋糕 (數量: 1 顆)',
+            '經典抹茶起司蛋糕 (數量: 2 顆)',
+            '季節草莓起司蛋糕 (數量: 3 顆)'
+        ],
+        price: '3600元',
+        isPaid: '已付款',
+        orderStatus: '已確認'
+    },
+    {
+        orderNumber: '2024010101',
+        userName: '吉伊卡哇',
+        tel: '0912-345-678',
+        productNames: [
+            '經典紐約起司蛋糕 (數量: 1 顆)',
+            '經典抹茶起司蛋糕 (數量: 2 顆)',
+            '季節草莓起司蛋糕 (數量: 3 顆)'
+        ],
+        price: '3600元',
+        isPaid: '已付款',
+        orderStatus: '已確認'
+    },
+    {
+        orderNumber: '2024010101',
+        userName: '吉伊卡哇',
+        tel: '0912-345-678',
+        productNames: [
+            '經典紐約起司蛋糕 (數量: 1 顆)',
+            '經典抹茶起司蛋糕 (數量: 2 顆)',
+            '季節草莓起司蛋糕 (數量: 3 顆)'
+        ],
+        price: '3600元',
+        isPaid: '已付款',
+        orderStatus: '已確認'
+    },
+    {
+        orderNumber: '2024010101',
+        userName: '吉伊卡哇',
+        tel: '0912-345-678',
+        productNames: [
+            '經典紐約起司蛋糕 (數量: 1 顆)',
+            '經典抹茶起司蛋糕 (數量: 2 顆)',
+            '季節草莓起司蛋糕 (數量: 3 顆)'
+        ],
+        price: '3600元',
+        isPaid: '已付款',
+        orderStatus: '已確認'
+    }
+]);
 
 
 </script>
@@ -145,13 +99,6 @@ export default {
 <template>
 
     <div class="pageContainer">
-
-        <!-- <div class="addBtnContainer">
-            <button class="addBtn" @click="openModal">
-                <i class="bi bi-plus-square-dotted me-2"></i><span>建立新的商品</span>
-            </button>
-        </div> -->
-
 
         <div class="contentContainer">
             <table class="contentTable">
@@ -162,6 +109,7 @@ export default {
                         <th>電話號碼</th>
                         <th>購買款項</th>
                         <th>總金額</th>
+                        <th>付款狀態</th>
                         <th>訂單狀態</th>
                         <th>編輯</th>
                         <th>刪除</th>
@@ -174,14 +122,16 @@ export default {
                         <td>{{ item.tel }}</td>
                         <td class="listContainer">
                             <ul class="list">
-                                <li class="listItem" v-for="(product, prodIndex) in item.productNames" :key="prodIndex">{{ product }}
+                                <li class="listItem" v-for="(product, prodIndex) in item.productNames" :key="prodIndex">
+                                    {{ product }}
                                 </li>
                             </ul>
                         </td>
                         <td>{{ item.price }}</td>
+                        <td>{{ item.isPaid }}</td>
                         <td>{{ item.orderStatus }}</td>
-                        <td><i class="bi bi-pencil-square" style="color: darkgrey;" @click="openModal"></i></td>
-                        <td><i class="bi bi-trash3" style="color: darkred;"></i></td>
+                        <td><i class="bi bi-pencil-square" style="color: darkgrey;" @click="openOrderModal(item)"></i></td>
+                        <td><i class="bi bi-trash3" style="color: darkred;" @click="deleteItem(item)"></i></td>
                     </tr>
                 </tbody>
             </table>
@@ -190,7 +140,7 @@ export default {
 
         </div>
 
-        <OrderModal ref="OrderModal" />
+        <OrderModal ref="orderModalRef" :product="currentItem" />
 
 
     </div>
@@ -198,7 +148,6 @@ export default {
 </template>
 
 <style scoped>
-
 .listContainer {
     display: flex;
     justify-items: center;

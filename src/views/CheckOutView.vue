@@ -1,6 +1,16 @@
 <script setup>
 import { ref, computed } from 'vue';
 import CartTopComponent2 from '@/components/CartTopComponent2.vue';
+import MemberLevelModal from '@/components/MemberLevelModal.vue';
+
+const modalRef = ref(null);
+
+// 用來觸發 modal 的打開方法
+function handleOpenModal() {
+  if (modalRef.value) {
+    modalRef.value.openModal(); // 調用 modal 的 openModal 方法
+  }
+}
 
 
 const productimg = { imageUrl: '../../public/imgZip/Sample/cake1.jpg' };
@@ -16,6 +26,8 @@ const checkout = () => {
 const totalprice = computed(() => {
     return productprice.value * quantity.value;
 });
+
+const discountCode = 'HappyHalloween'
 
 
 const discount = computed(() => {
@@ -116,12 +128,12 @@ const topStyle = computed(() => ({
                         <span>{{ totalprice }} 元</span>
                     </div>
                     <div class="allDiscount" :style="discountStyle">
-                        <span class="leftText">折扣:</span>
+                        <span class="leftText">折扣:<span style="font-size: small;"> (已使用折扣碼 {{ discountCode }} )</span></span>
                         <span>{{ discount }} 元</span>
                     </div>
                     <div class="ownDiscount" v-if="memberlevel != '白兔'">
                         <span class="leftText">{{ memberlevel }}會員專屬折扣:
-                            <span>(會員折扣詳見<RouterLink class="memberLevel">會員分級</RouterLink>)</span>
+                            <span>(會員折扣詳見<span @click="handleOpenModal" class="memberLevel">會員分級</span>)</span>
                         </span>
                         <span>{{ memberdiscount }} 元</span>
                     </div>
@@ -154,19 +166,6 @@ const topStyle = computed(() => ({
                 </div>
 
             </div>
-            <!-- <div class="payInfo">
-                <div class="top">付款資訊</div>
-                <div class="InfoContainer bg-white">
-                    <form>
-                        <div class="inputText">付款方式</div>
-                        <select name="payment" class="payWay infoInput" >
-                            <option value="cash">門市付款</option>
-                            <option value="creditCard">信用卡付款</option>
-                        </select>
-                    </form>
-                </div>
-                <div></div>
-            </div> -->
         </div>
         <div class="pickupAndCreditInfo">
             <div class="pickupInfo">
@@ -193,21 +192,6 @@ const topStyle = computed(() => ({
                 </div>
                 <div></div>
             </div>
-            <!-- <div class="creditInfo">
-                <div class="top">信用卡資訊</div>
-                <div class="InfoContainer bg-white">
-                    <form>
-                        <div class="inputText">卡號</div>
-                        <input type="text" name="creditCardNum" placeholder="請輸入卡號" class="infoInput">
-                        <div class="inputText">持卡人姓名</div>
-                        <input type="text" name="creditCardName" placeholder="請輸入持卡人姓名" class="infoInput">
-                        <div class="inputText">有效期(YY/MM)</div>
-                        <input type="text" name="creditCardExp" placeholder="請輸入有效日期" class="infoInput">
-                        <div class="inputText">安全碼</div>
-                        <input type="text" name="creditCardSafeCode" placeholder="請輸入安全碼" class="infoInput">
-                    </form>
-                </div>
-            </div> -->
 
         </div>
 
@@ -221,6 +205,8 @@ const topStyle = computed(() => ({
             <button class="btn2" @click="checkout">提交訂單</button>
         </RouterLink>
     </div>
+
+    <MemberLevelModal ref="modalRef" />
 
 
 </template>
@@ -332,6 +318,8 @@ const topStyle = computed(() => ({
 
 .memberLevel {
     color: rgba(166, 127, 120, 1);
+    text-decoration: underline;
+    cursor: pointer;
 }
 
 .cartLine {

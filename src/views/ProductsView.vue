@@ -1,6 +1,29 @@
 <script setup>
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import axios from 'axios';
+
+import { useRoute } from 'vue-router';
+import Loading from '@/components/Loading.vue';
+
+// 定义加载状态
+const isLoading = ref(true);
+
+// 使用 useRoute 来获取当前路由
+const route = useRoute();
+
+// 定义开始加载的方法
+const startLoading = () => {
+  setTimeout(() => {
+    isLoading.value = false;
+  }, 2100); // 2.1 秒后停止加载
+};
+
+// 监听路由变化
+watch(route, () => {
+  isLoading.value = true;
+  startLoading();
+});
+
 
 const products = ref({})
 const field = ref("蛋糕專區");
@@ -25,11 +48,14 @@ const citems = [
 onMounted(() => {
   axios.get('/products').then((res) => {
      
-    products.value = res.data
+    products.value = res.data;
+    isLoading.value = false;
 
     
   }).catch((err) => {
     console.log(err);
+    isLoading.value = false;
+    
     
   })
 })
@@ -39,9 +65,14 @@ onMounted(() => {
 
 <template>
 
+
+
 <div class="PContainer">
 
+
     <div class="categoryText1">商品列表 >> {{ field }}</div>
+
+    <Loading v-if="isLoading" />
 
     <div class="d-flex">
          <!-- 側邊分類欄 -->

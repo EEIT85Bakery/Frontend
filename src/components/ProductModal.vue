@@ -1,16 +1,71 @@
-<script>
+<script setup>
+import { ref, watch, defineProps } from 'vue';
 import useModal from '@/hooks/useModal';
+import { SwalHandle } from '@/stores/sweetAlertStore';
 
-export default {
-    setup() {
-        const { modalRef, openModal, hideModal } = useModal();
+const showSuccess = () => {
+  SwalHandle.showSuccessMsg('變更成功！');
+};
 
-        return {
-            modalRef,
-            openModal,
-            hideModal,
-        };
-    },
+const { openModal, hideModal, modalRef } = useModal()
+
+defineExpose({
+  openModal,
+  hideModal
+});
+
+const props = defineProps({
+  product: {
+    type: Object,
+    default: null
+  }
+})
+
+const isModalOpen = ref(false);
+
+const formData = ref({
+    category: '',
+    name: '',
+    price: '',
+    isEnable: '',
+    unit: '',
+    description: '',
+    ingredient: ''
+});
+
+watch(
+  () => props.product,
+  (newProduct) => {
+    if (newProduct) {
+      // 如果是編輯模式，將 product 的數據填入表單
+      formData.value = { ...newProduct };
+    } else {
+      // 如果是新增模式，清空表單
+      formData.value = {
+        category: '',
+        name: '',
+        price: '',
+        isEnable: '',
+        unit: '',
+        description: '',
+        ingredient: ''
+      };
+    }
+  },
+  { immediate: true }
+);
+
+// 表單提交
+const submitForm = () => {
+  if (props.product) {
+    console.log('編輯商品', formData.value);
+  } else {
+    console.log('新增商品', formData.value);
+  }
+  // 這裡可以觸發保存或新增的操作
+  showSuccess();
+  hideModal();
+  isModalOpen.value = false;
 };
 
 </script>
@@ -20,7 +75,7 @@ export default {
         <div class="modal-dialog  modalContainer modal-lg">
             <div class="modal-content">
                 <div class="modal-header modalHeader">
-                    <div class="modal-title modalTitle" id="exampleModalLabel">編輯商品</div>
+                    <div class="modal-title modalTitle" id="exampleModalLabel">{{ product ? '編輯商品' : '新增商品' }}</div>
                     <button type="button" class="btn-close closeBtn" @click="hideModal" aria-label="Close">
                     </button>
                 </div>
@@ -55,38 +110,34 @@ export default {
                     <div class="textContainer">
                         <div class="productTitle">
                             <div class="inputText">商品名稱</div>
-                            <input type="text" name="productName" class="inputContent" placeholder="請輸入商品名稱" />
+                            <input type="text" v-model="formData.name" name="name" class="inputContent" placeholder="請輸入商品名稱" />
                             <!-- <div class="inputTwo"> -->
                                 <div class="inputText">商品分類</div>
-                                <input type="text" name="category" class="inputContent" placeholder="請輸入商品分類"/>
+                                <input type="text" v-model="formData.category" name="category" class="inputContent" placeholder="請輸入商品分類"/>
                                 <div class="inputText">商品單位</div>
-                                <input type="text" name="unit" class="inputContent" placeholder="請輸入商品單位"/>
+                                <input type="text" v-model="formData.unit" name="unit" class="inputContent" placeholder="請輸入商品單位"/>
                             <!-- </div> -->
                             <div class="inputText">商品價格</div>
-                            <input type="number" name="price" class="inputContent" placeholder="請輸入商品價格" min="0"/>
+                            <input type="number" v-model="formData.price" name="price" class="inputContent" placeholder="請輸入商品價格" min="0"/>
                             <div class="inputText">商品是否啟用: 
-                                <input type="radio" name="isUsed" class="inputRadio ms-3 md-3"  /> 是
-                                <input type="radio" name="isUsed" class="inputRadio ms-3"  /> 否
+                                <input type="radio" v-model="formData.isEnable" name="isUsed" class="inputRadio ms-3 md-3"  /> 是
+                                <input type="radio" v-model="formData.isEnable" name="isUsed" class="inputRadio ms-3"  /> 否
                             </div>
                             
                         </div>
                         <hr />
                         <div class="productDetail">
                             <div class="inputText">商品描述</div>
-                            <textarea type="text" name="productDetail" class="inputContent" placeholder="請輸入商品描述"></textarea>
+                            <textarea type="text" v-model="formData.description" name="productDetail" class="inputContent" placeholder="請輸入商品描述"></textarea>
                             <div class="inputText">商品成分</div>
-                            <textarea type="text" name="composition" class="inputContent" placeholder="請輸入商品成分"></textarea>
+                            <textarea type="text" v-model="formData.ingredient" name="composition" class="inputContent" placeholder="請輸入商品成分"></textarea>
                         </div>
                     </div>
-
-
-
-
 
                 </div>
                 <div class="modal-footer modalFooter">
                     <button type="button" class="btn1" @click="hideModal">取消</button>
-                    <button type="button" class="btn2">儲存變更</button>
+                    <button type="submit" class="btn2" @click="submitForm">儲存變更</button>
                 </div>
             </div>
         </div>

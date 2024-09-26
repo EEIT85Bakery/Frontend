@@ -1,5 +1,21 @@
 <script setup>
+// import { useCartStore } from '@/stores/cartStore';
+// import { computed, onMounted } from 'vue';
 
+// 使用 cartStore
+// const cartStore = useCartStore();
+
+// 計算購物車中的商品數量
+// const carts = computed(() => cartStore.carts);
+
+// 組件加載時，獲取購物車數據
+// onMounted(() => {
+//   cartStore.getCart();
+// });
+
+function scrollToTop() {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
 
 </script>
 
@@ -8,11 +24,13 @@
 
 
 
-<div class="nabarAd">
-    我是廣告我是廣告我是廣告我是廣告我是廣告我是廣告我是廣告我是廣告
-</div>
+
 
     <nav class="navbar navbar-expand-lg sticky-top">
+
+        <div class="nabarAd">
+            我是廣告我是廣告我是廣告我是廣告我是廣告我是廣告我是廣告我是廣告
+        </div>
 
         <div class="navbarContainer container-fluid d-flex">
 
@@ -21,7 +39,6 @@
                 <img src="../../public/imgZip/Logo/logo.png" alt="navbarLogo" class="navbarLogo">
             </RouterLink>
 
-            <!-- 漢堡選單 -->
             <button class="navbarToggler navbar-toggler" type="button" data-bs-toggle="collapse"
                 data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
                 aria-label="Toggle navigation">
@@ -43,13 +60,13 @@
                         <RouterLink class="navLink" to="products">商品列表</RouterLink>
                     </li>
                     <li class="navItem">
-                        <RouterLink class="navLink" to="/">門市資訊</RouterLink>
+                        <RouterLink class="navLink" to="cartTest">門市資訊</RouterLink>
                     </li>
                     <li class="navItem">
-                        <RouterLink class="navLink" to="/">常見問題</RouterLink>
+                        <RouterLink class="navLink" to="addTest">常見問題</RouterLink>
                     </li>
                     <li class="navItem">
-                        <RouterLink class="navLink" to="/">我的收藏</RouterLink>
+                        <RouterLink class="navLink" to="wishList">我的收藏</RouterLink>
                     </li>
                 </ul>
                 <div class="lineContainer">
@@ -57,7 +74,7 @@
                 </div>
 
                 <div class="navbarIconContainer d-flex ms-auto">
-                    <div class="nabarSearchContainer">
+                    <div class="navbarSearchContainer">
                         <form class="d-flex" role="search">
                             <!-- <input class="navbarSearchInput" type="search" placeholder="找商品"> -->
                             <button class="btn" type="submit">
@@ -70,6 +87,10 @@
                     </RouterLink>
                     <RouterLink to="cart">
                         <i class="navbarIcon bi bi-cart4"></i>
+
+
+
+                        <span class="cartCount"></span>
                     </RouterLink>
                 </div>
 
@@ -90,25 +111,25 @@
         </div>
     </RouterLink>
 
-    <a href="#">
-    <div class="goTopContainer">
+    <div>
+        <div class="goTopContainer" @click="scrollToTop">
             <i class="bi bi-arrow-up-circle-fill goTopIcon"></i>
-    </div>    
-    </a>
-    
+        </div>
+    </div>
+
 
 </template>
 
 
 <style scoped>
-
 .nabarAd {
     font-size: small;
     padding: 0.2%;
     text-align: center;
     width: 100%;
     position: fixed;
-    z-index: 2000;
+    top: 0;
+    /* z-index: 1500; */
     color: white;
     background-color: rgba(143, 134, 129, 0.8);
 }
@@ -154,7 +175,12 @@
 
 .navLink:focus {
     color: rgba(166, 127, 120, 1);
-    text-decoration:underline;
+    text-decoration: underline;
+}
+
+.navLink:hover {
+    color: rgba(166, 127, 120, 1);
+    text-decoration: underline;
 }
 
 .dropdownMenuContainer {
@@ -170,7 +196,6 @@
     text-decoration: none;
 }
 
-/* test */
 .line {
     height: 0.5px;
     background-color: rgba(143, 134, 129, 0.5);
@@ -189,6 +214,10 @@
     color: rgba(50, 67, 95, 0.7);
     font-size: 1.7rem;
     cursor: pointer;
+}
+
+.navbarIcon:hover {
+    opacity: 0.7;
 }
 
 .navbarSearchIcon {
@@ -238,6 +267,7 @@
     z-index: 2000;
     font-size: 3vw;
     text-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+    cursor: pointer;
 }
 
 @media (max-width: 768px) {

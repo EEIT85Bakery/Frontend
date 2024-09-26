@@ -1,89 +1,100 @@
-<script>
+<script setup>
 import { ref } from 'vue';
 import PaginationComponent from '@/components/PaginationComponent.vue';
-import ProductModal from '@/components/ProductModal.vue'; // 確保路徑正確
+import ProductModal from '@/components/ProductModal.vue';
 
-export default {
-  components: {
-    ProductModal,
-    PaginationComponent
-  },
-  setup() {
-    const productModal = ref(null); // 用來引用子組件
+import { SwalHandle } from '@/stores/sweetAlertStore';
 
-    const openModal = () => {
-      if (productModal.value) {
-        productModal.value.openModal(); // 調用子組件的 openModal 方法
-      }
-    };
+const productModalRef = ref(null);
+const currentItem = ref(null); 
+
+// 打開新增 modal
+const openproductModal = () => {
+  currentItem.value = null; // 清空當前選中的商品，表示新增
+  if (productModalRef.value) {
+    productModalRef.value.openModal();
+  }
+};
+
+// 打開編輯 modal
+const openEditproductModal = (item) => {
+  currentItem.value = item; // 設置選中的商品
+  if (productModalRef.value) {
+    productModalRef.value.openModal();
+  }
+};
+
+const deleteItem = (item) => {
+  SwalHandle.confirm(
+    '確認刪除',
+    `您確定要刪除 ${item.name} 嗎？`,
+    '刪除成功！', // 自定義的成功消息
+    () => {
+      // 執行刪除操作，例如：
+      items.value = items.value.filter(i => i !== item);
+      SwalHandle.showSuccessMsg(`成功刪除 ${item.name}`);
+    }
+  );
+};
 
     
 const items = ref([
     {
         category: '蛋糕',
         name: '紐約起司蛋糕',
-        price: '160元',
-        use: '是'
+        price: 160,
+        isEnable: '是',
+        unit: '顆',
+        description: '訂購天數需要3~7個工作天（不含訂購當天）為保持風味最佳，請於隔日內享用完畢',
+        ingredient: '| 新鮮草莓 | 動物性鮮奶油 | 奶油乳酪 | 海綿蛋糕 |'
     },
     {
         category: '蛋糕',
         name: '紐約起司蛋糕',
-        price: '160元',
-        use: '否'
+        price: 160,
+        isEnable: '是',
+        unit: '顆',
+        description: '訂購天數需要3~7個工作天（不含訂購當天）為保持風味最佳，請於隔日內享用完畢',
+        ingredient: '| 新鮮草莓 | 動物性鮮奶油 | 奶油乳酪 | 海綿蛋糕 |'
     },
     {
         category: '蛋糕',
         name: '紐約起司蛋糕',
-        price: '160元',
-        use: '是'
+        price: 160,
+        isEnable: '是',
+        unit: '顆',
+        description: '訂購天數需要3~7個工作天（不含訂購當天）為保持風味最佳，請於隔日內享用完畢',
+        ingredient: '| 新鮮草莓 | 動物性鮮奶油 | 奶油乳酪 | 海綿蛋糕 |'
     },
     {
         category: '蛋糕',
         name: '紐約起司蛋糕',
-        price: '160元',
-        use: '否'
+        price: 160,
+        isEnable: '是',
+        unit: '顆',
+        description: '訂購天數需要3~7個工作天（不含訂購當天）為保持風味最佳，請於隔日內享用完畢',
+        ingredient: '| 新鮮草莓 | 動物性鮮奶油 | 奶油乳酪 | 海綿蛋糕 |'
     },
     {
         category: '蛋糕',
         name: '紐約起司蛋糕',
-        price: '160元',
-        use: '否'
+        price: 160,
+        isEnable: '是',
+        unit: '顆',
+        description: '訂購天數需要3~7個工作天（不含訂購當天）為保持風味最佳，請於隔日內享用完畢',
+        ingredient: '| 新鮮草莓 | 動物性鮮奶油 | 奶油乳酪 | 海綿蛋糕 |'
     },
     {
         category: '蛋糕',
         name: '紐約起司蛋糕',
-        price: '160元',
-        use: '否'
-    },
-    {
-        category: '蛋糕',
-        name: '紐約起司蛋糕',
-        price: '160元',
-        use: '否'
-    },
-    {
-        category: '蛋糕',
-        name: '紐約起司蛋糕',
-        price: '160元',
-        use: '否'
-    },
-    {
-        category: '蛋糕',
-        name: '紐約起司蛋糕',
-        price: '160元',
-        use: '否'
+        price: 160,
+        isEnable: '是',
+        unit: '顆',
+        description: '訂購天數需要3~7個工作天（不含訂購當天）為保持風味最佳，請於隔日內享用完畢',
+        ingredient: '| 新鮮草莓 | 動物性鮮奶油 | 奶油乳酪 | 海綿蛋糕 |'
     }
+    
 ]);
-
-    return {
-      productModal,
-      openModal,
-      items
-    };
-  }
-}
-
-
 
 
 </script>
@@ -93,7 +104,7 @@ const items = ref([
     <div class="pageContainer">
 
         <div class="addBtnContainer">
-        <button class="addBtn" @click="openModal">
+        <button class="addBtn" @click="openproductModal">
             <i class="bi bi-plus-square-dotted me-2"></i><span>建立新的商品</span>
         </button>
     </div>
@@ -115,10 +126,10 @@ const items = ref([
                     <tr v-for="(item, index) in items" :key="index">
                         <td>{{ item.category }}</td>
                         <td>{{ item.name }}</td>
-                        <td>{{ item.price }}</td>
-                        <td>{{ item.use }}</td>
-                        <td><i class="bi bi-pencil-square" style="color: darkgrey;" @click="openModal"></i></td>
-                        <td><i class="bi bi-trash3" style="color: darkred;"></i></td>
+                        <td>{{ item.price }} 元</td>
+                        <td>{{ item.isEnable }}</td>
+                        <td><i @click="openEditproductModal(item)" class="bi bi-pencil-square" style="color: darkgrey;"></i></td>
+                        <td><i @click="deleteItem(item)" class="bi bi-trash3" style="color: darkred;"></i></td>
                     </tr>
                 </tbody>
             </table>
@@ -127,7 +138,7 @@ const items = ref([
 
         </div>
 
-        <ProductModal ref="productModal" />
+        <ProductModal ref="productModalRef" :product="currentItem" />
 
 
     </div>

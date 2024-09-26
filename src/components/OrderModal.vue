@@ -1,76 +1,120 @@
-<script>
+<script setup>
+import { ref, watch, defineProps } from 'vue';
 import useModal from '@/hooks/useModal';
-import { ref } from 'vue';
+import { SwalHandle } from '@/stores/sweetAlertStore';
 
-export default {
-    setup() {
-        const { modalRef, openModal, hideModal } = useModal();
-
-        const userInfo =ref([
-            {
-                userName: "吉伊卡哇",
-                tel:"0912-345-678",
-                email:"BunnySugar@service.com"
-            }
-        ]);
-
-        const orderInfo =ref([
-            {
-                num: "2024010101",
-                date: "2024-01-01",
-                payWay: "信用卡",
-                unPaid: "未付款",
-                paid: "已付款",
-                payTime: "2024-01-02",
-                price: "3600 元"
-            }
-        ]);
-
-        // const newId = products.value.length + 1;
-
-        const products =ref([
-            {
-                id: "1",
-                productName: "經典紐約起司蛋糕",
-                quantity: "1 顆",
-                total: "360 元"
-            },
-            {
-                id: "2",
-                productName: "經典紐約起司蛋糕",
-                quantity: "1 顆",
-                total: "360 元"
-            },
-            {
-                id: "3",
-                productName: "經典紐約起司蛋糕",
-                quantity: "1 顆",
-                total: "360 元"
-            },
-            {
-                id: "4",
-                productName: "經典紐約起司蛋糕",
-                quantity: "1 顆",
-                total: "360 元"
-            },
-            {
-                id: "5",
-                productName: "經典紐約起司蛋糕",
-                quantity: "1 顆",
-                total: "360 元"
-            }
-        ]);
-
-        return {
-            modalRef,
-            openModal,
-            hideModal,
-            userInfo,
-            orderInfo,
-            products
-        };
-    },
+const showSuccess = () => {
+  SwalHandle.showSuccessMsg('變更成功！');
 };
+
+const { openModal, hideModal, modalRef } = useModal()
+
+defineExpose({
+  openModal,
+  hideModal
+});
+
+const props = defineProps({
+  product: {
+    type: Object,
+    default: null
+  }
+})
+
+const isModalOpen = ref(false);
+
+const formData = ref({
+    isPaid:'',
+    orderStatus: ''
+});
+
+watch(
+  () => props.product,
+  (newProduct) => {
+    if (newProduct) {
+      // 如果是編輯模式，將 product 的數據填入表單
+      formData.value = { ...newProduct };
+    } else {
+      // 如果是新增模式，清空表單
+      formData.value = {
+        isPaid:'',
+        orderStatus: ''
+      };
+    }
+  },
+  { immediate: true }
+);
+
+// 表單提交
+const submitForm = () => {
+  if (props.product) {
+    console.log('編輯商品', formData.value);
+  } else {
+    console.log('新增商品', formData.value);
+  }
+  // 這裡可以觸發保存或新增的操作
+  showSuccess();
+  hideModal();
+  isModalOpen.value = false;
+};
+
+
+
+const userInfo = ref([
+    {
+        userName: "吉伊卡哇",
+        tel: "0912-345-678",
+        email: "BunnySugar@service.com"
+    }
+]);
+
+const orderInfo = ref([
+    {
+        num: "2024010101",
+        date: "2024-01-01",
+        payWay: "信用卡",
+        unPaid: "未付款",
+        paid: "已付款",
+        confirm: "已確認",
+        finish:"已完成",
+        payTime: "2024-01-02",
+        price: "3600 元"
+    }
+]);
+
+const products = ref([
+    {
+        id: "1",
+        productName: "經典紐約起司蛋糕",
+        quantity: "1 顆",
+        total: "360 元"
+    },
+    {
+        id: "2",
+        productName: "經典紐約起司蛋糕",
+        quantity: "1 顆",
+        total: "360 元"
+    },
+    {
+        id: "3",
+        productName: "經典紐約起司蛋糕",
+        quantity: "1 顆",
+        total: "360 元"
+    },
+    {
+        id: "4",
+        productName: "經典紐約起司蛋糕",
+        quantity: "1 顆",
+        total: "360 元"
+    },
+    {
+        id: "5",
+        productName: "經典紐約起司蛋糕",
+        quantity: "1 顆",
+        total: "360 元"
+    }
+]);
+
 
 </script>
 
@@ -88,7 +132,7 @@ export default {
                     <div class="Container1">
 
                         <div class="inputText">訂購人資料</div>
-                        
+
                         <div class="Container2" v-for="(info, index) in userInfo" :key=index>
                             <div class="text"><span class="textName">姓名:</span><span>{{ info.userName }}</span></div>
                             <div class="text"><span class="textName">電話號碼:</span><span>{{ info.tel }}</span></div>
@@ -96,34 +140,43 @@ export default {
                             <hr />
                         </div>
 
-                       
+
 
                         <div class="inputText">訂單資訊</div>
-                        
+
                         <div class="Container2" v-for="(detail, index) in orderInfo" :key=index>
                             <div class="text"><span class="textName">訂單編號:</span><span>{{ detail.num }}</span></div>
                             <div class="text"><span class="textName">下單日期:</span><span>{{ detail.date }}</span></div>
                             <div class="text"><span class="textName">付款方式:</span><span>{{ detail.payWay }}</span></div>
                             <div class="text content textName">付款狀態:
-                                <select name="pay" class="payment">
+                                <select name="pay" class="payment" v-model="formData.isPaid">
                                     <option value="unPaid">{{ detail.unPaid }}</option>
                                     <option value="paid">{{ detail.paid }}</option>
+                                </select>
+                            </div>
+                            <div class="text content textName">訂單狀態:
+                                <select name="pay" class="payment" v-model="formData.orderStatus">
+                                    <option value="unPaid">{{ detail.confirm }}</option>
+                                    <option value="paid">{{ detail.finish }}</option>
                                 </select>
                             </div>
                             <div class="text"><span class="textName">付款時間:</span><span>{{ detail.payTime }}</span></div>
                             <div class="text"><span class="textName">總金額:</span><span>{{ detail.price }}</span></div>
                             <hr />
-                    </div>
-                    
+                        </div>
+
                     </div>
                     <div class="textContainer">
                         <div class="productTitle">
                             <div class="inputText">選購商品</div>
 
                             <div class="Container2" v-for="(item, index) in products" :key=index>
-                                <div class="textName text textNum"><i class="bi bi-check2-circle"> 品項{{ item.id }}</i></div>
-                                <div class="text"><span class="textName">商品名稱:</span><span>{{ item.productName }}</span></div>
-                                <div class="text"><span class="textName">數量:</span><span>{{ item.quantity }}</span></div>
+                                <div class="textName text textNum"><i class="bi bi-check2-circle"> 品項{{ item.id }}</i>
+                                </div>
+                                <div class="text"><span class="textName">商品名稱:</span><span>{{ item.productName }}</span>
+                                </div>
+                                <div class="text"><span class="textName">數量:</span><span>{{ item.quantity }}</span>
+                                </div>
                                 <div class="text"><span class="textName">小計:</span><span>{{ item.total }}</span></div>
                                 <hr />
                             </div>
@@ -134,7 +187,7 @@ export default {
                 </div>
                 <div class="modal-footer modalFooter">
                     <button type="button" class="btn1" @click="hideModal">取消</button>
-                    <button type="button" class="btn2">儲存變更</button>
+                    <button type="button" class="btn2" @click="submitForm">儲存變更</button>
                 </div>
             </div>
         </div>
