@@ -37,11 +37,6 @@ const routes = [
         component: () => import('../views/CheckOutView.vue')
       },
       {
-        path: '/checkOutSuccess',
-        name: '結帳成功頁面',
-        component: () => import('../views/CheckOutSuccess.vue')
-      },
-      {
         path: '/orderDetail',
         name: '訂單詳細頁面',
         component: () => import('../views/OrderDetail.vue')
@@ -102,8 +97,8 @@ const routes = [
         component: () => import('../components/Game.vue')
       },
       {
-        path: '/checkout',
-        name: '結帳頁面',
+        path: '/pay',
+        name: '付款頁面',
         component: () => import('../views/CheckoutForm.vue')
       }
       

@@ -1,45 +1,44 @@
 <script setup>
 import axios from 'axios';
+import { onMounted } from 'vue';
 import { ref, watch } from 'vue'; 
 
 const checkoutForm = ref({})
 const sendCheckoutForm = ref({})
 const merchantTradeNo = ref({})
+const isSubmitted = ref(false)
 
-axios.post('/ecpayCheckout', {
-    "total": 85
-}).then((res) => {
 
-   checkoutForm.value = res.data
+const once = () => {
 
-   const parser = new DOMParser();
-    const doc = parser.parseFromString(checkoutForm.value, 'text/html');
+    if (!isSubmitted.value) {
+        axios.post('/ecpayCheckout', {
+            total: 85,
 
-    // 從解析後的表單中找到 MerchantTradeNo 的值
-    const merchantTradeNoElement = doc.querySelector('input[name="MerchantTradeNo"]');
-    if (merchantTradeNoElement) {
-        merchantTradeNo.value = merchantTradeNoElement.value;
-        console.log('MerchantTradeNo:', merchantTradeNo.value); // 打印 MerchantTradeNo
-    } else {
-        console.log('MerchantTradeNo not found');
+
+        }).then((res) => {
+            checkoutForm.value = res.data;
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(checkoutForm.value, 'text/html');
+            const merchantTradeNoElement = doc.querySelector('input[name="MerchantTradeNo"]');
+            if (merchantTradeNoElement) {
+                merchantTradeNo.value = merchantTradeNoElement.value;
+            }
+            return axios.post(`/products`, { merchantTradeNo: merchantTradeNo.value });
+        }).then(() => {
+            sendCheckoutForm.value = checkoutForm.value;
+            isSubmitted = true; // 設定已提交
+        }).catch((err) => {
+            console.log('Error:', err);
+        });
     }
+}
 
-    return axios.post(`/products`, merchantTradeNo.value)
-    
- }).then(() => {
-    console.log(3);
-    
-    sendCheckoutForm.value = checkoutForm.value
-    }).catch((err) => {
-   console.log(err);
-
-console.log(merchantTradeNo.value)   
-   
- })
+onMounted(() => {
+    once();
+});
    
  
- 
-
  watch(sendCheckoutForm, (newForm) => {
     
     if (newForm) {

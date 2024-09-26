@@ -19,10 +19,6 @@ const productprice = ref(360);
 
 const quantity = ref(1);
 
-const checkout = () => {
-    router.push({ name: 'CheckoutForm' })
-}
-
 const totalprice = computed(() => {
     return productprice.value * quantity.value;
 });
@@ -201,8 +197,8 @@ const topStyle = computed(() => ({
         <RouterLink to="Cart" class="continueBuyBtn">
             <button class="btn1">上一步</button>
         </RouterLink>
-        <RouterLink to="orderDetail" class="goToBuyBtn">
-            <button class="btn2" @click="checkout">提交訂單</button>
+        <RouterLink to="pay" class="goToBuyBtn">
+            <button class="btn2">提交訂單</button>
         </RouterLink>
     </div>
 

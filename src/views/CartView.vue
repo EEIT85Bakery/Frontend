@@ -244,7 +244,7 @@ const finaltotal = computed(() => {
         <RouterLink to="products" class="continueBuyBtn">
             <button class="btn1">繼續購物</button>
         </RouterLink>
-        <RouterLink to="CheckOut" class="goToBuyBtn">
+        <RouterLink to="checkOut" class="goToBuyBtn">
             <button class="btn2">前往結帳</button>
         </RouterLink>
     </div>
