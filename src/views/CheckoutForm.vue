@@ -27,7 +27,7 @@ const once = () => {
             return axios.post(`/products`, { merchantTradeNo: merchantTradeNo.value });
         }).then(() => {
             sendCheckoutForm.value = checkoutForm.value;
-            isSubmitted = true; // 設定已提交
+            isSubmitted.value = true; // 設定已提交
         }).catch((err) => {
             console.log('Error:', err);
         });
