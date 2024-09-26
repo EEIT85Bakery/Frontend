@@ -43,7 +43,6 @@ onMounted(() => {
 
     <div class="categoryText1">商品列表 >> {{ field }}</div>
 
-    
     <div class="d-flex">
          <!-- 側邊分類欄 -->
         <div class="flexItemCategory w-100">
@@ -70,9 +69,7 @@ onMounted(() => {
             <div>
                 <div class="ProductsContainer">
                     <div v-for="(item, index) in products" :key="'products' + index" class="products-item">
-                        <!-- <img src="/public/imgZip/Sample/cake1.jpg" alt=""> -->
                         <img :src="item.imageUrl" :alt="item.name" class="products-image" />
-                        <!-- <img src="/public/imgZip/Sample/cake1.jpg" alt=""> -->
                         <div class="products-name">{{ item.name }}</div>
                         <div class="products-price">{{ item.price }}</div>
                     </div>
