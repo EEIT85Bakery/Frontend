@@ -1,7 +1,32 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import CartTopComponent1 from '@/components/CartTopComponent1.vue';
 import MemberLevelModal from '@/components/MemberLevelModal.vue';
+
+import axios from 'axios';
+
+const cartItems = ref([]);
+
+function fetchCartItems() {
+  const token = localStorage.getItem('jwt');
+  axios
+      .get('http://localhost:8080/cart', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((response) => {
+        cartItems.value = response.data; // 假設後端回傳的 Page 格式有 content 屬性
+      })
+      .catch((error) => {
+        console.error('Error fetching cart items:', error);
+      });
+}
+
+// 使用 Vue 的生命週期鉤子，在組件掛載時呼叫 API
+onMounted(() => {
+  fetchCartItems();
+});
 
 import { SwalHandle } from '@/stores/sweetAlertStore';
 
