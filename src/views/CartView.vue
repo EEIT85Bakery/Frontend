@@ -6,8 +6,9 @@ import MemberLevelModal from '@/components/MemberLevelModal.vue';
 import { SwalHandle } from '@/stores/sweetAlertStore';
 import axios from 'axios';
 import { onMounted } from 'vue';
-import { watch } from 'vue';
 
+const nextLevel = ref("")
+const levelUpPrice = ref(0)
 const items = ref([])
 const modalRef = ref(null);
 
@@ -33,7 +34,7 @@ const maxBunnyQuantity = ref({});
 const appliedBunnyQuantity = ref(0)
 
 const memberlevel = ref({})
-
+const accumulateSpent = ref(0)
 
 
 const getCart = () => {
@@ -42,8 +43,19 @@ const getCart = () => {
         const data = res.data;        
         maxBunnyQuantity.value = data[0].bunnyCoin
         memberlevel.value = data[0].userVip
-        
-                      
+        accumulateSpent.value = data[0].accumulateSpent
+       
+        if (accumulateSpent.value < 3000) {
+        levelUpPrice.value = 3000 - accumulateSpent.value
+        nextLevel.value = "金兔"
+    } else if (accumulateSpent.value < 6000) {
+        levelUpPrice.value = 6000 - accumulateSpent.value
+        nextLevel.value = "白金兔"
+    } else if (accumulateSpent.value < 9000) {
+        levelUpPrice.value = 9000 - accumulateSpent.value
+        nextLevel.value = "鑽石兔"
+    }
+
     }).catch(() => {
         SwalHandle.showErrorMsg('取得購物車失敗')
     })
@@ -66,13 +78,13 @@ const deleteItem = (cartItem) => {
   );
 };
 
-
 // 用來觸發 modal 的打開方法
 const handleOpenModal = () => {
   if (modalRef.value) {
     modalRef.value.openModal(); // 調用 modal 的 openModal 方法
   }
 }
+
 
 const totalPrice = computed(() => {
     return items.value.reduce((total, item) => total + item.price * item.quantity, 0);
@@ -136,7 +148,6 @@ function applyBunnyCoin() {
         appliedBunnyQuantity.value = Math.min(bunnyquantity.value, maxBunnyQuantity.value);
         SwalHandle.showSuccessMsg('套用BunnyCoin成功！');
     }
-
 }
 
 const remainingBunnyQuantity = computed(() => {
@@ -152,10 +163,6 @@ const finaltotal = computed(() => {
     }
 })
 
-//取得產品資料
-onMounted(() => {
-    getCart()
-})
 
 const add = (item) => {
     if(item.stocks == item.quantity) {
@@ -177,6 +184,10 @@ const minus = (item) => {
 }
 
 const updateCart = (item) => {
+    if (item.quantity >= item.stocks) {
+        item.quantity = item.stocks
+    }
+
     if (item.quantity <= 1) {
         item.quantity = 1
     }
@@ -188,6 +199,11 @@ const updateCart = (item) => {
         SwalHandle.showErrorMsg("更新購物車失敗，請聯繫網站管理員")
     })
 }
+
+
+onMounted(() => {
+    getCart()
+})
 
 
 </script>
@@ -228,7 +244,7 @@ const updateCart = (item) => {
            cursor: pointer; 
            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
            transition: all 0.3s ease;" @click="minus(item)" :disabled="item.quantity <= 1">-</button>
-                        <input type.prevent="number" min="1" v-model.number="item.quantity" class="quantityInput" @blur="updateCart(item)"/>
+                        <input type="number" min="1" v-model.number="item.quantity" class="quantityInput" @blur="updateCart(item)"/>
                         <button style="margin-left: 5px; background-color: rgba(166, 127, 120, 0.5);border: none; 
            padding: 5px 8px; 
            font-size: 16px; 
@@ -294,12 +310,16 @@ const updateCart = (item) => {
                     <span>(可使用之Bunny Coin {{ remainingBunnyQuantity }} 枚)</span>
                 </div>
                 <div class="bunnycoinNum">
-                    <input type.prevent="number" min="0" :max="maxBunnyQuantity" placeholder="請輸入欲使用的Bunny Coin數量"
+                    <input type="number" min="0" :max="maxBunnyQuantity" placeholder="請輸入欲使用的Bunny Coin數量"
                         class="bunnyCoinInput no-arrows" v-model="bunnyquantity">
                     <button class="use" @click="applyBunnyCoin">套用</button>
                     <span class="moreDetail"> (1枚Bunny Coin可以折抵新台幣1元)</span>
                 </div>
                 <div class="cartLine"></div>
+                <template v-if="memberlevel != '鑽石兔'" >
+                <p class="finalPrice">本次再消費滿<span class="nextLevel">{{ levelUpPrice }}</span>元即可升級為<span class="nextLevel">{{ nextLevel }}</span>會員</p>
+                <p class="nextLevel" style="text-align: end; font-style: italic;">(依折價後金額計算)</p>
+                </template>
                 <div class="finalPrice">合計:
                     <span class="finaltotalPrice">{{ finaltotal }}</span> 元
                 </div>
@@ -321,6 +341,16 @@ const updateCart = (item) => {
 </template>
 
 <style scoped>
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.nextLevel {
+    color: rgba(166, 127, 120, 0.8);
+}
 
 .cartContainer {
     width: 100%;
