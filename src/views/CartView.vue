@@ -4,82 +4,102 @@ import CartTopComponent1 from '@/components/CartTopComponent1.vue';
 import MemberLevelModal from '@/components/MemberLevelModal.vue';
 
 import { SwalHandle } from '@/stores/sweetAlertStore';
+import axios from 'axios';
+import { onMounted } from 'vue';
+import { watch } from 'vue';
 
-const showSuccess = () => {
-  SwalHandle.showSuccessMsg('套用成功！');
-};
-
-const showError = () => {
-  SwalHandle.showErrorMsg('套用失敗');
-};
-
-const deleteItem = (item) => {
-  SwalHandle.confirm(
-    '確認移除',
-    `您確定要把 ${item.productname} 從購物車中移除嗎？`,
-    '移除成功！', // 自定義的成功消息
-    () => {
-      // 執行刪除操作，例如：
-      items.value = items.value.filter(i => i !== item);
-      SwalHandle.showSuccessMsg(`成功刪除 ${item.productname}`);
-    }
-  );
-};
-
+const items = ref([])
 const modalRef = ref(null);
 
-// 用來觸發 modal 的打開方法
-function handleOpenModal() {
-  if (modalRef.value) {
-    modalRef.value.openModal(); // 調用 modal 的 openModal 方法
-  }
-}
-
-
-const items = ref([
-    {
-        imageUrl:'../../public/imgZip/Sample/cake1.jpg',
-        productname:'雙重莓果饗宴蛋糕',
-        productprice: 360,
-        quantity: 1
-    },
-    {
-        imageUrl:'../../public/imgZip/Sample/cake1.jpg',
-        productname:'雙重莓果饗宴蛋糕',
-        productprice: 360,
-        quantity: 1
-    },
-    {
-        imageUrl:'../../public/imgZip/Sample/cake1.jpg',
-        productname:'雙重莓果饗宴蛋糕',
-        productprice: 360,
-        quantity: 1
-    }
-])
-
-const totalprice = computed(() => {
-    return items.value.reduce((total, item) => total + item.productprice * item.quantity, 0);
-});
+const userId = ref({})
+userId.value = 1
 
 const discountExp = "2024/11/30";
 
 // 折扣相關變數
 const inputDiscountCode = ref(""); // 使用者輸入的折扣碼
 const validDiscountCode = ref(false); // 折扣碼是否有效
-const discountCode = "HappyHalloween"; // 正確的折扣碼
+const discountCode = "bunnySugar"; // 正確的折扣碼
 const isDiscountApplied = ref(false); // 用來控制是否應用樣式變化
 
 const isDiscountCodeVisible = ref(false);
 
-const discount = computed(() => {
-    const price = totalprice.value;
-    if (validDiscountCode.value && price >= 1000) {
-        // 每增加1000元折扣增加50元
-        return Math.floor(price / 1000) * 50;
-    } else {
-        return 0;
+const Generaldiscount = ref(0)
+const memberdiscount = ref(0);
+
+const bunnyquantity = ref(null);
+const maxBunnyQuantity = ref({});
+
+const appliedBunnyQuantity = ref(0)
+
+const memberlevel = ref({})
+
+
+
+const getCart = () => {
+    axios.get(`/api/cart/${userId.value}`).then((res) => {
+        items.value = res.data
+        const data = res.data;        
+        maxBunnyQuantity.value = data[0].bunnyCoin
+        memberlevel.value = data[0].userVip
+        
+                      
+    }).catch(() => {
+        SwalHandle.showErrorMsg('取得購物車失敗')
+    })
+}
+
+const deleteItem = (cartItem) => {
+   
+  SwalHandle.confirm(
+    '確認移除',
+    `您確定要把 ${cartItem.productName} 從購物車中移除嗎？`,
+    '',
+    () => {
+      // 執行刪除操作，例如：
+      axios.delete(`/api/cart/${userId.value}/${cartItem.id}`).then((res) => { 
+      getCart()
+    }).catch(() => {
+        SwalHandle.showErrorMsg('刪除失敗，請聯繫網站管理員')
+    })
     }
+  );
+};
+
+
+// 用來觸發 modal 的打開方法
+const handleOpenModal = () => {
+  if (modalRef.value) {
+    modalRef.value.openModal(); // 調用 modal 的 openModal 方法
+  }
+}
+
+const totalPrice = computed(() => {
+    return items.value.reduce((total, item) => total + item.price * item.quantity, 0);
 });
+
+const calculateDiscount = () => {
+    const price = totalPrice.value;
+    if (validDiscountCode.value && price >= 1000 
+    && memberlevel.value == "白兔") {
+        let discount = Math.floor(price / 1000) * 50;
+        Generaldiscount.value = discount;
+    } else if(validDiscountCode.value && price >= 1000) {
+        calculateMemberDiscount()
+        Generaldiscount.value = 0
+    }
+};
+
+const calculateMemberDiscount = () => {
+    memberdiscount.value = Math.floor(totalPrice.value / 1000) * 50
+if (memberlevel.value == "金兔") {
+            memberdiscount.value *= 1.2
+        }else if (memberlevel.value == "白金兔") {
+            memberdiscount.value *= 1.6
+        }else if (memberlevel.value == "鑽石兔") {
+            memberdiscount.value *= 2
+    }
+}
 
 // 折扣樣式的計算屬性
 const discountStyle = computed(() => {
@@ -95,24 +115,28 @@ function applyDiscountCode() {
         validDiscountCode.value = true;
         isDiscountApplied.value = true;  // 設置樣式應用為 true
         isDiscountCodeVisible.value = true;
-        showSuccess();
+        calculateDiscount()
+        SwalHandle.showSuccessMsg("套用折扣碼成功");
     } else {
         validDiscountCode.value = false;
         isDiscountApplied.value = false;
-        showError();
+        SwalHandle.showErrorMsg("無效的折扣碼");
     }
 }
 
-const memberdiscount = ref(60);
-
-const bunnyquantity = ref(null);
-const maxBunnyQuantity = ref(15);
-
-const appliedBunnyQuantity = ref(0);
-
 function applyBunnyCoin() {
-    appliedBunnyQuantity.value = Math.min(bunnyquantity.value, maxBunnyQuantity.value);
-    showSuccess();
+    
+    if(typeof(bunnyquantity.value) != 'number') {
+        SwalHandle.showErrorMsg("請輸入數字");
+        
+    }else {
+        if(bunnyquantity.value > maxBunnyQuantity.value) {
+        bunnyquantity.value = maxBunnyQuantity.value
+    }
+        appliedBunnyQuantity.value = Math.min(bunnyquantity.value, maxBunnyQuantity.value);
+        SwalHandle.showSuccessMsg('套用BunnyCoin成功！');
+    }
+
 }
 
 const remainingBunnyQuantity = computed(() => {
@@ -120,24 +144,50 @@ const remainingBunnyQuantity = computed(() => {
 });
 
 
-const memberlevel = ref("白兔");
-
-// const discountStyle = computed(() => {
-//     if (memberlevel.value !== '白兔') {
-//         return { textDecoration: 'line-through' };
-//     }
-//     return {};
-// });
-
-
-
 const finaltotal = computed(() => {
     if (memberlevel.value !== '白兔') {
-        return totalprice.value - memberdiscount.value - appliedBunnyQuantity.value
+        return totalPrice.value - memberdiscount.value - appliedBunnyQuantity.value
     } else {
-        return totalprice.value - discount.value - appliedBunnyQuantity.value
+        return totalPrice.value - Generaldiscount.value - appliedBunnyQuantity.value
     }
 })
+
+//取得產品資料
+onMounted(() => {
+    getCart()
+})
+
+const add = (item) => {
+    if(item.stocks == item.quantity) {
+        SwalHandle.showErrorMsg("添加失敗，庫存已售鑿")
+    }else{
+    item.quantity += 1
+    updateCart(item)
+}
+}
+
+const minus = (item) => {
+    if(item.quantity == 1) {
+        SwalHandle.showErrorMsg("數量不得小於1")
+    }else{
+    item.quantity -= 1
+    updateCart(item)
+
+}
+}
+
+const updateCart = (item) => {
+    if (item.quantity <= 1) {
+        item.quantity = 1
+    }
+    axios.put(`/api/cart/${item.id}`, {
+        quantity : item.quantity
+    }).then(() => {
+        getCart()
+    }).catch(() => {
+        SwalHandle.showErrorMsg("更新購物車失敗，請聯繫網站管理員")
+    })
+}
 
 
 </script>
@@ -156,21 +206,40 @@ const finaltotal = computed(() => {
                 <div class="productTitle">商品資料</div>
                 <div class="priceTitle">單件價格</div>
                 <div class="quantityTitle">數量</div>
+                <div class="stocksTitle">庫存</div>
                 <div class="totalTitle">小計</div>
                 <div class="delTitle"></div>
             </div>
             <div class="cartLine"></div>
-            <div class="itemContainer" v-for="(item, index) in items" :key="index">
+            <div class="itemContainer" v-for="(item, index) in items" :key="index + 'CartItem'">
                 <div class="items">
                     <div class="productImg">
                         <img :src="item.imageUrl" alt="" class="itemImg">
                     </div>
-                    <div class="productInfo">{{ item.productname }}</div>
-                    <div class="priceInfo">{{ item.productprice }} 元</div>
+                    <div class="productInfo">{{ item.productName }}</div>
+                    <div class="priceInfo">{{ item.price }} 元</div>
+                    
                     <div class="quantityInfo">
-                        <input type="number" min="1" v-model.number="item.quantity" class="quantityInput" />
+                        <button style="margin-right: 5px; background-color: rgba(166, 127, 120, 0.5);border: none; 
+           padding: 5px 8px; 
+           font-size: 16px; 
+           color: white; 
+           border-radius: 8px; 
+           cursor: pointer; 
+           box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
+           transition: all 0.3s ease;" @click="minus(item)" :disabled="item.quantity <= 1">-</button>
+                        <input type.prevent="number" min="1" v-model.number="item.quantity" class="quantityInput" @blur="updateCart(item)"/>
+                        <button style="margin-left: 5px; background-color: rgba(166, 127, 120, 0.5);border: none; 
+           padding: 5px 8px; 
+           font-size: 16px; 
+           color: white; 
+           border-radius: 8px; 
+           cursor: pointer; 
+           box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
+           transition: all 0.3s ease;" @click="add(item)" :disabled="item.quantity >= item.stocks">+</button>
                     </div>
-                    <div class="totalInfo">{{ item.productprice * item.quantity }} 元</div>
+                    <div class="stocksInfo">{{ item.stocks }}份</div>
+                    <div class="totalInfo">{{ item.price * item.quantity }} 元</div>
                     <div class="delInfo"><i @click="deleteItem(item)" class="bi bi-x-circle"></i></div>
                 </div>
                 <div class="cartLine"></div>
@@ -180,7 +249,7 @@ const finaltotal = computed(() => {
                     <div class="mb-1">
                         <i class="bi bi-caret-right-fill"></i>
                         即日起至<b class="discountExp">{{ discountExp }}</b>
-                        ，結帳輸入折扣碼「<b class="discountCode">HappyHalloween</b>」，即可享有全館商品滿1000折50之優惠 (滿2000折100，以此類推)
+                        ，結帳輸入折扣碼「<b class="discountCode">bunnySugar</b>」，即可享有全館商品滿1000折50之優惠 (滿2000折100，以此類推)
                     </div>
                     <div>
                         <i class="bi bi-caret-right-fill"></i>
@@ -198,16 +267,14 @@ const finaltotal = computed(() => {
             <div class="detailContainer">
                 <div class="total">
                     <span class="leftText">總計:</span>
-                    <span>{{ totalprice }} 元</span>
+                    <span>{{ totalPrice }} 元</span>
                 </div>
                 <div class="allDiscount" :style="discountStyle">
                     <span class="leftText">折扣:<span style="font-size: small;" v-if="isDiscountCodeVisible"> (已使用折扣碼 {{ discountCode }} )</span></span>
-                    <span>{{ discount }} 元</span>
+                    <span>{{ Generaldiscount }} 元</span>
                 </div>
-                <div class="ownDiscount" v-if="memberlevel != '白兔'">
-                    <span class="leftText">{{ memberlevel }}會員專屬折扣:
-                        <span>(會員折扣詳見<span @click="handleOpenModal" class="memberLevel">會員分級</span>)</span>
-                    </span>
+                <div class="ownDiscount" v-if="memberlevel != '白兔' && validDiscountCode">
+                    <span class="leftText">{{ memberlevel }}會員專屬折扣:</span>
                     <span>{{ memberdiscount }} 元</span>
                 </div>
                 <div class="bunnyCoinDiscount">
@@ -227,14 +294,14 @@ const finaltotal = computed(() => {
                     <span>(可使用之Bunny Coin {{ remainingBunnyQuantity }} 枚)</span>
                 </div>
                 <div class="bunnycoinNum">
-                    <input type="number" min="0" :max="maxBunnyQuantity" placeholder="請輸入欲使用的Bunny Coin數量"
-                        class="bunnyCoinInput" v-model.number="bunnyquantity">
+                    <input type.prevent="number" min="0" :max="maxBunnyQuantity" placeholder="請輸入欲使用的Bunny Coin數量"
+                        class="bunnyCoinInput no-arrows" v-model="bunnyquantity">
                     <button class="use" @click="applyBunnyCoin">套用</button>
                     <span class="moreDetail"> (1枚Bunny Coin可以折抵新台幣1元)</span>
                 </div>
                 <div class="cartLine"></div>
                 <div class="finalPrice">合計:
-                    <span class="finalTotalPrice">{{ finaltotal }}</span> 元
+                    <span class="finaltotalPrice">{{ finaltotal }}</span> 元
                 </div>
             </div>
         </div>
@@ -254,6 +321,7 @@ const finaltotal = computed(() => {
 </template>
 
 <style scoped>
+
 .cartContainer {
     width: 100%;
     display: flex;
@@ -297,6 +365,10 @@ const finaltotal = computed(() => {
 
 .quantityTitle {
     flex: 0 0 25%;
+}
+
+.stocksTitle{
+    flex: 0 0 5%
 }
 
 .totalTitle {
@@ -358,12 +430,16 @@ const finaltotal = computed(() => {
     border-radius: 3px;
 }
 
+.stocksInfo {
+    flex: 0 0 6%
+}
+
 .totalInfo {
     flex: 0 0 15%;
 }
 
 .delInfo {
-    flex: 0 0 10%;
+    flex: 0 0 5%;
     cursor: pointer;
 }
 
@@ -468,7 +544,7 @@ const finaltotal = computed(() => {
     font-size: large;
 }
 
-.finalTotalPrice {
+.finaltotalPrice {
     margin: 0 1%;
     color: rgba(166, 127, 120, 1);
     font-size: 2vw;
@@ -525,7 +601,7 @@ const finaltotal = computed(() => {
         width: 35%;
     }
 
-    .finalTotalPrice {
+    .finaltotalPrice {
         font-size: 3vw;
     }
 }
@@ -569,7 +645,7 @@ const finaltotal = computed(() => {
         margin-bottom: 1%;
     }
 
-    .finalTotalPrice {
+    .finaltotalPrice {
         font-size: 4vw;
     }
 }

@@ -52,7 +52,9 @@ defineExpose({
 </script>
 
 <style scoped>
-
+.modal{
+    margin-top: 25%
+}
 
 .modalHeader {
     color: white;
