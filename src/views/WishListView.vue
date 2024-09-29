@@ -1,45 +1,55 @@
-<script>
+<script setup>
 import { ref } from 'vue';
 import PaginationComponent from '@/components/PaginationComponent.vue';
+import { SwalHandle } from '@/stores/sweetAlertStore';
 
-export default {
-    components: {
-        PaginationComponent
-    },
-    setup() {
-        const items = ref([
-            {
-                ImageUrl: '../../public/imgZip/Sample/cake1.jpg',
-                name: '雙重莓果饗宴蛋糕',
-                price: '360元'
-            },
-            {
-                ImageUrl: '../../public/imgZip/Sample/cake1.jpg',
-                name: '雙重莓果饗宴蛋糕',
-                price: '360元'
-            },
-            {
-                ImageUrl: '../../public/imgZip/Sample/cake1.jpg',
-                name: '雙重莓果饗宴蛋糕',
-                price: '360元'
-            },
-            {
-                ImageUrl: '../../public/imgZip/Sample/cake1.jpg',
-                name: '雙重莓果饗宴蛋糕',
-                price: '360元'
-            },
-            {
-                ImageUrl: '../../public/imgZip/Sample/cake1.jpg',
-                name: '雙重莓果饗宴蛋糕',
-                price: '360元'
-            }
-        ]);
+const showSuccess = () => {
+  SwalHandle.showSuccessMsg('成功加入購物車！');
+};
 
-        return {
-            items
-        };
+const deleteItem = (item) => {
+  SwalHandle.confirm(
+    '確認刪除',
+    `您確定要刪除 ${item.name} 嗎？`,
+    '刪除成功！', 
+    () => {
+      // 執行刪除操作，例如：
+      items.value = items.value.filter(i => i !== item);
+      SwalHandle.showSuccessMsg(`成功刪除 ${item.name}`);
     }
-}
+  );
+};
+
+
+const items = ref([
+    {
+        ImageUrl: '../../public/imgZip/Sample/cake1.jpg',
+        name: '雙重莓果饗宴蛋糕',
+        price: '360元'
+    },
+    {
+        ImageUrl: '../../public/imgZip/Sample/cake1.jpg',
+        name: '雙重莓果饗宴蛋糕',
+        price: '360元'
+    },
+    {
+        ImageUrl: '../../public/imgZip/Sample/cake1.jpg',
+        name: '雙重莓果饗宴蛋糕',
+        price: '360元'
+    },
+    {
+        ImageUrl: '../../public/imgZip/Sample/cake1.jpg',
+        name: '雙重莓果饗宴蛋糕',
+        price: '360元'
+    },
+    {
+        ImageUrl: '../../public/imgZip/Sample/cake1.jpg',
+        name: '雙重莓果饗宴蛋糕',
+        price: '360元'
+    }
+]);
+
+
 
 </script>
 
@@ -96,9 +106,9 @@ export default {
                                 </td>
                                 <td>{{ item.price }}</td>
                                 <td>
-                                    <button class="btnRight">加入購物車</button>
+                                    <button class="btnRight" @click="showSuccess">加入購物車</button>
                                 </td>
-                                <td><i class="bi bi-x-circle" style="color: darkgray; cursor: pointer;"></i></td>
+                                <td @click="deleteItem(item)"><i class="bi bi-x-circle" style="color: darkgray; cursor: pointer;"></i></td>
                             </tr>
                         </tbody>
                     </table>
@@ -111,6 +121,9 @@ export default {
 </template>
 
 <style scoped>
+.bi:hover {
+    opacity: 0.7;
+}
 
 .btnRight {
     border: transparent solid 1px;
@@ -127,17 +140,17 @@ export default {
 
 .imgTd {
     width: 30%;
-  text-align: left;
-  vertical-align: middle;
-  padding: 1%;
+    text-align: left;
+    vertical-align: middle;
+    padding: 1%;
 }
 
 .img {
-  width: 30%; 
-  height: auto; 
-  object-fit: cover; 
-  vertical-align: middle;
-  margin-right: 5%; 
+    width: 30%;
+    height: auto;
+    object-fit: cover;
+    vertical-align: middle;
+    margin-right: 5%;
 }
 
 .contentTable {

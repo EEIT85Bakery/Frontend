@@ -1,36 +1,32 @@
-<script>
+<script setup>
+import { ref, onMounted, watch } from 'vue';
+import { useRoute } from 'vue-router';
 import DashBoardNavBar from '@/components/DashBoardNavBar.vue';
-
 import Loading from '@/components/Loading.vue';
 
-export default {
-  data() {
-    return {
-      isLoading: true
-    };
-  },
-  components: {
-    DashBoardNavBar,
-    Loading
-  },
-  watch: {
-    $route(to, from) {
-      this.isLoading = true;
-      this.startLoading();
-    }
-  },
-  methods: {
-    startLoading() {
-      setTimeout(() => {
-        this.isLoading = false;
-      }, 2100); 
-    }
-  },
-  mounted() {
-    this.isLoading = false;
+const isLoading = ref(true);
+const route = useRoute();
+
+// 監聽路由變化
+watch(
+  () => route.path, // 監聽路由路徑變化
+  () => {
+    isLoading.value = true;
+    startLoading();
   }
+);
+
+// 方法：模擬加載
+const startLoading = () => {
+  setTimeout(() => {
+    isLoading.value = false;
+  }, 2100);
 };
 
+// 組件掛載時延遲取消加載
+onMounted(() => {
+  startLoading();
+});
 </script>
 
 <template>

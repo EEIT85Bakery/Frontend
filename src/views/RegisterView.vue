@@ -21,6 +21,7 @@ const sendVerificationCode = async () => {
         text: '驗證信發送成功',
         icon: 'success',
         confirmButtonText: '確認',
+        customClass: {confirmButton: 'myConfirmBtn'},
         timer: 5000, // 5秒後自動關閉提示框
       });
       verificationSent.value = true;
@@ -32,6 +33,7 @@ const sendVerificationCode = async () => {
       text: '發送驗證信失敗',
       icon: 'error',
       confirmButtonText: '重新嘗試',
+      customClass: {confirmButton: 'myConfirmBtn'}
     });
   }
 };
@@ -48,7 +50,8 @@ const verifyCode = async () => {
         text: '驗證成功',
         icon: 'success',
         confirmButtonText: '確認',
-        timer: 2000,
+        customClass: {confirmButton: 'myConfirmBtn'},
+        timer: 2000
       });
       console.log("跳轉到註冊表單頁面");
       router.push({
@@ -65,6 +68,7 @@ const verifyCode = async () => {
       text: '驗證碼驗證失敗',
       icon: 'error',
       confirmButtonText: '確認',
+      customClass: {confirmButton: 'myConfirmBtn'},
       timer: 2000,
     });
   }
@@ -98,7 +102,7 @@ const verifyCode = async () => {
             </button>
           </div>
           <div class="validArrived" v-if="verificationSent"><span class="validArrived">已發送驗證碼</span></div>
-          <div class="registerText">驗證碼</div>
+          <div class="registerText" style="margin-top: 8%;">驗證碼</div>
           <input type="text" v-model="verifyingToken" placeholder="請輸入驗證碼" class="registerInput" />
         </form>
       </div>

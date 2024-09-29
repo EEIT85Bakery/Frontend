@@ -6,10 +6,21 @@ import Swal from 'sweetalert2';
 import { auth, provider } from '../firebase.js'
 import { signInWithPopup } from 'firebase/auth';
 
+import SetPasswordModal from '@/components/SetPasswordModal.vue';
+
+const modalRef = ref(null);
 
 const account = ref('');
 const password = ref('');
 const router = useRouter();
+
+// 用來觸發 modal 的打開方法
+function handleOpenModal() {
+  if (modalRef.value) {
+    modalRef.value.openModal(); // 調用 modal 的 openModal 方法
+  }
+}
+
 
 const usersLogin = async () => {
   try {
@@ -30,6 +41,7 @@ const usersLogin = async () => {
         text: '登入成功！',
         icon: 'success',
         confirmButtonText: '確認',
+        customClass: {confirmButton: 'myConfirmBtn'},
         timer: 2000, // 2 秒後自動關閉
         timerProgressBar: true // 顯示進度條
       });
@@ -41,9 +53,10 @@ const usersLogin = async () => {
     // 登入失敗的處理
     Swal.fire({
       title: '登入失敗',
-      text: '請檢查帳號和密碼。',
+      text: '請檢查帳號和密碼',
       icon: 'error',
-      confirmButtonText: '重新嘗試'
+      confirmButtonText: '重新嘗試',
+      customClass: {confirmButton: 'myConfirmBtn'}
     });
   }
 };
@@ -101,7 +114,7 @@ const loginWithGoogle = async () => {
           <br /><br>
           <div class="loginText">密碼</div>
           <input v-model="password" type="password" placeholder="請輸入密碼" class="loginInput" />
-          <div class="forgetPasswd"><a class="forgetPasswd" href="#">忘記密碼</a></div>
+          <div class="forgetPasswd"><div class="forgetPasswd" @click="handleOpenModal" >忘記密碼</div></div>
           <div class="h-100">
             <button class="loginButton" type="submit">開始購物吧！</button>
           </div>
@@ -130,6 +143,9 @@ const loginWithGoogle = async () => {
       </div>
     </div>
   </div>
+
+  <SetPasswordModal ref="modalRef" />
+
 </template>
 
 <style>
@@ -230,6 +246,12 @@ const loginWithGoogle = async () => {
   font-weight: bold;
   margin-top: 10px;
   margin-bottom: 10px;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.forgetPasswd:hover {
+  opacity: 0.7;
 }
 
 .thirdLoginIcon {

@@ -4,21 +4,21 @@ import useModal from '@/hooks/useModal';
 import { SwalHandle } from '@/stores/sweetAlertStore';
 
 const showSuccess = () => {
-  SwalHandle.showSuccessMsg('變更成功！');
+    SwalHandle.showSuccessMsg('變更成功！');
 };
 
 const { openModal, hideModal, modalRef } = useModal()
 
 defineExpose({
-  openModal,
-  hideModal
+    openModal,
+    hideModal
 });
 
 const props = defineProps({
-  product: {
-    type: Object,
-    default: null
-  }
+    product: {
+        type: Object,
+        default: null
+    }
 })
 
 const isModalOpen = ref(false);
@@ -34,38 +34,38 @@ const formData = ref({
 });
 
 watch(
-  () => props.product,
-  (newProduct) => {
-    if (newProduct) {
-      // 如果是編輯模式，將 product 的數據填入表單
-      formData.value = { ...newProduct };
-    } else {
-      // 如果是新增模式，清空表單
-      formData.value = {
-        category: '',
-        name: '',
-        price: '',
-        isEnable: '',
-        unit: '',
-        description: '',
-        ingredient: ''
-      };
-    }
-  },
-  { immediate: true }
+    () => props.product,
+    (newProduct) => {
+        if (newProduct) {
+            // 如果是編輯模式，將 product 的數據填入表單
+            formData.value = { ...newProduct };
+        } else {
+            // 如果是新增模式，清空表單
+            formData.value = {
+                category: '',
+                name: '',
+                price: '',
+                isEnable: '',
+                unit: '',
+                description: '',
+                ingredient: ''
+            };
+        }
+    },
+    { immediate: true }
 );
 
 // 表單提交
 const submitForm = () => {
-  if (props.product) {
-    console.log('編輯商品', formData.value);
-  } else {
-    console.log('新增商品', formData.value);
-  }
-  // 這裡可以觸發保存或新增的操作
-  showSuccess();
-  hideModal();
-  isModalOpen.value = false;
+    if (props.product) {
+        console.log('編輯商品', formData.value);
+    } else {
+        console.log('新增商品', formData.value);
+    }
+    // 這裡可以觸發保存或新增的操作
+    showSuccess();
+    hideModal();
+    isModalOpen.value = false;
 };
 
 </script>
@@ -103,34 +103,56 @@ const submitForm = () => {
                             </div>
                         </div>
                         <div class="inputText">新增或變更圖片</div>
-                        <input type="text" name="addr" class="inputContent" placeholder="請輸入圖片網址">
-                        <input type="file" name="imgFile" class="inputContent file" id="fileInput">
+                        <div class="imgItemUploadText">
+                            <span style="flex: 25%;">圖片一：</span>
+                            <input type="file" name="imgFile" class="inputContent file" id="fileInput" />
+                        </div>
+                        <div class="imgItemUploadText">
+                            <span style="flex: 25%;">圖片二：</span>
+                            <input type="file" name="imgFile" class="inputContent file" id="fileInput" />
+                        </div>
+                        <div class="imgItemUploadText">
+                            <span style="flex: 25%;">圖片三：</span>
+                            <input type="file" name="imgFile" class="inputContent file" id="fileInput" />
+                        </div>
+                        <div class="imgItemUploadText">
+                            <span style="flex: 25%;">圖片四：</span>
+                            <input type="file" name="imgFile" class="inputContent file" id="fileInput" />
+                        </div>
                     </div>
 
                     <div class="textContainer">
                         <div class="productTitle">
                             <div class="inputText">商品名稱</div>
-                            <input type="text" v-model="formData.name" name="name" class="inputContent" placeholder="請輸入商品名稱" />
-                            <!-- <div class="inputTwo"> -->
-                                <div class="inputText">商品分類</div>
-                                <input type="text" v-model="formData.category" name="category" class="inputContent" placeholder="請輸入商品分類"/>
-                                <div class="inputText">商品單位</div>
-                                <input type="text" v-model="formData.unit" name="unit" class="inputContent" placeholder="請輸入商品單位"/>
-                            <!-- </div> -->
+                            <input type="text" v-model="formData.name" name="name" class="inputContent"
+                                placeholder="請輸入商品名稱" />
+
+                            <div class="inputText">商品分類</div>
+                            <input type="text" v-model="formData.category" name="category" class="inputContent"
+                                placeholder="請輸入商品分類" />
+                            <div class="inputText">商品單位</div>
+                            <input type="text" v-model="formData.unit" name="unit" class="inputContent"
+                                placeholder="請輸入商品單位" />
+
                             <div class="inputText">商品價格</div>
-                            <input type="number" v-model="formData.price" name="price" class="inputContent" placeholder="請輸入商品價格" min="0"/>
-                            <div class="inputText">商品是否啟用: 
-                                <input type="radio" v-model="formData.isEnable" name="isUsed" class="inputRadio ms-3 md-3"  /> 是
-                                <input type="radio" v-model="formData.isEnable" name="isUsed" class="inputRadio ms-3"  /> 否
+                            <input type="number" v-model="formData.price" name="price" class="inputContent"
+                                placeholder="請輸入商品價格" min="0" />
+                            <div class="inputText">商品是否啟用:
+                                <input type="radio" v-model="formData.isEnable" name="isUsed"
+                                    class="inputRadio ms-3 md-3" /> 是
+                                <input type="radio" v-model="formData.isEnable" name="isUsed" class="inputRadio ms-3" />
+                                否
                             </div>
-                            
+
                         </div>
                         <hr />
                         <div class="productDetail">
                             <div class="inputText">商品描述</div>
-                            <textarea type="text" v-model="formData.description" name="productDetail" class="inputContent" placeholder="請輸入商品描述"></textarea>
+                            <textarea type="text" v-model="formData.description" name="productDetail"
+                                class="inputContent" placeholder="請輸入商品描述"></textarea>
                             <div class="inputText">商品成分</div>
-                            <textarea type="text" v-model="formData.ingredient" name="composition" class="inputContent" placeholder="請輸入商品成分"></textarea>
+                            <textarea type="text" v-model="formData.ingredient" name="composition" class="inputContent"
+                                placeholder="請輸入商品成分"></textarea>
                         </div>
                     </div>
 
@@ -146,7 +168,6 @@ const submitForm = () => {
 
 
 <style scoped>
-
 .inputTwo {
     display: flex;
 }
@@ -160,8 +181,10 @@ const submitForm = () => {
     font-weight: bold;
     position: relative;
     display: flex;
-    justify-content: center;  /* 水平居中 */
-    align-items: center;      /* 垂直居中 */
+    justify-content: center;
+    /* 水平居中 */
+    align-items: center;
+    /* 垂直居中 */
     /* text-align: center; */
     background-color: rgba(166, 127, 120, 0.8);
 }
@@ -179,7 +202,6 @@ const submitForm = () => {
     width: 100%;
     display: flex;
     justify-content: center;
-    /* background-color: antiquewhite; */
 }
 
 .modal-content {
@@ -187,9 +209,7 @@ const submitForm = () => {
 }
 
 .modalBody {
-    /* background-color: aqua; */
     padding: 2%;
-    height: 50vw;
     display: flex;
 }
 
@@ -197,7 +217,7 @@ const submitForm = () => {
     flex: 0 0 48%;
     margin: 1%;
     padding: 1% 2%;
-} 
+}
 
 .textContainer {
     flex: 0 0 48%;
@@ -257,10 +277,15 @@ const submitForm = () => {
     color: rgba(50, 67, 95, 0.5);
 }
 
+.imgItemUploadText {
+    display: flex;
+    color: rgba(143, 134, 129, 0.8);
+}
+
 .file {
-   background-color: white;
-   font-size: small;
-   color: rgba(50, 67, 95, 0.5);
+    background-color: white;
+    font-size: small;
+    color: rgba(50, 67, 95, 0.5);
 }
 
 ::-webkit-file-upload-button {
@@ -293,6 +318,4 @@ const submitForm = () => {
     border: transparent solid 1px;
     border-radius: 5px;
 }
-
-
 </style>

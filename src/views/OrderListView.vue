@@ -1,50 +1,56 @@
-<script>
+<script setup>
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 import PaginationComponent from '@/components/PaginationComponent.vue';
+import Loading from '@/components/Loading.vue';
 
-export default {
-    components: {
-        PaginationComponent
-    },
-    setup() {
-        const items = ref([
-            {
-                orderNumber: '2024010101',
-                date: '2024-01-01',
-                price: '3600元',
-                orderStatus: '已付款'
-            },
-            {
-                orderNumber: '2024010101',
-                date: '2024-01-01',
-                price: '3600元',
-                orderStatus: '已付款'
-            },
-            {
-                orderNumber: '2024010101',
-                date: '2024-01-01',
-                price: '3600元',
-                orderStatus: '已付款'
-            },
-            {
-                orderNumber: '2024010101',
-                date: '2024-01-01',
-                price: '3600元',
-                orderStatus: '已付款'
-            },
-            {
-                orderNumber: '2024010101',
-                date: '2024-01-01',
-                price: '3600元',
-                orderStatus: '已付款'
-            }
-        ]);
+const isLoading = ref(false);
+const router = useRouter();
 
-        return {
-            items
-        };
-    }
-}
+// 按下按鈕後的處理邏輯
+const startProcess = () => {
+    isLoading.value = true;
+
+    // 處理過程
+    setTimeout(() => {
+        isLoading.value = false;
+        // 處理完成後跳轉
+        router.push('orderDetail');
+    }, 2100); // 改成實際處理時間
+};
+
+const items = ref([
+  {
+    orderNumber: '2024010101',
+    date: '2024-01-01',
+    price: '3600元',
+    orderStatus: '已付款'
+  },
+  {
+    orderNumber: '2024010102',
+    date: '2024-01-02',
+    price: '3600元',
+    orderStatus: '已付款'
+  },
+  {
+    orderNumber: '2024010103',
+    date: '2024-01-03',
+    price: '3600元',
+    orderStatus: '已付款'
+  },
+  {
+    orderNumber: '2024010104',
+    date: '2024-01-04',
+    price: '3600元',
+    orderStatus: '已付款'
+  },
+  {
+    orderNumber: '2024010105',
+    date: '2024-01-05',
+    price: '3600元',
+    orderStatus: '已付款'
+  }
+]);
 
 </script>
 
@@ -101,14 +107,15 @@ export default {
                                 <td>{{ item.price }}</td>
                                 <td>{{ item.orderStatus }}</td>
                                 <td>
-                                    <RouterLink><i class="bi bi-info-circle-fill" style="color: darkgray;"></i>
-                                    </RouterLink>
+                                    <div @click="startProcess"><i class="bi bi-info-circle-fill" style="color: darkgray;"></i>
+                                    </div>
                                 </td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
                 <PaginationComponent />
+                <Loading v-if="isLoading" />
             </div>
         </div>
     </div>
@@ -116,6 +123,13 @@ export default {
 </template>
 
 <style scoped>
+
+.bi:hover {
+    opacity: 0.7;
+    cursor: pointer;
+}
+
+
 .contentTable {
     width: 100%;
     line-height: 3;
