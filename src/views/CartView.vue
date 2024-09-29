@@ -1,7 +1,28 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import CartTopComponent1 from '@/components/CartTopComponent1.vue';
 import MemberLevelModal from '@/components/MemberLevelModal.vue';
+
+import axiosInstanceForInsertHeader from "@/axios/axiosInstanceForInsertHeader.js";
+
+const cartItems = ref([]);
+
+function fetchCartItems() {
+  //使用axios實例
+  axiosInstanceForInsertHeader
+      .get('/cart')
+      .then((response) => {
+        cartItems.value = response.data;
+      })
+      .catch((error) => {
+        console.error('Error fetching cart items:', error);
+      });
+}
+
+//onMounted下去，組件完成初始化之後直接跑裡面的方法
+onMounted(() => {
+  fetchCartItems();
+});
 
 import { SwalHandle } from '@/stores/sweetAlertStore';
 import axios from 'axios';
