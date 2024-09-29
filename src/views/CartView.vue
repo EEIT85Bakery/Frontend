@@ -1,29 +1,25 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import CartTopComponent1 from '@/components/CartTopComponent1.vue';
 import MemberLevelModal from '@/components/MemberLevelModal.vue';
 
-import axios from 'axios';
+import axiosInstanceForInsertHeader from "@/axios/axiosInstanceForInsertHeader.js";
 
 const cartItems = ref([]);
 
 function fetchCartItems() {
-  const token = localStorage.getItem('jwt');
-  axios
-      .get('http://localhost:8080/cart', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
+  //使用axios實例
+  axiosInstanceForInsertHeader
+      .get('/cart')
       .then((response) => {
-        cartItems.value = response.data; // 假設後端回傳的 Page 格式有 content 屬性
+        cartItems.value = response.data;
       })
       .catch((error) => {
         console.error('Error fetching cart items:', error);
       });
 }
 
-// 使用 Vue 的生命週期鉤子，在組件掛載時呼叫 API
+//onMounted下去，組件完成初始化之後直接跑裡面的方法
 onMounted(() => {
   fetchCartItems();
 });
