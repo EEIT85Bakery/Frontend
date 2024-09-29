@@ -55,6 +55,7 @@ import { ref } from 'vue';
     width: 100%;
     height: auto; 
     padding: 10% 5% 1% 5%;
+    cursor: grab;
   } 
 
   .moreProductName {

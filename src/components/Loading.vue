@@ -6,46 +6,51 @@
   </div>
 </template>
 
-<script>
-export default {
-  data() {
-    return {
-      images: [
-        '/imgZip/loading/bunnyLoading1.png',
-        '/imgZip/loading/bunnyLoading2.png',
-        '/imgZip/loading/bunnyLoading3.png',
-        '/imgZip/loading/bunnyLoading4.png',
-        '/imgZip/loading/bunnyLoading5.png',
-        '/imgZip/loading/bunnyLoading6.png',
-        '/imgZip/loading/bunnyLoading7.png'
-      ],
-      currentImage: 0,
-      isLoading: true,
-      interval: null
-    };
-  },
-  mounted() {
-    this.startSlideshow();
-  },
-  methods: {
-    startSlideshow() {
-      this.showNextImage();
-    },
-    showNextImage() {
-      this.interval = setTimeout(() => {
-        this.currentImage = (this.currentImage + 1) % this.images.length;
-        this.showNextImage(); 
-      }, 300); 
-    },
-    stopSlideshow() {
-      clearTimeout(this.interval);
-      this.isLoading = false; // 停止加载动画
-    }
-  },
-  beforeDestroy() {
-    clearTimeout(this.interval); // 清除定时器，防止内存泄漏
-  }
+<script setup>
+import { ref, onMounted, onBeforeUnmount } from 'vue';
+
+// 定義數據
+const images = [
+  '/imgZip/loading/bunnyLoading1.png',
+  '/imgZip/loading/bunnyLoading2.png',
+  '/imgZip/loading/bunnyLoading3.png',
+  '/imgZip/loading/bunnyLoading4.png',
+  '/imgZip/loading/bunnyLoading5.png',
+  '/imgZip/loading/bunnyLoading6.png',
+  '/imgZip/loading/bunnyLoading7.png'
+];
+const currentImage = ref(0);
+const isLoading = ref(true);
+let interval = null;
+
+// 開始輪播圖片
+const startSlideshow = () => {
+  showNextImage();
 };
+
+// 顯示下一張圖片
+const showNextImage = () => {
+  interval = setTimeout(() => {
+    currentImage.value = (currentImage.value + 1) % images.length;
+    showNextImage();
+  }, 300);
+};
+
+// 停止輪播圖片
+const stopSlideshow = () => {
+  clearTimeout(interval);
+  isLoading.value = false;
+};
+
+// 組件掛載時開始輪播
+onMounted(() => {
+  startSlideshow();
+});
+
+// 組件卸載前清除計時器，避免內存洩漏
+onBeforeUnmount(() => {
+  clearTimeout(interval);
+});
 </script>
 
 <style scoped>

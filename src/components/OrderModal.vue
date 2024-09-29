@@ -78,7 +78,10 @@ const orderInfo = ref([
         confirm: "已確認",
         finish:"已完成",
         payTime: "2024-01-02",
-        price: "3600 元"
+        price: 3600,
+        discountCode: "HappyHalloween",
+        discount: 150,
+        BunnyCoin: 15
     }
 ]);
 
@@ -161,7 +164,10 @@ const products = ref([
                                 </select>
                             </div>
                             <div class="text"><span class="textName">付款時間:</span><span>{{ detail.payTime }}</span></div>
-                            <div class="text"><span class="textName">總金額:</span><span>{{ detail.price }}</span></div>
+                            <div class="text"><span class="textName">總金額:</span><span>{{ detail.price }} 元</span></div>
+                            <div class="text"><span class="textName">使用折扣碼:</span><span>{{ detail.discountCode }}</span></div>
+                            <div class="text"><span class="textName">折扣金額:</span><span>{{ detail.discount }} 元</span></div>
+                            <div class="text"><span class="textName">使用BunnyCoin:</span><span>{{ detail.BunnyCoin }} 枚</span></div>
                             <hr />
                         </div>
 
@@ -238,7 +244,6 @@ const products = ref([
 
 .modalBody {
     padding: 2%;
-    /* height: 50vw; */
     display: flex;
 }
 

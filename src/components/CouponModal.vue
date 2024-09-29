@@ -58,9 +58,9 @@ watch(
 // 表單提交
 const submitForm = () => {
   if (props.product) {
-    console.log('編輯商品', formData.value);
+    console.log('編輯折扣碼', formData.value);
   } else {
-    console.log('新增商品', formData.value);
+    console.log('新增折扣碼', formData.value);
   }
   // 這裡可以觸發保存或新增的操作
   showSuccess();
@@ -75,7 +75,7 @@ const submitForm = () => {
         <div class="modal-dialog  modalContainer modal-md">
             <div class="modal-content">
                 <div class="modal-header modalHeader">
-                    <div class="modal-title modalTitle" id="exampleModalLabel">{{ product ? '編輯優惠券' : '新增優惠券' }}</div>
+                    <div class="modal-title modalTitle" id="exampleModalLabel">{{ product ? '編輯折扣碼' : '新增折扣碼' }}</div>
                     <button type="button" class="btn-close closeBtn" @click="hideModal" aria-label="Close">
                     </button>
                 </div>
@@ -83,7 +83,7 @@ const submitForm = () => {
 
                     <div class="textContainer">
                         <div class="productTitle">
-                            <div class="inputText">優惠名稱</div>
+                            <div class="inputText">折扣碼名稱</div>
                             <input type="text"  v-model="formData.name" name="productName" class="inputContent" placeholder="請輸入優惠名稱" />
                            
                                 <div class="inputText">折扣滿額</div>
@@ -153,7 +153,6 @@ const submitForm = () => {
 
 .modalBody {
     padding: 2%;
-    /* display: flex; */
 }
 
 .textContainer {
