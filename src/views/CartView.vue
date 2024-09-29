@@ -2,6 +2,7 @@
 import { ref, onMounted, computed } from 'vue';
 import CartTopComponent1 from '@/components/CartTopComponent1.vue';
 import MemberLevelModal from '@/components/MemberLevelModal.vue';
+import { SwalHandle } from '@/stores/sweetAlertStore';
 
 import axiosInstanceForInsertHeader from "@/axios/axiosInstanceForInsertHeader.js";
 
@@ -23,10 +24,6 @@ function fetchCartItems() {
 onMounted(() => {
   fetchCartItems();
 });
-
-import { SwalHandle } from '@/stores/sweetAlertStore';
-import axios from 'axios';
-import { onMounted } from 'vue';
 
 const nextLevel = ref("")
 const levelUpPrice = ref(0)
@@ -58,29 +55,29 @@ const memberlevel = ref({})
 const accumulateSpent = ref(0)
 
 
-const getCart = () => {
-    axios.get(`/api/cart/${userId.value}`).then((res) => {
-        items.value = res.data
-        const data = res.data;        
-        maxBunnyQuantity.value = data[0].bunnyCoin
-        memberlevel.value = data[0].userVip
-        accumulateSpent.value = data[0].accumulateSpent
-       
-        if (accumulateSpent.value < 3000) {
-        levelUpPrice.value = 3000 - accumulateSpent.value
-        nextLevel.value = "金兔"
-    } else if (accumulateSpent.value < 6000) {
-        levelUpPrice.value = 6000 - accumulateSpent.value
-        nextLevel.value = "白金兔"
-    } else if (accumulateSpent.value < 9000) {
-        levelUpPrice.value = 9000 - accumulateSpent.value
-        nextLevel.value = "鑽石兔"
-    }
-
-    }).catch(() => {
-        SwalHandle.showErrorMsg('取得購物車失敗')
-    })
-}
+// const getCart = () => {
+//     axios.get(`/api/cart/${userId.value}`).then((res) => {
+//         items.value = res.data
+//         const data = res.data;
+//         maxBunnyQuantity.value = data[0].bunnyCoin
+//         memberlevel.value = data[0].userVip
+//         accumulateSpent.value = data[0].accumulateSpent
+//
+//         if (accumulateSpent.value < 3000) {
+//         levelUpPrice.value = 3000 - accumulateSpent.value
+//         nextLevel.value = "金兔"
+//     } else if (accumulateSpent.value < 6000) {
+//         levelUpPrice.value = 6000 - accumulateSpent.value
+//         nextLevel.value = "白金兔"
+//     } else if (accumulateSpent.value < 9000) {
+//         levelUpPrice.value = 9000 - accumulateSpent.value
+//         nextLevel.value = "鑽石兔"
+//     }
+//
+//     }).catch(() => {
+//         SwalHandle.showErrorMsg('取得購物車失敗')
+//     })
+// }
 
 const deleteItem = (cartItem) => {
    
@@ -220,12 +217,6 @@ const updateCart = (item) => {
         SwalHandle.showErrorMsg("更新購物車失敗，請聯繫網站管理員")
     })
 }
-
-
-onMounted(() => {
-    getCart()
-})
-
 
 </script>
 
