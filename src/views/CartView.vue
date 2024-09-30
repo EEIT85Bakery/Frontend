@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { useCartStore } from '@/stores/cartStore';
 import CartTopComponent1 from '@/components/CartTopComponent1.vue';
 import MemberLevelModal from '@/components/MemberLevelModal.vue';
@@ -32,8 +32,8 @@ const isDiscountCodeVisible = ref(false);
 const Generaldiscount = ref(0)
 const memberdiscount = ref(0);
 
-const bunnyquantity = ref(null);
-const maxBunnyQuantity = ref({});
+const bunnyquantity = ref(0);
+const maxBunnyQuantity = ref(0);
 
 const appliedBunnyQuantity = ref(0)
 
@@ -42,7 +42,7 @@ const accumulateSpent = ref(0)
 
 
 const getCart = () => {
-    axiosInstanceForInsertHeader.get(`/api/cart/${userId.value}`).then((res) => {
+    axios.get(`/api/cart/${userId.value}`).then((res) => {
         items.value = res.data
         const data = res.data;
         maxBunnyQuantity.value = data[0].bunnyCoin
