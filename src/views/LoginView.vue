@@ -2,7 +2,10 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
-import Swal from 'sweetalert2'; // 引入 SweetAlert2
+import Swal from 'sweetalert2';
+import { auth, provider } from '../firebase.js'
+import { signInWithPopup } from 'firebase/auth';
+
 
 const account = ref('');
 const password = ref('');
@@ -44,6 +47,21 @@ const usersLogin = async () => {
     });
   }
 };
+
+const loginWithGoogle = async () => {
+  try {
+    const result = await signInWithPopup(auth, provider);
+    const user = result.user;
+    console.log('User Info:', user);
+
+    // 這裡可以將用戶的 token 發送到你的後端進行驗證
+    const token = await user.getIdToken();
+    console.log('Firebase ID Token:', token);
+    // 在這裡添加你的邏輯來處理 token
+  } catch (error) {
+    console.error('Error during login:', error);
+  }
+};
 </script>
 
 <template>
@@ -76,8 +94,8 @@ const usersLogin = async () => {
       <div class="thirdLogin">
         <span class="thirdLoginText">或使用社群帳號登入</span>
         <div class="thirdLoginIcon">
-          <img class="loginImg" src="../../public/imgZip/Icon/FB.png" alt=".">
-          <img class="loginImg" src="../../public/imgZip/Icon/GOOGLE.png" alt=".">
+          <img class="loginImg" src="../../public/imgZip/Icon/FB.png" alt="Facebook" />
+          <img class="loginImg" src="../../public/imgZip/Icon/GOOGLE.png" alt="Google" @click="loginWithGoogle" />
         </div>
       </div>
 
