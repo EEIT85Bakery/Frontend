@@ -2,8 +2,12 @@
 import { ref, computed } from 'vue';
 import CartTopComponent2 from '@/components/CartTopComponent2.vue';
 import MemberLevelModal from '@/components/MemberLevelModal.vue';
+import { useCartStore } from '@/stores/cartStore';
+import { onMounted } from 'vue';
 
 const modalRef = ref(null);
+const cartStore = useCartStore()
+const finalTotalFromPinia = computed(() => cartStore.finalTotal);
 
 // 用來觸發 modal 的打開方法
 function handleOpenModal() {
@@ -77,6 +81,11 @@ const topStyle = computed(() => ({
     borderBottomLeftRadius: isClicked.value ? '10px' : '0',
     borderBottomRightRadius: isClicked.value ? '10px' : '0'
 }));
+
+onMounted(() => {
+    console.log(finalTotalFromPinia.value);
+    
+})
 
 
 </script>
