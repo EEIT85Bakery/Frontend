@@ -8,8 +8,8 @@ import axiosInstanceForInsertHeader from "@/axios/axiosInstanceForInsertHeader.j
 
 const cartItems = ref([]);
 
-function fetchCartItems() {
-  //使用axios實例
+const fetchCartItems = () => {
+  // 使用 axios 實例
   axiosInstanceForInsertHeader
       .get('/cart')
       .then((response) => {
@@ -18,7 +18,7 @@ function fetchCartItems() {
       .catch((error) => {
         console.error('Error fetching cart items:', error);
       });
-}
+};
 
 //onMounted下去，組件完成初始化之後直接跑裡面的方法
 onMounted(() => {

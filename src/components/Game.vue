@@ -21,17 +21,53 @@
 <script setup>
 import { ref, reactive } from 'vue';
 import axios from 'axios';
+import axiosInstanceForInsertHeader from "@/axios/axiosInstanceForInsertHeader"; // 引入 axios 實例
+
+const startGame = () => {
+  isSpinning.value = true;
+  result.value = '';
+axiosInstanceForInsertHeader.post("/game/start/") // 使用修改後的 axios 實例
+    .then(response => {
+      if (response.data === "User has enough game times!") {
+        // 後端返回剩餘遊玩次數
+        gameTimes.value = response.data.gameTimes;
+
+        // 啟動轉輪動畫
+        const spinInterval = setInterval(() => {
+          reels.value = reels.value.map(() => getRandomSymbol());
+        }, 100);
+
+        // 停止轉輪並顯示結果
+        setTimeout(() => {
+          clearInterval(spinInterval);
+          determineResult();
+          isSpinning.value = false;
+        }, 2000);
+      } else {
+        // 當抽獎券不足時顯示錯誤訊息
+        showToast("抽獎券不足，滿千就有一次抽獎機會唷!", 'error');
+        isSpinning.value = false;
+      }
+    })
+    .catch(error => {
+      console.error('Error starting game:', error);
+      // 顯示錯誤訊息或後端返回的錯誤
+      result.value = error.response?.data || "Error starting game. Please try again.";
+      showToast("Error starting game. Please try again.", 'error');
+      isSpinning.value = false;
+    });
+
 
 const reels = ref(['🐰', '🐰', '🐰']);
 const isSpinning = ref(false);
 const result = ref('');
 const earnedCoins = ref(0);
-const id = ref(2);
+// const id = ref();
 const gameTimes = ref(0);
 
 // Toast state
 const toast = reactive({
-  show: false,
+  show: true,
   message: '',
   type: 'info'
 });
@@ -83,36 +119,36 @@ const determineResult = () => {
   isSpinning.value = false;
 };
 
-const startGame = () => {
-  isSpinning.value = true;
-  result.value = '';
+// const startGame = () => {
+//   isSpinning.value = true;
+//   result.value = '';
 
-  axios.post(`http://localhost:8080/api/game/start/${id.value}`)
-    .then(response => {
-      if (response.data === "User has enough game times!") {
-        // 後端返回剩餘遊玩次數
-        gameTimes.value = response.data.gameTimes;
-        const spinInterval = setInterval(() => {
-          reels.value = reels.value.map(() => getRandomSymbol());
-        }, 100);
-
-        setTimeout(() => {
-          clearInterval(spinInterval);
-          determineResult();
-          isSpinning.value = false;
-        }, 2000);
-      } else {
-        // result.value = "You don't have enough game times! Buy some cakes!";
-        showToast("抽獎券不足，滿千就有一次抽獎機會唷!", 'error');
-        isSpinning.value = false;
-      }
-    })
-    .catch(error => {
-      console.error('Error starting game:', error);
-      result.value = error.response?.data || "Error starting game. Please try again.";
-      showToast("Error starting game. Please try again.", 'error');
-      isSpinning.value = false;
-    });
+  // axios.post(`http://localhost:8080/api/game/start/${id.value}`)
+  //   .then(response => {
+  //     if (response.data === "User has enough game times!") {
+  //       // 後端返回剩餘遊玩次數
+  //       gameTimes.value = response.data.gameTimes;
+  //       const spinInterval = setInterval(() => {
+  //         reels.value = reels.value.map(() => getRandomSymbol());
+  //       }, 100);
+  //
+  //       setTimeout(() => {
+  //         clearInterval(spinInterval);
+  //         determineResult();
+  //         isSpinning.value = false;
+  //       }, 2000);
+  //     } else {
+  //       // result.value = "You don't have enough game times! Buy some cakes!";
+  //       showToast("抽獎券不足，滿千就有一次抽獎機會唷!", 'error');
+  //       isSpinning.value = false;
+  //     }
+  //   })
+  //   .catch(error => {
+  //     console.error('Error starting game:', error);
+  //     result.value = error.response?.data || "Error starting game. Please try again.";
+  //     showToast("Error starting game. Please try again.", 'error');
+  //     isSpinning.value = false;
+  //   });
 };
 </script>
 
