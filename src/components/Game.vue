@@ -7,57 +7,57 @@
       </div>
     </div>
     <p v-if="result" class="result">{{ result }}</p>
-    <button @click="startGame" :disabled="isSpinning">
+    <button @click="startGame()" :disabled="isSpinning">
       {{ isSpinning ? 'Spinning...' : 'Spin' }}
     </button>
-    
+
     <!-- Toast component -->
     <div v-if="toast.show" class="toast" :class="toast.type">
-      {{ toast.message }}
+    {{ toast.message }}
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue';
-import axios from 'axios';
+import { ref, reactive, onMounted } from 'vue';
+import axiosInstanceForInsertHeader from '@/axios/axiosInstanceForInsertHeader';
 
 const reels = ref(['🐰', '🐰', '🐰']);
 const isSpinning = ref(false);
 const result = ref('');
 const earnedCoins = ref(0);
-const id = ref(2);
 const gameTimes = ref(0);
 
-// Toast state
+// Toast狀態
 const toast = reactive({
   show: false,
   message: '',
   type: 'info'
 });
 
-// Show toast function
+// 跳出toast
 const showToast = (message, type = 'info') => {
   toast.show = true;
   toast.message = message;
   toast.type = type;
   setTimeout(() => {
     toast.show = false;
-  }, 3000);
+  }, 3000); 
 };
 
+// 獲取隨機符號
 const getRandomSymbol = () => {
   const symbols = ['🐰', '🍰', '🪙', '🌟'];
   return symbols[Math.floor(Math.random() * symbols.length)];
 };
 
+// 設定轉盤結果及購物金
 const setReelsAndResult = (symbol, coins) => {
   reels.value = [symbol, symbol, symbol];
-  // result.value = `Congratulations! You won ${coins} coins! 🎉`;
-  console.log(`恭喜獲得 ${coins} 元購物金! `);
   earnedCoins.value = coins;
 };
 
+// 根據隨機機率決定獲得獎勵
 const determineResult = () => {
   const bigWin = Math.random() < 0.03;
   const mediumWin = Math.random() < 0.10;
@@ -72,13 +72,19 @@ const determineResult = () => {
   } else {
     setReelsAndResult('🌟', 10);
   }
-  
-  axios.post(`http://localhost:8080/api/game/end/${id.value}`, { earnedCoins: earnedCoins.value })
-  .then((response) => {
-      gameTimes.value = response.data;
-      // 在 toast 顯示剩餘次數
-      showToast(`恭喜獲得 ${earnedCoins.value} 元購物金! 剩餘抽獎券: ${gameTimes.value}張`, 'success');
-    });;
+};
+
+const endGame = () => {
+  axiosInstanceForInsertHeader
+    .put('/game/end', { earnedCoins: earnedCoins.value })  // 傳送 earnedCoins 的值
+    .then((response) => {
+      showToast(`恭喜獲得 ${earnedCoins.value} 元購物金!`, 'success');  // 顯示購物金數值
+      console.log("恭喜獲得" + earnedCoins.value + "元");
+    })
+    .catch((error) => {
+      console.error('Error ending game:', error);
+      showToast('Error ending the game. Please try again.', 'error');  // 顯示錯誤消息
+    });
 
   isSpinning.value = false;
 };
@@ -87,11 +93,10 @@ const startGame = () => {
   isSpinning.value = true;
   result.value = '';
 
-  axios.post(`http://localhost:8080/api/game/start/${id.value}`)
+  axiosInstanceForInsertHeader
+    .get('/game/start')
     .then(response => {
       if (response.data === "User has enough game times!") {
-        // 後端返回剩餘遊玩次數
-        gameTimes.value = response.data.gameTimes;
         const spinInterval = setInterval(() => {
           reels.value = reels.value.map(() => getRandomSymbol());
         }, 100);
@@ -100,21 +105,28 @@ const startGame = () => {
           clearInterval(spinInterval);
           determineResult();
           isSpinning.value = false;
+          endGame();  // 轉盤結束後發送結果
         }, 2000);
       } else {
-        // result.value = "You don't have enough game times! Buy some cakes!";
         showToast("抽獎券不足，滿千就有一次抽獎機會唷!", 'error');
         isSpinning.value = false;
       }
     })
     .catch(error => {
       console.error('Error starting game:', error);
-      result.value = error.response?.data || "Error starting game. Please try again.";
       showToast("Error starting game. Please try again.", 'error');
       isSpinning.value = false;
     });
 };
+
+
+// 組件初始化後執行
+onMounted(() => {
+  
+});
 </script>
+
+
 
 <style scoped>
 .slot-machine {
