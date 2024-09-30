@@ -1,111 +1,75 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
+import axiosInstanceForInsertHeader from '@/axios/axiosInstanceForInsertHeader.js'; // 使用自定義的 axios 實例
 import PaginationComponent from '@/components/PaginationComponent.vue';
 import MemberModal from '@/components/MemberModal.vue';
-
 import { SwalHandle } from '@/stores/sweetAlertStore';
 
 const memberModalRef = ref(null);
-const currentItem = ref(null); 
+const currentItem = ref(null);
+const members = ref([]); // 用來存放從後端取得的會員資料
+const currentPage = ref(0); // 當前頁數
+const pageSize = ref(10); // 每頁顯示多少筆
+const totalPages = ref(0); // 總頁數
 
 // 打開新增 modal
 const openMemberModal = () => {
-  currentItem.value = null; // 清空當前選中的商品，表示新增
+  currentItem.value = null; // 清空當前選中的會員資料，表示新增
   if (memberModalRef.value) {
     memberModalRef.value.openModal();
   }
 };
 
-const deleteItem = (item) => {
+// 從後端抓取會員資料
+const fetchMembers = (page = 1, size = 10) => {
+  axiosInstanceForInsertHeader
+    .get(`/admin/members`, {
+      params: {
+        page: page,
+        size: size,
+      },
+    })
+    .then((response) => {
+      const data = response.data;
+      members.value = data.content; // 將會員資料存入 members
+      totalPages.value = data.totalPages; // 設定總頁數
+      currentPage.value = page; // 設定當前頁數
+    })
+    .catch((error) => {
+      console.error('Error fetching members:', error);
+    });
+};
+
+// 刪除會員
+const deleteMember = (member) => {
   SwalHandle.confirm(
     '確認刪除',
-    `您確定要刪除 ${item.name} 嗎？`,
-    '刪除成功！', 
+    `您確定要刪除 ${member.name} 嗎？`,
+    '刪除成功！',
     () => {
-      // 執行刪除操作，例如：
-      items.value = items.value.filter(i => i !== item);
-      SwalHandle.showSuccessMsg(`成功刪除 ${item.name}`);
+      // 使用 member.id 來進行刪除操作
+      axiosInstanceForInsertHeader
+        .delete(`/admin/members/${member.id}`)
+        .then(() => {
+          SwalHandle.showSuccessMsg(`成功刪除 ${member.name}`);
+          fetchMembers(currentPage.value, pageSize.value); // 刪除成功後重新抓取資料
+        })
+        .catch((error) => {
+          console.error('Error deleting member:', error);
+        });
     }
   );
 };
 
-
-
-const items = ref([
-    {
-        name: '吉伊卡哇',
-        gender: '女',
-        tel: '0912-345-678',
-        email: 'BunnySugar@service.com',
-        birthday: '2024-01-01',
-        level: '白兔會員'
-    },
-    {
-        name: '吉伊卡哇',
-        gender: '女',
-        tel: '0912-345-678',
-        email: 'BunnySugar@service.com',
-        birthday: '2024-01-01',
-        level: '白兔會員'
-    },
-    {
-        name: '吉伊卡哇',
-        gender: '女',
-        tel: '0912-345-678',
-        email: 'BunnySugar@service.com',
-        birthday: '2024-01-01',
-        level: '白兔會員'
-    },
-    {
-        name: '吉伊卡哇',
-        gender: '女',
-        tel: '0912-345-678',
-        email: 'BunnySugar@service.com',
-        birthday: '2024-01-01',
-        level: '白兔會員'
-    },
-    {
-        name: '吉伊卡哇',
-        gender: '女',
-        tel: '0912-345-678',
-        email: 'BunnySugar@service.com',
-        birthday: '2024-01-01',
-        level: '白兔會員'
-    },
-    {
-        name: '吉伊卡哇',
-        gender: '女',
-        tel: '0912-345-678',
-        email: 'BunnySugar@service.com',
-        birthday: '2024-01-01',
-        level: '白兔會員'
-    },
-    {
-        name: '吉伊卡哇',
-        gender: '女',
-        tel: '0912-345-678',
-        email: 'BunnySugar@service.com',
-        birthday: '2024-01-01',
-        level: '白兔會員'
-    },
-    {
-        name: '吉伊卡哇',
-        gender: '女',
-        tel: '0912-345-678',
-        email: 'BunnySugar@service.com',
-        birthday: '2024-01-01',
-        level: '白兔會員'
-    },
-
-]);
-
+// 當組件掛載時，抓取初始的會員資料
+onMounted(() => {
+  fetchMembers();
+});
 
 </script>
 
 <template>
-
     <div class="pageContainer">
-
         <div class="contentContainer">
             <table class="contentTable">
                 <thead>
@@ -121,29 +85,28 @@ const items = ref([
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="(item, index) in items" :key="index">
-                        <td>{{ item.name }}</td>
-                        <td>{{ item.gender }}</td>
-                        <td>{{ item.tel }}</td>
-                        <td>{{ item.email }}</td>
-                        <td>{{ item.birthday }}</td>
-                        <td>{{ item.level }}</td>
-                        <td><i class="bi bi-pencil-square" style="color: darkgrey;" @click="openMemberModal(item)"></i></td>
-                        <td><i class="bi bi-trash3" style="color: darkred;" @click="deleteItem(item)"></i></td>
+                    <tr v-for="(member, index) in members" :key="index">
+                        <td>{{ member.name }}</td>
+                        <td>{{ member.gender }}</td>
+                        <td>{{ member.tel }}</td>
+                        <td>{{ member.email }}</td>
+                        <td>{{ member.birthday }}</td>
+                        <td>{{ member.level }}</td>
+                        <td><i class="bi bi-pencil-square" style="color: darkgrey;" @click="openMemberModal(member)"></i></td>
+                        <!-- 刪除按鈕傳遞完整的 member 對象 -->
+                        <td><i class="bi bi-trash3" style="color: darkred;" @click="deleteMember(member)"></i></td>
                     </tr>
                 </tbody>
             </table>
 
-            <PaginationComponent />
-
+            <PaginationComponent :totalPages="totalPages" :currentPage="currentPage" @pageChange="fetchMembers" />
         </div>
 
         <MemberModal ref="memberModalRef" :product="currentItem" />
-
-
     </div>
-
 </template>
+
+
 
 <style scoped>
 .listContainer {
