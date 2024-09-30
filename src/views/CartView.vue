@@ -1,29 +1,15 @@
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, computed } from 'vue';
+import { useCartStore } from '@/stores/cartStore';
 import CartTopComponent1 from '@/components/CartTopComponent1.vue';
 import MemberLevelModal from '@/components/MemberLevelModal.vue';
 import { SwalHandle } from '@/stores/sweetAlertStore';
-
+import axios from 'axios';
+import { onMounted } from 'vue';
 import axiosInstanceForInsertHeader from "@/axios/axiosInstanceForInsertHeader.js";
 
-const cartItems = ref([]);
-
-const fetchCartItems = () => {
-  // 使用 axios 實例
-  axiosInstanceForInsertHeader
-      .get('/cart')
-      .then((response) => {
-        cartItems.value = response.data;
-      })
-      .catch((error) => {
-        console.error('Error fetching cart items:', error);
-      });
-};
-
-//onMounted下去，組件完成初始化之後直接跑裡面的方法
-onMounted(() => {
-  fetchCartItems();
-});
+const cartStore = useCartStore()
+const finalTotalFromPinia = computed(() => cartStore.finalTotal);
 
 const nextLevel = ref("")
 const levelUpPrice = ref(0)
@@ -55,29 +41,29 @@ const memberlevel = ref({})
 const accumulateSpent = ref(0)
 
 
-// const getCart = () => {
-//     axios.get(`/api/cart/${userId.value}`).then((res) => {
-//         items.value = res.data
-//         const data = res.data;
-//         maxBunnyQuantity.value = data[0].bunnyCoin
-//         memberlevel.value = data[0].userVip
-//         accumulateSpent.value = data[0].accumulateSpent
-//
-//         if (accumulateSpent.value < 3000) {
-//         levelUpPrice.value = 3000 - accumulateSpent.value
-//         nextLevel.value = "金兔"
-//     } else if (accumulateSpent.value < 6000) {
-//         levelUpPrice.value = 6000 - accumulateSpent.value
-//         nextLevel.value = "白金兔"
-//     } else if (accumulateSpent.value < 9000) {
-//         levelUpPrice.value = 9000 - accumulateSpent.value
-//         nextLevel.value = "鑽石兔"
-//     }
-//
-//     }).catch(() => {
-//         SwalHandle.showErrorMsg('取得購物車失敗')
-//     })
-// }
+const getCart = () => {
+    axiosInstanceForInsertHeader.get(`/api/cart/${userId.value}`).then((res) => {
+        items.value = res.data
+        const data = res.data;
+        maxBunnyQuantity.value = data[0].bunnyCoin
+        memberlevel.value = data[0].userVip
+        accumulateSpent.value = data[0].accumulateSpent
+
+        if (accumulateSpent.value < 3000) {
+        levelUpPrice.value = 3000 - accumulateSpent.value
+        nextLevel.value = "金兔"
+    } else if (accumulateSpent.value < 6000) {
+        levelUpPrice.value = 6000 - accumulateSpent.value
+        nextLevel.value = "白金兔"
+    } else if (accumulateSpent.value < 9000) {
+        levelUpPrice.value = 9000 - accumulateSpent.value
+        nextLevel.value = "鑽石兔"
+    }
+
+    }).catch(() => {
+        SwalHandle.showErrorMsg('取得購物車失敗')
+    })
+}
 
 const deleteItem = (cartItem) => {
    
@@ -103,9 +89,20 @@ const handleOpenModal = () => {
   }
 }
 
-
 const totalPrice = computed(() => {
-    return items.value.reduce((total, item) => total + item.price * item.quantity, 0);
+    return items.value.reduce((total, item) => {
+        // 檢查 item.quantity 是否為有效的數字
+        if (typeof item.quantity !== 'number' || isNaN(item.quantity) || item.quantity < 1) {
+            item.quantity = 1; // 設為 1
+        }
+        
+        // 檢查 item.quantity 是否大於 item.stocks
+        if (item.quantity > item.stocks) {
+            item.quantity = item.stocks; 
+        }
+        
+        return total + (item.price * item.quantity); 
+    }, 0);
 });
 
 const calculateDiscount = () => {
@@ -158,13 +155,22 @@ function applyBunnyCoin() {
     
     if(typeof(bunnyquantity.value) != 'number') {
         SwalHandle.showErrorMsg("請輸入數字");
+         if (bunnyquantity.value <= 1) {
+            bunnyquantity.value = 0
+            appliedBunnyQuantity.value = 0
+    }
         
     }else {
         if(bunnyquantity.value > maxBunnyQuantity.value) {
         bunnyquantity.value = maxBunnyQuantity.value
     }
+    if (bunnyquantity.value <= 1) {
+            bunnyquantity.value = 0
+    }
         appliedBunnyQuantity.value = Math.min(bunnyquantity.value, maxBunnyQuantity.value);
+        if(bunnyquantity.value > 0) {
         SwalHandle.showSuccessMsg('套用BunnyCoin成功！');
+}
     }
 }
 
@@ -173,13 +179,14 @@ const remainingBunnyQuantity = computed(() => {
 });
 
 
-const finaltotal = computed(() => {
-    if (memberlevel.value !== '白兔') {
-        return totalPrice.value - memberdiscount.value - appliedBunnyQuantity.value
-    } else {
-        return totalPrice.value - Generaldiscount.value - appliedBunnyQuantity.value
-    }
-})
+// const finaltotal = computed(() => {
+//     if (memberlevel.value !== '白兔') {
+//         return totalPrice.value - memberdiscount.value - appliedBunnyQuantity.value
+//     } else {
+//         return totalPrice.value - Generaldiscount.value - appliedBunnyQuantity.value
+//     }
+// })
+
 
 
 const add = (item) => {
@@ -217,6 +224,25 @@ const updateCart = (item) => {
         SwalHandle.showErrorMsg("更新購物車失敗，請聯繫網站管理員")
     })
 }
+
+watch(
+  [totalPrice, Generaldiscount, memberdiscount, appliedBunnyQuantity],
+  () => {
+    let newTotal;
+    if (memberlevel.value !== '白兔') {
+      newTotal = totalPrice.value - memberdiscount.value - appliedBunnyQuantity.value;
+    } else {
+      newTotal = totalPrice.value - Generaldiscount.value - appliedBunnyQuantity.value;
+    }
+    
+    cartStore.setFinalTotal(newTotal);
+  }
+);
+
+onMounted(() => {
+    getCart()
+    
+})
 
 </script>
 
@@ -267,7 +293,7 @@ const updateCart = (item) => {
            transition: all 0.3s ease;" @click="add(item)" :disabled="item.quantity >= item.stocks">+</button>
                     </div>
                     <div class="stocksInfo">{{ item.stocks }}份</div>
-                    <div class="totalInfo">{{ item.price * item.quantity }} 元</div>
+                    <div class="totalInfo">{{ item.quantity > item.stocks ? item.price * item.stocks : item.price * item.quantity }} 元</div>
                     <div class="delInfo"><i @click="deleteItem(item)" class="bi bi-x-circle"></i></div>
                 </div>
                 <div class="cartLine"></div>
@@ -333,7 +359,7 @@ const updateCart = (item) => {
                 <p class="nextLevel" style="text-align: end; font-style: italic;">(依折價後金額計算)</p>
                 </template>
                 <div class="finalPrice">合計:
-                    <span class="finaltotalPrice">{{ finaltotal }}</span> 元
+                    <span class="finaltotalPrice">{{ finalTotalFromPinia }}</span> 元
                 </div>
             </div>
         </div>
