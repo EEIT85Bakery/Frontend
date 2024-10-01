@@ -40,9 +40,23 @@ const appliedBunnyQuantity = ref(0)
 const memberlevel = ref({})
 const accumulateSpent = ref(0)
 
+// const test = () => {
+//     axiosInstanceForInsertHeader
+//       .get('/cart')
+//       .then((res) => {
+//         console.log(res);
+        
+//       })
+//       .catch((error) => {
+//         console.error('Error fetching cart items:', error);
+//       });
+// }
 
 const getCart = () => {
-    axios.get(`/api/cart/${userId.value}`).then((res) => {
+    axiosInstanceForInsertHeader.get('/cart').then((res) => {
+        console.log(res);
+        console.log(123);
+        
         items.value = res.data
         const data = res.data;
         maxBunnyQuantity.value = data[0].bunnyCoin
@@ -241,7 +255,6 @@ watch(
 
 onMounted(() => {
     getCart()
-    
 })
 
 </script>
