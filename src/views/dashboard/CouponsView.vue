@@ -2,6 +2,7 @@
 import { ref } from 'vue';
 import PaginationComponent from '@/components/PaginationComponent.vue';
 import CouponModal from '@/components/CouponModal.vue';
+import DashBoardNavBarCoupon from '@/components/DashBoardNavBarCoupon.vue';
 
 import { SwalHandle } from '@/stores/sweetAlertStore';
 
@@ -113,6 +114,8 @@ const items = ref([
 </script>
 
 <template>
+
+  <DashBoardNavBarCoupon />
 
     <div class="pageContainer">
 

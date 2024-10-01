@@ -2,124 +2,143 @@
 import { ref, watch, defineProps } from 'vue';
 import useModal from '@/hooks/useModal';
 import { SwalHandle } from '@/stores/sweetAlertStore';
+import axiosInstanceForInsertHeader from '@/axios/axiosInstanceForInsertHeader';
 
-const showSuccess = () => {
-    SwalHandle.showSuccessMsg('變更成功！');
-};
-
-const { openModal, hideModal, modalRef } = useModal()
-
-defineExpose({
-    openModal,
-    hideModal
-});
-
+// 定義傳入的 props
 const props = defineProps({
-  product: {
+  member: {
     type: Object,
     default: null
   }
-})
+});
 
-const isModalOpen = ref(false);
+// 使用自訂的 useModal 鉤子
+const { openModal, hideModal, modalRef } = useModal();
 
+// 暴露 openModal 和 hideModal 方法，以便父組件可以控制
+defineExpose({
+  openModal,
+  hideModal
+});
+
+// 表單資料，包含會員等級
 const formData = ref({
   level: ''
 });
 
-watch(
-  () => props.product,
-  (newProduct) => {
-    if (newProduct) {
-      // 如果是編輯模式，將 product 的數據填入表單
-      formData.value = { ...newProduct };
-    } else {
-      // 如果是新增模式，清空表單
-      formData.value = {
-        level: ''
-      };
-    }
-  },
-  { immediate: true }
-);
+// 會員等級選項
+const levels = [
+  { value: 'level1', label: '白兔會員' },
+  { value: 'level2', label: '金兔會員' },
+  { value: 'level3', label: '白金兔會員' },
+  { value: 'level4', label: '鑽石兔會員' }
+];
 
-// 表單提交
-const submitForm = () => {
-  if (props.product) {
-    console.log('編輯商品', formData.value);
-  } else {
-    console.log('新增商品', formData.value);
+// 格式化日期
+const formatDate = (dateArray) => {
+  if (!Array.isArray(dateArray) || dateArray.length !== 3) {
+    console.warn('Invalid date format:', dateArray);
+    return '';
   }
-  // 這裡可以觸發保存或新增的操作
-  showSuccess();
-  hideModal();
-  isModalOpen.value = false;
+  const [year, month, day] = dateArray;
+  const formattedMonth = String(month).padStart(2, '0');
+  const formattedDay = String(day).padStart(2, '0');
+  return `${year}/${formattedMonth}/${formattedDay}`;
 };
 
-
-
-const userInfo = ref([
-    {
-        userName: "吉伊卡哇",
-        gender: '女',
-        tel: "0912-345-678",
-        email: "BunnySugar@service.com",
-        birthday: "2024-01-01",
-        level1: "白兔會員",
-        level2: "金兔會員",
-        level3: "白金兔會員",
-        level4: "鑽石兔會員",
-
+// 監聽 props.member 的變化，以抓取會員資料並初始化表單
+watch(
+  () => props.member,
+  (newMember) => {
+    if (newMember && newMember.id) {
+      console.log('新會員資料:', newMember);
+      openModal();
+      formData.value.level = newMember.userVip || '';
+    } else {
+      formData.value.level = '';
     }
-]);
+  },
+  { immediate: true, deep: true }
+);
 
 
+// 新增: 定義 memberUpdated 事件
+const emit = defineEmits(['memberUpdated']);
+
+// 新增: 創建 levelMap 用於轉換 value 到 label
+const levelMap = levels.reduce((acc, level) => {
+  acc[level.value] = level.label;
+  return acc;
+}, {});
+
+// 表單提交的函數，用於更新會員等級
+const submitForm = async () => {
+  if (!props.member || !props.member.id) {
+    SwalHandle.showErrorMsg('會員資料無法讀取');
+    return;
+  }
+
+  try {
+    const updateData = {
+      userVip: formData.value.level
+    };
+
+    const response = await axiosInstanceForInsertHeader.put(`/admin/members/${props.member.id}`, updateData);
+
+    if (response.status === 200) {
+      SwalHandle.showSuccessMsg('會員等級變更成功');
+      hideModal();
+      emit('memberUpdated', { ...props.member, userVip: formData.value.level }); 
+      
+    } else {
+      SwalHandle.showErrorMsg('更新失敗');
+    }
+  } catch (error) {
+    console.error('更新會員資料失敗', error);
+    SwalHandle.showErrorMsg('更新會員資料失敗');
+  }
+};
 </script>
 
+
 <template>
-    <div ref="modalRef" class="modal fade" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog  modalContainer modal-md">
-            <div class="modal-content">
-                <div class="modal-header modalHeader">
-                    <div class="modal-title modalTitle" id="exampleModalLabel">會員資訊</div>
-                    <button type="button" class="btn-close closeBtn" @click="hideModal" aria-label="Close">
-                    </button>
+    <div ref="modalRef" class="modal fade" tabindex="-1" aria-labelledby="memberModalLabel" aria-hidden="true">
+      <div class="modal-dialog modalContainer modal-md">
+        <div class="modal-content">
+          <div class="modal-header modalHeader">
+            <h5 class="modal-title modalTitle" id="memberModalLabel">會員資訊</h5>
+            <button type="button" class="btn-close closeBtn" @click="hideModal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body modalBody">
+            <div v-if="member">
+              <div class="Container2">
+                <div class="text"><span class="textName">會員姓名:</span><span>{{ member.name }}</span></div>
+                <div class="text"><span class="textName">性別:</span><span>{{ member.gender }}</span></div>
+                <div class="text"><span class="textName">電話號碼:</span><span>{{ member.phone }}</span></div>
+                <div class="text"><span class="textName">電子信箱:</span><span>{{ member.email }}</span></div>
+                <div class="text"><span class="textName">生日:</span><span>{{ formatDate(member.birthday) }}</span></div>                <div class="text content textName">
+                  會員等級:
+                  <select name="level" class="payment" v-model="formData.level">
+                    <option v-for="option in levels" :key="option.value" :value="option.label">
+                      {{ option.label }}
+                    </option>
+                  </select>
                 </div>
-                <div class="modal-body modalBody">
-
-                    <div class="Container1">
-
-
-
-                        <div class="Container2" v-for="(info, index) in userInfo" :key=index>
-                            <div class="text"><span class="textName">會員姓名:</span><span>{{ info.userName }}</span></div>
-                            <div class="text"><span class="textName">性別:</span><span>{{ info.gender }}</span></div>
-                            <div class="text"><span class="textName">電話號碼:</span><span>{{ info.tel }}</span></div>
-                            <div class="text"><span class="textName">電子信箱:</span><span>{{ info.email }}</span></div>
-                            <div class="text"><span class="textName">生日:</span><span>{{ info.birthday }}</span></div>
-                            <div class="text content textName">會員等級:
-                                <select name="pay" class="payment" v-model="formData.level">
-                                    <option value="unPaid">{{ info.level1 }}</option>
-                                    <option value="paid">{{ info.level2 }}</option>
-                                    <option value="paid">{{ info.level3 }}</option>
-                                    <option value="paid">{{ info.level4 }}</option>
-                                </select>
-                            </div>
-                            <!-- <hr /> -->
-                        </div>
-
-                    </div>
-
-                </div>
-                <div class="modal-footer modalFooter">
-                    <button type="button" class="btn1" @click="hideModal">取消</button>
-                    <button type="submit" class="btn2" @click="submitForm">儲存變更</button>
-                </div>
+              </div>
             </div>
+            <div v-else>
+              <p>載入中...</p>
+            </div>
+          </div>
+          <div class="modal-footer modalFooter">
+            <button type="button" class="btn1" @click="hideModal">取消</button>
+            <button type="button" class="btn2" @click="submitForm">儲存變更</button>
+          </div>
         </div>
+      </div>
     </div>
-</template>
-
+  </template>
+  
 
 <style scoped>
 /* header */
