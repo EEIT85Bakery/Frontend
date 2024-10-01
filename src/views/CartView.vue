@@ -4,12 +4,10 @@ import { useCartStore } from '@/stores/cartStore';
 import CartTopComponent1 from '@/components/CartTopComponent1.vue';
 import MemberLevelModal from '@/components/MemberLevelModal.vue';
 import { SwalHandle } from '@/stores/sweetAlertStore';
-import axios from 'axios';
 import { onMounted } from 'vue';
 import axiosInstanceForInsertHeader from "@/axios/axiosInstanceForInsertHeader.js";
 
 const cartStore = useCartStore()
-const finalTotalFromPinia = computed(() => cartStore.finalTotal);
 
 const nextLevel = ref("")
 const levelUpPrice = ref(0)
@@ -150,6 +148,8 @@ function applyDiscountCode() {
         isDiscountCodeVisible.value = true;
         calculateDiscount()
         SwalHandle.showSuccessMsg("套用折扣碼成功");
+        cartStore.couponName = inputDiscountCode
+        // cartStore.
     } else {
         validDiscountCode.value = false;
         isDiscountApplied.value = false;
@@ -176,6 +176,7 @@ function applyBunnyCoin() {
         appliedBunnyQuantity.value = Math.min(bunnyquantity.value, maxBunnyQuantity.value);
         if(bunnyquantity.value > 0) {
         SwalHandle.showSuccessMsg('套用BunnyCoin成功！');
+        cartStore.usedBunnyCoins = bunnyquantity.value
 }
     }
 }
@@ -249,8 +250,7 @@ watch(
     } else {
       newTotal = totalPrice.value - Generaldiscount.value - appliedBunnyQuantity.value;
     }
-    
-    cartStore.setFinalTotal(newTotal);
+    cartStore.paymentPrice = newTotal
   }
 );
 
@@ -374,7 +374,7 @@ onMounted(() => {
                 <p class="nextLevel" style="text-align: end; font-style: italic;">(依折價後金額計算)</p>
                 </template>
                 <div class="finalPrice">合計:
-                    <span class="finaltotalPrice">{{ finalTotalFromPinia }}</span> 元
+                    <span class="finaltotalPrice">{{ cartStore.paymentPrice }}</span> 元
                 </div>
             </div>
         </div>

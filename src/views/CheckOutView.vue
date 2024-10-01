@@ -7,8 +7,7 @@ import { onMounted } from 'vue';
 import axiosInstanceForInsertHeader from '@/axios/axiosInstanceForInsertHeader';
 
 const modalRef = ref(null);
-const cartStore = useCartStore()
-const finalTotalFromPinia = computed(() => cartStore.finalTotal);
+const cartStore = useCartStore();
 const memberInfo = ref({})
 const pickupTime = ref(new Date().toISOString().substring(0, 10))
 const paymentMethod = ref("門市付款")
@@ -22,9 +21,7 @@ function handleOpenModal() {
 
 const getMemberInfo = () => {
     axiosInstanceForInsertHeader.get('/memberPage/getById').then((res) => { 
-        memberInfo.value = res.data
-        console.log(memberInfo.value);
-                
+        memberInfo.value = res.data                
     })
 }
 
@@ -37,8 +34,6 @@ const quantity = ref(1);
 const totalprice = computed(() => {
     return productprice.value * quantity.value;
 });
-
-const discountCode = 'HappyHalloween'
 
 
 const discount = computed(() => {
@@ -57,10 +52,6 @@ const bunnyquantity = ref(null);
 const maxBunnyQuantity = ref(15);
 
 const appliedBunnyQuantity = ref(0);
-
-function applyBunnyCoin() {
-    appliedBunnyQuantity.value = Math.min(bunnyquantity.value, maxBunnyQuantity.value);
-}
 
 const memberlevel = ref("金兔");
 
@@ -94,7 +85,8 @@ const topStyle = computed(() => ({
 }));
 
 onMounted(() => {
-    console.log(finalTotalFromPinia.value);
+    console.log(cartStore.paymentPrice);
+    
     getMemberInfo()
     
 })
@@ -105,9 +97,8 @@ onMounted(() => {
 <template>
 
     <CartTopComponent2 />
-
     <div class="priceBigText">合計:
-        <span class="finalTotalPrice">{{ finaltotal }}</span> 元
+        <span class="finalTotalPrice">{{ cartStore.paymentPrice }}</span> 元
     </div>
 
     <!-- 購物車 -->
@@ -145,7 +136,7 @@ onMounted(() => {
                         <span>{{ totalprice }} 元</span>
                     </div>
                     <div class="allDiscount" :style="discountStyle">
-                        <span class="leftText">折扣:<span style="font-size: small;"> (已使用折扣碼 {{ discountCode }} )</span></span>
+                        <span class="leftText">折扣:<span style="font-size: small;"> (已使用折扣碼 {{ cartStore.couponName }} )</span></span>
                         <span>{{ discount }} 元</span>
                     </div>
                     <div class="ownDiscount" v-if="memberlevel != '白兔'">

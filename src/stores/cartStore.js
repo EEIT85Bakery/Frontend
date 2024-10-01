@@ -4,21 +4,18 @@ import { SwalHandle } from '@/stores/sweetAlertStore'
 
 export const useCartStore = defineStore('cartStore', () => {
   const carts = ref([])
-  const finalTotal = ref(0)
   const total = ref(0)
-  const paymentMethod = ref("")
+  const paymentPrice = ref(0)
+  const couponName = ref("")
+  const usedBunnyCoins = ref(0)
 
-  const  setFinalTotal = (amount) => {
-    finalTotal.value = amount;
-  }
  
   return {
     carts,
-    finalTotal,
     total,
-    // getCart,
-    // addToCart,
-    setFinalTotal
+    paymentPrice,
+    couponName,
+    usedBunnyCoins
   }
 })
 
