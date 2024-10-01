@@ -72,26 +72,54 @@ const loginWithGoogle = async () => {
     console.log('Firebase ID Token:', token);
 
     // 發送 ID Token 到後端進行驗證
-    const response = await axios.post('http://localhost:8080/api/auth', {
-      idToken: token
+    const response = await axios.post('http://localhost:8080/user/googleLogin', {
+      googleToken: token // 确保字段名称与后端一致
     });
 
     // 後端驗證成功後的回應
     console.log('後端驗證成功:', response.data);
 
-    // 根據後端回傳的結果，處理前端邏輯 (例如將 token 存入狀態管理或跳轉頁面)
-    if (response.data.success) {
-      // 可以將後端回傳的用戶資料或 token 存入狀態管理或 localStorage
-      localStorage.setItem('backendUserToken', response.data.userToken);
+    // 根據後端回傳的結果，處理前端邏輯
+    if (response.data.status === 'success') { // 檢查狀態是否成功
+      const jwt = response.data.token; // 確保從後端獲取 JWT
+      localStorage.setItem('jwt', jwt); // 儲存 JWT 到 localStorage
       console.log('用戶登入成功，跳轉到首頁');
-      window.location.href = '/home'; // 重定向到首頁
+
+      // 顯示 SweetAlert，持續 2 秒
+      await Swal.fire({
+        title: '成功!',
+        text: '登入成功！',
+        icon: 'success',
+        confirmButtonText: '確認',
+        customClass: { confirmButton: 'myConfirmBtn' },
+        timer: 2000, // 2 秒後自動關閉
+        timerProgressBar: true // 顯示進度條
+      });
+
+      router.push({ name: '首頁' });
     } else {
       console.error('後端驗證失敗:', response.data.message);
+      Swal.fire({
+        title: '登入失敗',
+        text: response.data.message,
+        icon: 'error',
+        confirmButtonText: '重新嘗試',
+        customClass: { confirmButton: 'myConfirmBtn' }
+      });
     }
   } catch (error) {
-    console.error('Error during login:', error);
+    console.error('Error during login:', error.response ? error.response.data : error.message);
+    // 處理登入失敗的情況
+    Swal.fire({
+      title: '登入失敗',
+      text: '請檢查您的 Google 登入，或重試。',
+      icon: 'error',
+      confirmButtonText: '重新嘗試',
+      customClass: { confirmButton: 'myConfirmBtn' }
+    });
   }
 };
+
 </script>
 
 <template>
