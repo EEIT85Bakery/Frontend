@@ -43,6 +43,16 @@ const countTotal = () => {
     cartStore.total = totalPrice
 }
 
+const resetDiscount = () => {
+    inputDiscountCode.value = "";
+    validDiscountCode.value = false;
+    isDiscountApplied.value = false;
+    isDiscountCodeVisible.value = false;
+    Generaldiscount.value = 0;
+    memberdiscount.value = 0;
+    cartStore.couponName = "";
+};
+
 const getCart = () => {
     axiosInstanceForInsertHeader.get('/cart').then((res) => {
         items.value = res.data        
@@ -146,6 +156,8 @@ const discountStyle = computed(() => {
 });
 
 function applyDiscountCode() {
+    if (cartStore.total >= 1000) {
+        
     if (inputDiscountCode.value === discountCode) {
         validDiscountCode.value = true;
         isDiscountApplied.value = true;  // 設置樣式應用為 true
@@ -158,6 +170,9 @@ function applyDiscountCode() {
         validDiscountCode.value = false;
         isDiscountApplied.value = false;
         SwalHandle.showErrorMsg("無效的折扣碼");
+    }
+    }else{
+        SwalHandle.showErrorMsg("購買總額至少1000才可以使用哦！")
     }
 }
 
@@ -240,6 +255,8 @@ const updateCart = (item) => {
         quantity : item.quantity
     }).then(() => {
         getCart()
+        cartStore.total = totalPrice.value;
+        resetDiscount()
     }).catch(() => {
         SwalHandle.showErrorMsg("更新購物車失敗，請聯繫網站管理員")
     })
@@ -257,6 +274,11 @@ watch(
     cartStore.paymentPrice = newTotal
   }
 );
+
+watch(totalPrice, (newTotal) => {
+    cartStore.total = newTotal;
+    calculateDiscount();
+});
 
 onMounted(() => {
     getCart()

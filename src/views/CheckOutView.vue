@@ -51,10 +51,8 @@ function handleOpenModal() {
 }
 
 const getMemberInfo = () => {
-    axiosInstanceForInsertHeader.get('/memberPage/getById').then((res) => { 
-        memberInfo.value = res.data                
-        console.log(memberInfo.value);
-        
+    axiosInstanceForInsertHeader.get('/memberPage').then((res) => { 
+        memberInfo.value = res.data
     }).catch(() => {
         alert('無法取得使用者資訊')
     })
