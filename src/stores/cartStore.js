@@ -1,6 +1,5 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { SwalHandle } from '@/stores/sweetAlertStore'
 
 export const useCartStore = defineStore('cartStore', () => {
   const carts = ref([])

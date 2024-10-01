@@ -6,7 +6,6 @@ import MemberLevelModal from '@/components/MemberLevelModal.vue';
 import { SwalHandle } from '@/stores/sweetAlertStore';
 import { onMounted } from 'vue';
 import axiosInstanceForInsertHeader from "@/axios/axiosInstanceForInsertHeader.js";
-
 const cartStore = useCartStore()
 
 const nextLevel = ref("")
@@ -38,6 +37,10 @@ const accumulateSpent = ref(0)
 //點擊清空欄位
 const clearInput = (e) => {
     e.target.value = ''
+}
+
+const countTotal = () => {
+    cartStore.total = totalPrice
 }
 
 const getCart = () => {
@@ -103,6 +106,7 @@ const totalPrice = computed(() => {
         if (item.quantity > item.stocks) {
             item.quantity = item.stocks; 
         }
+        
         
         return total + (item.price * item.quantity); 
     }, 0);
@@ -336,7 +340,7 @@ onMounted(() => {
             <div class="detailContainer">
                 <div class="total">
                     <span class="leftText">總計:</span>
-                    <span>{{ totalPrice }} 元</span>
+                    <span>{{ cartStore.total }} 元</span>
                 </div>
                 <div class="allDiscount" :style="discountStyle">
                     <span class="leftText">折扣:<span style="font-size: small;" v-if="isDiscountCodeVisible"> (已使用折扣碼 {{ discountCode }} )</span></span>
@@ -385,7 +389,7 @@ onMounted(() => {
             <button class="btn1">繼續購物</button>
         </RouterLink>
         <RouterLink to="checkOut" class="goToBuyBtn">
-            <button class="btn2">前往結帳</button>
+            <button class="btn2" @click="countTotal">前往結帳</button>
         </RouterLink>
     </div>
 

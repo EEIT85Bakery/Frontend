@@ -5,12 +5,45 @@ import MemberLevelModal from '@/components/MemberLevelModal.vue';
 import { useCartStore } from '@/stores/cartStore';
 import { onMounted } from 'vue';
 import axiosInstanceForInsertHeader from '@/axios/axiosInstanceForInsertHeader';
+import { SwalHandle } from '@/stores/sweetAlertStore';
+import { format, parseISO } from 'date-fns';
 
 const modalRef = ref(null);
 const cartStore = useCartStore();
 const memberInfo = ref({})
 const pickupTime = ref(new Date().toISOString().substring(0, 10))
 const paymentMethod = ref("門市付款")
+const submitOrders = () => {
+        axiosInstanceForInsertHeader.post('/orders', {
+        paymentMethod: paymentMethod.value,
+        pickupTime: formattedPickupDateTime.value,
+        paymentPrice: cartStore.paymentPrice,
+        total: cartStore.total,
+        couponName: cartStore.couponName,
+        usedBunnyCoins: cartStore.usedBunnyCoins
+    }).then(() => { 
+        SwalHandle.showSuccessMsg("成功新增訂單")
+    }).catch(() => {
+        SwalHandle.showErrorMsg("新增訂單異常，請聯繫網站管理員")
+    })
+}
+
+const formattedDisplayDateTime = computed(() => {
+  if (pickupTime.value) {
+    const dateTime = parse(pickupTime.value, "yyyy-MM-dd HH:mm", new Date());
+    return format(dateTime, "yyyy年MM月dd日 HH:mm");
+  }
+  return '';
+});
+
+const formattedPickupDateTime = computed(() => {
+  if (pickupTime.value) {
+    // Parse the input value and format it to include seconds
+    const dateTime = parseISO(pickupTime.value);
+    return format(dateTime, "yyyy-MM-dd'T'HH:mm:ss");
+  }
+  return null;
+});
 
 // 用來觸發 modal 的打開方法
 function handleOpenModal() {
@@ -22,6 +55,8 @@ function handleOpenModal() {
 const getMemberInfo = () => {
     axiosInstanceForInsertHeader.get('/memberPage/getById').then((res) => { 
         memberInfo.value = res.data                
+    }).catch(() => {
+        alert('無法取得使用者資訊')
     })
 }
 
@@ -85,10 +120,7 @@ const topStyle = computed(() => ({
 }));
 
 onMounted(() => {
-    console.log(cartStore.paymentPrice);
-    
     getMemberInfo()
-    
 })
 
 
@@ -182,8 +214,8 @@ onMounted(() => {
                     <form>
                         <div class="inputText">取貨方式</div>
                         <input type="text" name="pickupWay" placeholder="門市取貨" disabled class="infoInput">
-                        <div class="inputText">取貨日期</div>
-                        <input type="date" name="pickupDate" placeholder="請選擇取貨日期" class="infoInput" v-model="pickupTime">
+                        <div class="inputText">取貨時間</div>
+                        <input type="datetime-local" name="pickupDate" placeholder="請選擇取貨日期" class="infoInput" v-model="pickupTime">
                     </form>
                 </div>
             </div>
@@ -210,10 +242,10 @@ onMounted(() => {
             <button class="btn1">上一步</button>
         </RouterLink>
         <RouterLink to="orderDetail" class="goToBuyBtn" v-if="paymentMethod == '門市付款'">
-            <button class="btn2">提交訂單</button>
+            <button class="btn2" @click="submitOrders">提交訂單</button>
         </RouterLink>
         <RouterLink to="pay" class="goToBuyBtn" v-else>
-            <button class="btn2">提交訂單</button>
+            <button class="btn2" @click="submitOrders">提交訂單</button>
         </RouterLink>
     </div>
 
