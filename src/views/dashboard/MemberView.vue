@@ -25,12 +25,33 @@ const formatDate = (dateArray) => {
   return `${year}/${formattedMonth}/${formattedDay}`;
 };
 
-// 打開新增 modal
-const openMemberModal = () => {
-  currentItem.value = null;
-  console.log('Opening modal for new member creation');
+// 打開修改會員等級的 modal
+const openMemberModal = (member) => {
+  currentItem.value = member; // 確保這裡是傳入了正確的會員數據
+  console.log('Opening modal for editing member:', member);
   if (memberModalRef.value) {
     memberModalRef.value.openModal();
+  }
+};
+
+// 新增: 創建 levels 數組和 levelMap
+const levels = [
+  { value: 'level1', label: '白兔會員' },
+  { value: 'level2', label: '金兔會員' },
+  { value: 'level3', label: '白金兔會員' },
+  { value: 'level4', label: '鑽石兔會員' }
+];
+
+const levelMap = levels.reduce((acc, level) => {
+  acc[level.value] = level.label;
+  return acc;
+}, {});
+
+// 新增: 用於接收更新後的會員資料
+const handleMemberUpdated = (updatedMember) => {
+  const index = members.value.findIndex(member => member.id === updatedMember.id);
+  if (index !== -1) {
+    members.value[index] = updatedMember; // 更新會員資料
   }
 };
 
@@ -116,7 +137,7 @@ onMounted(() => {
                         <td>{{ member.phone }}</td>
                         <td>{{ member.email }}</td>
                         <td>{{ formatDate(member.birthday) }}</td>
-                        <td>{{ member.userVip }}</td>
+                        <td>{{ levelMap[member.userVip] || member.userVip }}</td>
                         <td><i class="bi bi-pencil-square" style="color: darkgrey;" @click="openMemberModal(member)"></i></td>
                         <td><i class="bi bi-trash3" style="color: darkred;" @click="deleteMember(member)"></i></td>
                     </tr>
@@ -127,7 +148,7 @@ onMounted(() => {
             <PaginationComponent :totalPages="totalPages" :currentPage="currentPage" @pageChange="handlePageChange" />
         </div>
 
-        <MemberModal ref="memberModalRef" :product="currentItem" />
+        <MemberModal ref="memberModalRef" :member="currentItem" @updatedMember="handleMemberUpdated" />
     </div>
 </template>
 
