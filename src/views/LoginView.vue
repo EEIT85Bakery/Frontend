@@ -9,6 +9,9 @@ import { signInWithPopup } from 'firebase/auth';
 import SetPasswordModal from '@/components/SetPasswordModal.vue';
 
 const modalRef = ref(null);
+import SetPasswordModal from '@/components/SetPasswordModal.vue';
+
+const modalRef = ref(null);
 
 const account = ref('');
 const password = ref('');
