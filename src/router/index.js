@@ -67,9 +67,19 @@ const routes = [
         component: () => import('../views/WishListView.vue')
       },
       {
-        path: '/cartTest',
-        name: '購物車測試',
-        component: () => import('../views/cartTest.vue')
+        path: '/shopInformation',
+        name: '門市資訊',
+        component: () => import('../views/shopInformationView.vue')
+      },
+      {
+        path: '/theLastestNews',
+        name: '最新消息',
+        component: () => import('../views/theLastestNewsView.vue')
+      },
+      {
+        path: '/question',
+        name: '常見問題',
+        component: () => import('../views/QuestionView.vue')
       },
       {
         path: '/addTest',

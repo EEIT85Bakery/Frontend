@@ -20,7 +20,7 @@ watch(
 const startLoading = () => {
   setTimeout(() => {
     isLoading.value = false;
-  }, 2100);
+  }, 1200);
 };
 
 // 組件掛載時延遲取消加載

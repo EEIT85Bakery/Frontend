@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 
 const imgArray = ref([
   { imageUrl: '../../public/imgZip/HomePageImg/Img1.png' },
@@ -12,18 +12,37 @@ const imgArray = ref([
   { imageUrl: '../../public/imgZip/HomePageImg/Img8.png' }
 ]);
 
+const images = ref([]); // 用來儲存所有圖片 DOM
+
+onMounted(() => {
+  const options = {
+    root: null,
+    rootMargin: '0px',
+    threshold: 0.1 // 當圖片進入可視區域的 10% 時觸發
+  };
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('fadeIn'); // 添加 fadeIn class
+      } else {
+        entry.target.classList.remove('fadeIn'); // 離開可視範圍時移除 fadeIn class
+      }
+    });
+  }, options);
+
+  // 獲取所有圖片元素
+  const imgElements = document.querySelectorAll('.ListImg, .ImgGalleryItems, .sayingText');
+  imgElements.forEach(img => {
+    observer.observe(img); // 為每個圖片元素添加觀察者
+  });
+});
 </script>
 
 <template>
 
   <!-- Carousel -->
   <div id="demo" class="carousel slide" data-bs-ride="carousel">
-
-    <!-- <div class="carousel-indicators">
-      <button type="button" data-bs-target="#demo" data-bs-slide-to="0" class="active"></button>
-      <button type="button" data-bs-target="#demo" data-bs-slide-to="1"></button>
-      <button type="button" data-bs-target="#demo" data-bs-slide-to="2"></button>
-    </div> -->
 
     <div class="carousel-inner">
       <RouterLink to="products">
@@ -59,7 +78,7 @@ const imgArray = ref([
 
   <div class="rankListImg">
     <RouterLink to="products"  class="rankListItem">
-    <img src="../../public/imgZip/HomePageImg/HomePageImgP1.png" class="ListImg" alt="HomePageImgP1">
+    <img src="../../public/imgZip/HomePageImg/HomePageImgP1.png" class="ListImg" alt="HomePageImgP1" ref="images">
     </RouterLink>
     <RouterLink to="products"  class="rankListItem">
      <img src="../../public/imgZip/HomePageImg/HomePageImgP2.png" class="ListImg" alt="HomePageImgP2"> 
@@ -74,7 +93,7 @@ const imgArray = ref([
   <!-- 標語大圖 -->
   <RouterLink to="products">
   <div class="pic">
-    <img class="HomePagePic" src="../../public/imgZip/HomePageImg/HomePageImgBig.png" alt="">
+    <img class="HomePagePic" src="../../public/imgZip/HomePageImg/HomePageImgBig.png" alt="" ref="images">
   </div>
 </RouterLink>
   <div class="rankList">
@@ -85,7 +104,7 @@ const imgArray = ref([
   <!-- 選擇多樣化 -->
   <RouterLink class="imgGallery" to="products">
     <div v-for="(item, index) in imgArray" :key="index" class="imgItem">
-      <img :src="item.imageUrl" alt="Image" class="ImgGalleryItems" />
+      <img :src="item.imageUrl" alt="Image" class="ImgGalleryItems" ref="images" />
     </div>
   </RouterLink>
 
@@ -93,16 +112,48 @@ const imgArray = ref([
   <RouterLink class="sayingContainer">
     <div class="saying">
       <div class="sayingImgContainer">
-        <img class="sayingImg" src="../../public/imgZip/HomePageImg/HomePageMadelein.png" alt="Madelein">
+        <img class="sayingImg" src="../../public/imgZip/HomePageImg/HomePageMadelein.png" alt="Madelein" />
       </div>
       <div class="sayingTextCotainer">
-        <img class="sayingText" src="../../public/imgZip/HomePageImg/saying.png" alt="">
+        <img class="sayingText" src="../../public/imgZip/HomePageImg/saying.png" alt="saying" ref="images" />
       </div>
     </div>
   </RouterLink>
 </template>
 
 <style scoped>
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px); /* 向下位移一點增加動態效果 */
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0); /* 完全顯示時不位移 */
+  }
+}
+
+.ImgGalleryItems, 
+.ListImg,
+.sayingText {
+  opacity: 0; /* 初始隱藏 */
+  transform: translateY(20px); /* 初始位置稍微向下移動 */
+  transition: opacity 1s ease, transform 1s ease; /* 過渡效果 */
+}
+
+.fadeIn {
+  opacity: 1; /* 當添加動畫 class 時，圖片逐漸顯示 */
+  transform: translateY(0); /* 回到初始位置 */
+}
+
+
+
+
+
+
+
+
 .carousel-item {
   height: 40vw;
 }
@@ -133,6 +184,11 @@ const imgArray = ref([
   justify-content: center;
   gap: 3%;
   object-fit: contain;
+}
+
+.rankListItem:hover {
+  transform: scale(1.05);
+  opacity: 0.7;
 }
 
 .ListImg {
@@ -194,6 +250,11 @@ const imgArray = ref([
   height: auto;
   margin-bottom: 9%;
   box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+}
+
+.ImgGalleryItems:hover {
+  transform: scale(1.05);
+  opacity: 0.7;
 }
 
 .sayingContainer {

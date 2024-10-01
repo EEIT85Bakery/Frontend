@@ -11,14 +11,14 @@ import MemberLevelModal from '@/components/MemberLevelModal.vue';
 import { SwalHandle } from '@/stores/sweetAlertStore';
 
 const showSuccess = () => {
-  SwalHandle.showSuccessMsg('加入成功！');
+    SwalHandle.showSuccessMsg('加入成功！');
 };
 
 const isIconA = ref(true);
 
 function toggleIcon() {
-  isIconA.value = !isIconA.value; // 切換狀態
-  
+    isIconA.value = !isIconA.value; // 切換狀態
+
 }
 
 
@@ -26,9 +26,9 @@ const modalRef = ref(null);
 
 // 用來觸發 modal 的打開方法
 function handleOpenModal() {
-  if (modalRef.value) {
-    modalRef.value.openModal(); // 調用 modal 的 openModal 方法
-  }
+    if (modalRef.value) {
+        modalRef.value.openModal(); // 調用 modal 的 openModal 方法
+    }
 }
 
 const isLoading = ref(true);
@@ -144,14 +144,15 @@ onMounted(() => {
             <div class="CutLine"></div>
 
             <div class="productDiscount">
-                <div>
-                    <i class="bi bi-caret-right-fill"></i>
-                    即日起至<b class="discountExp">{{ discountExp }}</b>，全館商品滿1000折50
+                <div class="d-flex">
+                    <i class="bi bi-caret-right-fill me-2"></i>
+                    <span>即日起至<b class="discountExp">{{ discountExp }}</b>，結帳輸入「<b>HappyHalloween</b>」，全館商品滿1000折50</span>
                 </div>
-                <div>
-                    <i class="bi bi-caret-right-fill"></i>
-                    Bunny Sugar會員，滿額可依
-                    <span @click="handleOpenModal" class="memberLevel">會員分級</span> 享優惠折扣
+                <div class="d-flex">
+                    <i class="bi bi-caret-right-fill me-2"></i>
+                    <span>Bunny Sugar會員，滿額可依
+                        <span @click="handleOpenModal" class="memberLevel">會員分級</span> 享優惠折扣
+                    </span>
                 </div>
             </div>
 
@@ -187,16 +188,15 @@ onMounted(() => {
         <div class="Line"></div>
     </div>
 
-    
+
     <Swiper />
 
     <MemberLevelModal ref="modalRef" />
-    
+
 
 </template>
 
 <style scoped>
-
 .productContainer {
     display: flex;
     width: 100%;

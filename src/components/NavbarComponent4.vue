@@ -1,20 +1,14 @@
 <script setup>
-// import { useCartStore } from '@/stores/cartStore';
-// import { computed, onMounted } from 'vue';
+import { ref } from 'vue';
 
-// 使用 cartStore
-// const cartStore = useCartStore();
+const isMenuOpen = ref(false); // 用來控制菜單的狀態
 
-// 計算購物車中的商品數量
-// const carts = computed(() => cartStore.carts);
-
-// 組件加載時，獲取購物車數據
-// onMounted(() => {
-//   cartStore.getCart();
-// });
+const toggleMenu = () => {
+    isMenuOpen.value = !isMenuOpen.value; // 切換狀態
+};
 
 function scrollToTop() {
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 </script>
@@ -22,15 +16,20 @@ function scrollToTop() {
 
 <template>
 
-
-
-
-
     <nav class="navbar navbar-expand-lg sticky-top">
 
-        <div class="nabarAd">
-            我是廣告我是廣告我是廣告我是廣告我是廣告我是廣告我是廣告我是廣告
-        </div>
+
+        <nav class="navbar navbar-expand-lg sticky-top">
+            <div class="navbarAd">
+                    <div>
+                        <i class="bi bi-megaphone me-2"></i>
+                        <span>「您記不住的，Bunny Sugar幫你記住」，趕緊加入會員，前往會員中心
+                            <RouterLink to="anniversary" style="color: white; font-weight: bold;">紀念日專區</RouterLink>
+                            寫下屬於您的日子吧！
+                        </span>
+                    </div>
+            </div>
+        </nav>
 
         <div class="navbarContainer container-fluid d-flex">
 
@@ -39,34 +38,33 @@ function scrollToTop() {
                 <img src="../../public/imgZip/Logo/logo.png" alt="navbarLogo" class="navbarLogo">
             </RouterLink>
 
-            <button class="navbarToggler navbar-toggler" type="button" data-bs-toggle="collapse"
-                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
-                aria-label="Toggle navigation">
+            <button class="navbarToggler navbar-toggler" type="button" @click="toggleMenu">
                 <span class="navbar-toggler-icon icon-large"></span>
             </button>
 
-            <div class="navbarSupportedContent collapse navbar-collapse" id="navbarSupportedContent">
+            <div class="navbarSupportedContent collapse navbar-collapse" id="navbarSupportedContent"
+                :class="{ show: isMenuOpen }">
                 <ul class="navbar-nav ms-auto">
                     <div class="lineContainer">
                         <div class="line"></div>
                     </div>
                     <li class="navItem">
-                        <RouterLink class="navLink" to="product">關於我們</RouterLink>
+                        <RouterLink class="navLink" to="product" @click="toggleMenu">關於我們</RouterLink>
                     </li>
                     <li class="navItem">
-                        <RouterLink class="navLink" to="customerInformation">最新消息</RouterLink>
+                        <RouterLink class="navLink" to="theLastestNews" @click="toggleMenu">最新消息</RouterLink>
                     </li>
                     <li class="navItem">
-                        <RouterLink class="navLink" to="products">商品列表</RouterLink>
+                        <RouterLink class="navLink" to="products" @click="toggleMenu">商品列表</RouterLink>
                     </li>
                     <li class="navItem">
-                        <RouterLink class="navLink" to="cartTest">門市資訊</RouterLink>
+                        <RouterLink class="navLink" to="shopInformation" @click="toggleMenu">門市資訊</RouterLink>
                     </li>
                     <li class="navItem">
-                        <RouterLink class="navLink" to="addTest">常見問題</RouterLink>
+                        <RouterLink class="navLink" to="question" @click="toggleMenu">常見問題</RouterLink>
                     </li>
                     <li class="navItem">
-                        <RouterLink class="navLink" to="wishList">我的收藏</RouterLink>
+                        <RouterLink class="navLink" to="wishList" @click="toggleMenu">我的收藏</RouterLink>
                     </li>
                 </ul>
                 <div class="lineContainer">
@@ -122,22 +120,26 @@ function scrollToTop() {
 
 
 <style scoped>
-.nabarAd {
+.navbarAd {
     font-size: small;
-    padding: 0.2%;
+    padding: 0.5%;
     text-align: center;
     width: 100%;
     position: fixed;
     top: 0;
-    /* z-index: 1500; */
     color: white;
-    background-color: rgba(143, 134, 129, 0.8);
+    background-color: rgba(143, 134, 129, 0.9);
 }
 
 
+
+
+
+
+
 .navbarContainer {
-    margin-top: -8px;
-    padding: 2.5% 2% 1% 2%;
+    margin-top: -10px;
+    padding: 3.5% 2% 1% 2%;
     align-items: stretch;
     background-color: rgba(255, 255, 255, 0.9);
     box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
@@ -161,6 +163,8 @@ function scrollToTop() {
     color: #32435F;
     justify-content: space-evenly;
     padding-left: 1%;
+    text-align: center;
+    font-size: medium;
 }
 
 .navItem {
@@ -230,6 +234,13 @@ function scrollToTop() {
     border: 0;
 }
 
+.navbarToggler:focus {
+    outline: none;
+    /* 去除焦點輪廓 */
+    box-shadow: none;
+    /* 去除盒子陰影 */
+}
+
 .gameContainer {
     position: fixed;
     bottom: 10%;
@@ -256,6 +267,16 @@ function scrollToTop() {
     /* background-color: rgba(255, 255, 255, 0.8); */
     border-radius: 50px;
     /* padding: 0 0.8%; */
+}
+
+.navbarSupportedContent {
+    /* 默認隱藏 */
+    display: none;
+}
+
+.navbarSupportedContent.show {
+    display: block;
+    /* 顯示選單 */
 }
 
 .goTopContainer {
@@ -301,6 +322,11 @@ function scrollToTop() {
         font-size: 5vw;
         right: 3%;
     }
+
+    .navbarContainer {
+        margin-top: -3px;
+    }
+
 }
 
 @media (max-width: 576px) {
@@ -309,6 +335,14 @@ function scrollToTop() {
     .goTopContainer {
         font-size: 7vw;
         right: 3%;
+    }
+
+    .navbarContainer {
+        margin-top: 2px;
+    }
+
+    .navbarAd {
+        font-size: smaller;
     }
 }
 </style>
