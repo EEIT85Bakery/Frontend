@@ -15,16 +15,31 @@ const sendVerificationCode = async () => {
       email: email.value,
       phone: phone.value,
     });
+
     if (response.status === 200) {
-      Swal.fire({ // 直接使用 Swal
-        title: '成功!',
-        text: '驗證信發送成功',
-        icon: 'success',
-        confirmButtonText: '確認',
-        customClass: {confirmButton: 'myConfirmBtn'},
-        timer: 5000, // 5秒後自動關閉提示框
-      });
-      verificationSent.value = true;
+      // 提取狀態和消息
+      const { status, message } = response.data;
+
+      if (status === "success") {
+        Swal.fire({
+          title: '成功!',
+          text: message, // 使用從後端返回的消息
+          icon: 'success',
+          confirmButtonText: '確認',
+          customClass: { confirmButton: 'myConfirmBtn' },
+          timer: 5000, // 5秒後自動關閉提示框
+        });
+        verificationSent.value = true;
+      } else {
+        // 處理錯誤狀態
+        Swal.fire({
+          title: '錯誤!',
+          text: message, // 使用從後端返回的錯誤消息
+          icon: 'error',
+          confirmButtonText: '重新嘗試',
+          customClass: { confirmButton: 'myConfirmBtn' }
+        });
+      }
     }
   } catch (error) {
     console.error('發送驗證碼失敗', error);
@@ -33,7 +48,7 @@ const sendVerificationCode = async () => {
       text: '發送驗證信失敗',
       icon: 'error',
       confirmButtonText: '重新嘗試',
-      customClass: {confirmButton: 'myConfirmBtn'}
+      customClass: { confirmButton: 'myConfirmBtn' }
     });
   }
 };
