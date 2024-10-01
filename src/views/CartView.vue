@@ -17,7 +17,6 @@ const items = ref([])
 const modalRef = ref(null);
 
 const userId = ref({})
-userId.value = 1
 
 const discountExp = "2024/11/30";
 
@@ -40,28 +39,16 @@ const appliedBunnyQuantity = ref(0)
 const memberlevel = ref({})
 const accumulateSpent = ref(0)
 
-// const test = () => {
-//     axiosInstanceForInsertHeader
-//       .get('/cart')
-//       .then((res) => {
-//         console.log(res);
-        
-//       })
-//       .catch((error) => {
-//         console.error('Error fetching cart items:', error);
-//       });
-// }
-
 const getCart = () => {
     axiosInstanceForInsertHeader.get('/cart').then((res) => {
-        console.log(res);
-        console.log(123);
-        
-        items.value = res.data
+        items.value = res.data        
         const data = res.data;
-        maxBunnyQuantity.value = data[0].bunnyCoin
-        memberlevel.value = data[0].userVip
-        accumulateSpent.value = data[0].accumulateSpent
+        if(items.value.length !== 0) {
+            
+            maxBunnyQuantity.value = data[0].bunnyCoin
+            memberlevel.value = data[0].userVip
+            accumulateSpent.value = data[0].accumulateSpent
+        }
 
         if (accumulateSpent.value < 3000) {
         levelUpPrice.value = 3000 - accumulateSpent.value
@@ -104,6 +91,7 @@ const handleOpenModal = () => {
 }
 
 const totalPrice = computed(() => {
+    if(items.value.length !== 0) {
     return items.value.reduce((total, item) => {
         // 檢查 item.quantity 是否為有效的數字
         if (typeof item.quantity !== 'number' || isNaN(item.quantity) || item.quantity < 1) {
@@ -117,6 +105,7 @@ const totalPrice = computed(() => {
         
         return total + (item.price * item.quantity); 
     }, 0);
+}
 });
 
 const calculateDiscount = () => {
@@ -214,7 +203,20 @@ const add = (item) => {
 
 const minus = (item) => {
     if(item.quantity == 1) {
-        SwalHandle.showErrorMsg("數量不得小於1")
+        SwalHandle.confirm(
+    '確認移除',
+    `您確定要把 ${item.productName} 從購物車中移除嗎？`,
+    '',
+    () => {
+        item.quantity = 1
+      // 執行刪除操作，例如：
+      axiosInstanceForInsertHeader.delete(`/cart/${item.id}`).then(() => {
+        getCart()
+    }).catch(() => {
+        SwalHandle.showErrorMsg("更新購物車失敗，請聯繫網站管理員")
+    })
+    }
+  );
     }else{
     item.quantity -= 1
     updateCart(item)
@@ -226,11 +228,7 @@ const updateCart = (item) => {
     if (item.quantity >= item.stocks) {
         item.quantity = item.stocks
     }
-
-    if (item.quantity <= 1) {
-        item.quantity = 1
-    }
-    axios.put(`/api/cart/${item.id}`, {
+        axiosInstanceForInsertHeader.put(`/cart/${item.id}`, {
         quantity : item.quantity
     }).then(() => {
         getCart()
@@ -262,7 +260,8 @@ onMounted(() => {
 
 
 <template>
-
+<div>
+    <div v-if="items.length != 0">
     <CartTopComponent1 />
 
     <!-- 購物車 -->
@@ -294,7 +293,7 @@ onMounted(() => {
            border-radius: 8px; 
            cursor: pointer; 
            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
-           transition: all 0.3s ease;" @click="minus(item)" :disabled="item.quantity <= 1">-</button>
+           transition: all 0.3s ease;" @click="minus(item)" :disabled="item.quantity <= 0">-</button>
                         <input type="number" min="1" v-model.number="item.quantity" class="quantityInput" @blur="updateCart(item)"/>
                         <button style="margin-left: 5px; background-color: rgba(166, 127, 120, 0.5);border: none; 
            padding: 5px 8px; 
@@ -388,6 +387,12 @@ onMounted(() => {
     </div>
 
     <MemberLevelModal ref="modalRef" />
+    </div>
+
+<div v-else>去逛逛商品吧</div>
+
+</div>
+
 
 </template>
 
