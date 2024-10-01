@@ -4,6 +4,7 @@ import axiosInstanceForInsertHeader from '@/axios/axiosInstanceForInsertHeader.j
 import PaginationComponent from '@/components/PaginationComponent.vue';
 import MemberModal from '@/components/MemberModal.vue';
 import { SwalHandle } from '@/stores/sweetAlertStore';
+import DashBoardNavBarMember from '@/components/DashBoardNavBarMember.vue';
 
 const memberModalRef = ref(null);
 const currentItem = ref(null);
@@ -90,6 +91,9 @@ onMounted(() => {
 </script>
 
 <template>
+
+  <DashBoardNavBarMember />
+
     <div class="pageContainer">
         <div class="contentContainer">
             <table class="contentTable">

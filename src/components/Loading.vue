@@ -33,7 +33,7 @@ const showNextImage = () => {
   interval = setTimeout(() => {
     currentImage.value = (currentImage.value + 1) % images.length;
     showNextImage();
-  }, 300);
+  }, 100);
 };
 
 // 停止輪播圖片

@@ -1,7 +1,6 @@
 <script setup>
 import { ref, onMounted, watch } from 'vue';
 import { useRoute } from 'vue-router';
-import DashBoardNavBar from '@/components/DashBoardNavBar.vue';
 import Loading from '@/components/Loading.vue';
 
 const isLoading = ref(true);
@@ -20,7 +19,7 @@ watch(
 const startLoading = () => {
   setTimeout(() => {
     isLoading.value = false;
-  }, 1200);
+  }, 600);
 };
 
 // 組件掛載時延遲取消加載
@@ -33,8 +32,6 @@ onMounted(() => {
 
     <div class="BG">
         <div class="wrapper">
-
-            <DashBoardNavBar />
             <div>
                 <Loading v-if="isLoading" />
                 <RouterView />
