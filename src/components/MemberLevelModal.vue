@@ -53,7 +53,8 @@ defineExpose({
 
 <style scoped>
 .modal{
-    margin-top: 25%
+    /* margin-top: 25%; */
+    top: 25%;
 }
 
 .modalHeader {
