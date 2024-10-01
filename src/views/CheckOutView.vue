@@ -218,7 +218,7 @@ onMounted(() => {
         <RouterLink to="Cart" class="continueBuyBtn">
             <button class="btn1">上一步</button>
         </RouterLink>
-        <RouterLink to="orderList" class="goToBuyBtn" v-if="paymentMethod == '門市付款'">
+        <RouterLink to="orderDetail" class="goToBuyBtn" v-if="paymentMethod == '門市付款'">
             <button class="btn2">提交訂單</button>
         </RouterLink>
         <RouterLink to="pay" class="goToBuyBtn" v-else>
