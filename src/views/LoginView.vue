@@ -5,14 +5,9 @@ import axios from 'axios';
 import Swal from 'sweetalert2';
 import { auth, provider } from '../firebase.js'
 import { signInWithPopup } from 'firebase/auth';
-
 import SetPasswordModal from '@/components/SetPasswordModal.vue';
 
 const modalRef = ref(null);
-import SetPasswordModal from '@/components/SetPasswordModal.vue';
-
-const modalRef = ref(null);
-
 const account = ref('');
 const password = ref('');
 const router = useRouter();
