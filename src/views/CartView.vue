@@ -1,10 +1,11 @@
 <script setup>
-import { ref, computed , watch, onMounted } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { useCartStore } from '@/stores/cartStore';
 import CartTopComponent1 from '@/components/CartTopComponent1.vue';
 import MemberLevelModal from '@/components/MemberLevelModal.vue';
 import { SwalHandle } from '@/stores/sweetAlertStore';
 import axios from 'axios';
+import { onMounted } from 'vue';
 import axiosInstanceForInsertHeader from "@/axios/axiosInstanceForInsertHeader.js";
 
 const cartStore = useCartStore()
@@ -31,8 +32,8 @@ const isDiscountCodeVisible = ref(false);
 const Generaldiscount = ref(0)
 const memberdiscount = ref(0);
 
-const bunnyquantity = ref(null);
-const maxBunnyQuantity = ref({});
+const bunnyquantity = ref(0);
+const maxBunnyQuantity = ref(0);
 
 const appliedBunnyQuantity = ref(0)
 
@@ -41,27 +42,27 @@ const accumulateSpent = ref(0)
 
 
 const getCart = () => {
-  axios.get(`/api/cart/${userId.value}`).then((res) => {
-    items.value = res.data
-    const data = res.data;
-    maxBunnyQuantity.value = data[0].bunnyCoin
-    memberlevel.value = data[0].userVip
-    accumulateSpent.value = data[0].accumulateSpent
+    axios.get(`/api/cart/${userId.value}`).then((res) => {
+        items.value = res.data
+        const data = res.data;
+        maxBunnyQuantity.value = data[0].bunnyCoin
+        memberlevel.value = data[0].userVip
+        accumulateSpent.value = data[0].accumulateSpent
 
-    if (accumulateSpent.value < 3000) {
-      levelUpPrice.value = 3000 - accumulateSpent.value
-      nextLevel.value = "金兔"
+        if (accumulateSpent.value < 3000) {
+        levelUpPrice.value = 3000 - accumulateSpent.value
+        nextLevel.value = "金兔"
     } else if (accumulateSpent.value < 6000) {
-      levelUpPrice.value = 6000 - accumulateSpent.value
-      nextLevel.value = "白金兔"
+        levelUpPrice.value = 6000 - accumulateSpent.value
+        nextLevel.value = "白金兔"
     } else if (accumulateSpent.value < 9000) {
-      levelUpPrice.value = 9000 - accumulateSpent.value
-      nextLevel.value = "鑽石兔"
+        levelUpPrice.value = 9000 - accumulateSpent.value
+        nextLevel.value = "鑽石兔"
     }
 
-  }).catch(() => {
-    SwalHandle.showErrorMsg('取得購物車失敗')
-  })
+    }).catch(() => {
+        SwalHandle.showErrorMsg('取得購物車失敗')
+    })
 }
 
 const deleteItem = (cartItem) => {
