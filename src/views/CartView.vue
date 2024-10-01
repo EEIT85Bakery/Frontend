@@ -16,8 +16,6 @@ const levelUpPrice = ref(0)
 const items = ref([])
 const modalRef = ref(null);
 
-const userId = ref({})
-
 const discountExp = "2024/11/30";
 
 // 折扣相關變數
@@ -38,6 +36,11 @@ const appliedBunnyQuantity = ref(0)
 
 const memberlevel = ref({})
 const accumulateSpent = ref(0)
+
+//點擊清空欄位
+const clearInput = (e) => {
+    e.target.value = ''
+}
 
 const getCart = () => {
     axiosInstanceForInsertHeader.get('/cart').then((res) => {
@@ -74,7 +77,7 @@ const deleteItem = (cartItem) => {
     '',
     () => {
       // 執行刪除操作，例如：
-      axios.delete(`/api/cart/${userId.value}/${cartItem.id}`).then((res) => { 
+      axiosInstanceForInsertHeader.delete(`/cart/${cartItem.id}`).then((res) => { 
       getCart()
     }).catch(() => {
         SwalHandle.showErrorMsg('刪除失敗，請聯繫網站管理員')
@@ -294,7 +297,7 @@ onMounted(() => {
            cursor: pointer; 
            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
            transition: all 0.3s ease;" @click="minus(item)" :disabled="item.quantity <= 0">-</button>
-                        <input type="number" min="1" v-model.number="item.quantity" class="quantityInput" @blur="updateCart(item)"/>
+                        <input type="number" min="1" v-model.number="item.quantity" class="quantityInput" @blur="updateCart(item)" @click="clearInput"/>
                         <button style="margin-left: 5px; background-color: rgba(166, 127, 120, 0.5);border: none; 
            padding: 5px 8px; 
            font-size: 16px; 
@@ -389,7 +392,12 @@ onMounted(() => {
     <MemberLevelModal ref="modalRef" />
     </div>
 
-<div v-else>去逛逛商品吧</div>
+<div v-else>
+    <RouterLink to="/">
+            <button>去逛逛商品吧</button>
+    </RouterLink>
+
+</div>
 
 </div>
 
