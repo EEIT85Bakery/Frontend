@@ -54,10 +54,27 @@ const loginWithGoogle = async () => {
     const user = result.user;
     console.log('User Info:', user);
 
-    // 這裡可以將用戶的 token 發送到你的後端進行驗證
+    // 拿到 Firebase ID Token
     const token = await user.getIdToken();
     console.log('Firebase ID Token:', token);
-    // 在這裡添加你的邏輯來處理 token
+
+    // 發送 ID Token 到後端進行驗證
+    const response = await axios.post('http://localhost:8080/api/auth', {
+      idToken: token
+    });
+
+    // 後端驗證成功後的回應
+    console.log('後端驗證成功:', response.data);
+
+    // 根據後端回傳的結果，處理前端邏輯 (例如將 token 存入狀態管理或跳轉頁面)
+    if (response.data.success) {
+      // 可以將後端回傳的用戶資料或 token 存入狀態管理或 localStorage
+      localStorage.setItem('backendUserToken', response.data.userToken);
+      console.log('用戶登入成功，跳轉到首頁');
+      window.location.href = '/home'; // 重定向到首頁
+    } else {
+      console.error('後端驗證失敗:', response.data.message);
+    }
   } catch (error) {
     console.error('Error during login:', error);
   }
