@@ -6,17 +6,30 @@ import { useCartStore } from '@/stores/cartStore';
 import { onMounted } from 'vue';
 import axiosInstanceForInsertHeader from '@/axios/axiosInstanceForInsertHeader';
 import { SwalHandle } from '@/stores/sweetAlertStore';
-import { format, parseISO } from 'date-fns';
+import { format, parse, isValid} from 'date-fns';
 
 const modalRef = ref(null);
 const cartStore = useCartStore();
 const memberInfo = ref({})
-const pickupTime = ref(new Date().toISOString().substring(0, 10))
 const paymentMethod = ref("門市付款")
+
+const pickupDate = ref('');
+const pickupTime = ref('');
+const combinedDateTime = computed(() => {
+      if (pickupDate.value && pickupTime.value) {
+        const dateTimeString = `${pickupDate.value}T${pickupTime.value}:00`;
+        const dateTime = parse(dateTimeString, "yyyy-MM-dd'T'HH:mm:ss", new Date());
+        if (isValid(dateTime)) {
+          return format(dateTime, "yyyy-MM-dd'T'HH:mm:ss");
+        }
+      }
+      return null;
+    });
+
 const submitOrders = () => {
         axiosInstanceForInsertHeader.post('/orders', {
         paymentMethod: paymentMethod.value,
-        pickupTime: formattedPickupDateTime.value,
+        pickupTime: combinedDateTime.value,
         paymentPrice: cartStore.paymentPrice,
         total: cartStore.total,
         couponName: cartStore.couponName,
@@ -28,22 +41,7 @@ const submitOrders = () => {
     })
 }
 
-const formattedDisplayDateTime = computed(() => {
-  if (pickupTime.value) {
-    const dateTime = parse(pickupTime.value, "yyyy-MM-dd HH:mm", new Date());
-    return format(dateTime, "yyyy年MM月dd日 HH:mm");
-  }
-  return '';
-});
 
-const formattedPickupDateTime = computed(() => {
-  if (pickupTime.value) {
-    // Parse the input value and format it to include seconds
-    const dateTime = parseISO(pickupTime.value);
-    return format(dateTime, "yyyy-MM-dd'T'HH:mm:ss");
-  }
-  return null;
-});
 
 // 用來觸發 modal 的打開方法
 function handleOpenModal() {
@@ -55,6 +53,8 @@ function handleOpenModal() {
 const getMemberInfo = () => {
     axiosInstanceForInsertHeader.get('/memberPage/getById').then((res) => { 
         memberInfo.value = res.data                
+        console.log(memberInfo.value);
+        
     }).catch(() => {
         alert('無法取得使用者資訊')
     })
@@ -214,8 +214,10 @@ onMounted(() => {
                     <form>
                         <div class="inputText">取貨方式</div>
                         <input type="text" name="pickupWay" placeholder="門市取貨" disabled class="infoInput">
+                        <div class="inputText">取貨日期</div>
+                        <input type="date" name="pickupDateTime" placeholder="請選擇取貨日期" class="infoInput" v-model="pickupDate">
                         <div class="inputText">取貨時間</div>
-                        <input type="datetime-local" name="pickupDate" placeholder="請選擇取貨日期" class="infoInput" v-model="pickupTime">
+                        <input type="time" v-model="pickupTime" class="infoInput">
                     </form>
                 </div>
             </div>
