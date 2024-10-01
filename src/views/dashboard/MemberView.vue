@@ -8,13 +8,26 @@ import { SwalHandle } from '@/stores/sweetAlertStore';
 const memberModalRef = ref(null);
 const currentItem = ref(null);
 const members = ref([]); // 用來存放從後端取得的會員資料
-const currentPage = ref(0); // 當前頁數
+const currentPage = ref(1); // 當前頁數，初始化為1
 const pageSize = ref(10); // 每頁顯示多少筆
 const totalPages = ref(0); // 總頁數
 
+// 格式化日期
+const formatDate = (dateArray) => {
+  if (!Array.isArray(dateArray) || dateArray.length !== 3) {
+    console.warn('Invalid date format:', dateArray);
+    return '';
+  }
+  const [year, month, day] = dateArray;
+  const formattedMonth = String(month).padStart(2, '0');
+  const formattedDay = String(day).padStart(2, '0');
+  return `${year}/${formattedMonth}/${formattedDay}`;
+};
+
 // 打開新增 modal
 const openMemberModal = () => {
-  currentItem.value = null; // 清空當前選中的會員資料，表示新增
+  currentItem.value = null;
+  console.log('Opening modal for new member creation');
   if (memberModalRef.value) {
     memberModalRef.value.openModal();
   }
@@ -22,6 +35,7 @@ const openMemberModal = () => {
 
 // 從後端抓取會員資料
 const fetchMembers = (page = 1, size = 10) => {
+  console.log(`Fetching members for page: ${page}, size: ${size}`);
   axiosInstanceForInsertHeader
     .get(`/admin/members`, {
       params: {
@@ -31,9 +45,10 @@ const fetchMembers = (page = 1, size = 10) => {
     })
     .then((response) => {
       const data = response.data;
-      members.value = data.content; // 將會員資料存入 members
-      totalPages.value = data.totalPages; // 設定總頁數
-      currentPage.value = page; // 設定當前頁數
+      console.log('Fetched members data:', data);
+      members.value = data.content;
+      totalPages.value = data.totalPages;
+      currentPage.value = page; // 更新當前頁數
     })
     .catch((error) => {
       console.error('Error fetching members:', error);
@@ -42,26 +57,32 @@ const fetchMembers = (page = 1, size = 10) => {
 
 // 刪除會員
 const deleteMember = (member) => {
+  console.log(`Attempting to delete member: ${member.name} (ID: ${member.id})`);
   SwalHandle.confirm(
     '確認刪除',
     `您確定要刪除 ${member.name} 嗎？`,
     '刪除成功！',
     () => {
-      // 使用 member.id 來進行刪除操作
       axiosInstanceForInsertHeader
         .delete(`/admin/members/${member.id}`)
         .then(() => {
+          console.log(`Successfully deleted member: ${member.name}`);
           SwalHandle.showSuccessMsg(`成功刪除 ${member.name}`);
           fetchMembers(currentPage.value, pageSize.value); // 刪除成功後重新抓取資料
         })
         .catch((error) => {
-          console.error('Error deleting member:', error);
+          console.error(`Error deleting member ${member.name}:`, error);
         });
     }
   );
 };
 
-// 當組件掛載時，抓取初始的會員資料
+// 頁數變更時觸發
+const handlePageChange = (newPage) => {
+  fetchMembers(newPage); // 根據新頁碼抓取數據
+};
+
+// 組件初始化時抓取資料
 onMounted(() => {
   fetchMembers();
 });
@@ -88,18 +109,18 @@ onMounted(() => {
                     <tr v-for="(member, index) in members" :key="index">
                         <td>{{ member.name }}</td>
                         <td>{{ member.gender }}</td>
-                        <td>{{ member.tel }}</td>
+                        <td>{{ member.phone }}</td>
                         <td>{{ member.email }}</td>
-                        <td>{{ member.birthday }}</td>
-                        <td>{{ member.level }}</td>
+                        <td>{{ formatDate(member.birthday) }}</td>
+                        <td>{{ member.userVip }}</td>
                         <td><i class="bi bi-pencil-square" style="color: darkgrey;" @click="openMemberModal(member)"></i></td>
-                        <!-- 刪除按鈕傳遞完整的 member 對象 -->
                         <td><i class="bi bi-trash3" style="color: darkred;" @click="deleteMember(member)"></i></td>
                     </tr>
                 </tbody>
             </table>
 
-            <PaginationComponent :totalPages="totalPages" :currentPage="currentPage" @pageChange="fetchMembers" />
+            <!-- 確保將 pageChange 事件綁定至 handlePageChange -->
+            <PaginationComponent :totalPages="totalPages" :currentPage="currentPage" @pageChange="handlePageChange" />
         </div>
 
         <MemberModal ref="memberModalRef" :product="currentItem" />

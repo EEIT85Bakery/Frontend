@@ -1,28 +1,46 @@
-<script setup>
-
+<script>
+export default {
+  props: {
+    currentPage: {
+      type: Number,
+      required: true,
+    },
+    totalPages: {
+      type: Number,
+      required: true,
+    },
+  },
+  methods: {
+    changePage(page) {
+      if (page >= 1 && page <= this.totalPages) {
+        this.$emit('pageChange', page); // 發送頁數變更事件
+      }
+    },
+  },
+};
 </script>
 
 <template>
-
-<nav aria-label="Page navigation" class="navigation">
-  <ul class="pagination">
-    <li class="page-item">
-      <a class="page-link" href="#" aria-label="Previous">
-        <span aria-hidden="true">&laquo;</span>
-      </a>
-    </li>
-    <li class="page-item"><a class="page-link" href="#">1</a></li>
-    <li class="page-item"><a class="page-link" href="#">2</a></li>
-    <li class="page-item"><a class="page-link" href="#">3</a></li>
-    <li class="page-item">
-      <a class="page-link" href="#" aria-label="Next">
-        <span aria-hidden="true">&raquo;</span>
-      </a>
-    </li>
-  </ul>
-</nav>
-
+  <nav aria-label="Page navigation" class="navigation">
+    <ul class="pagination">
+      <li class="page-item" :class="{ disabled: currentPage <= 1 }">
+        <a class="page-link" href="#" aria-label="Previous" @click.prevent="changePage(currentPage - 1)">
+          <span aria-hidden="true">&laquo;</span>
+        </a>
+      </li>
+      <li v-for="page in totalPages" :key="page" class="page-item" :class="{ active: page === currentPage }">
+        <a class="page-link" href="#" @click.prevent="changePage(page)">{{ page }}</a>
+      </li>
+      <li class="page-item" :class="{ disabled: currentPage >= totalPages }">
+        <a class="page-link" href="#" aria-label="Next" @click.prevent="changePage(currentPage + 1)">
+          <span aria-hidden="true">&raquo;</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
 </template>
+
+
 
 <style scoped>
 
