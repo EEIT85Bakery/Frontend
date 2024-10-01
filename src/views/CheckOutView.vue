@@ -4,10 +4,14 @@ import CartTopComponent2 from '@/components/CartTopComponent2.vue';
 import MemberLevelModal from '@/components/MemberLevelModal.vue';
 import { useCartStore } from '@/stores/cartStore';
 import { onMounted } from 'vue';
+import axiosInstanceForInsertHeader from '@/axios/axiosInstanceForInsertHeader';
 
 const modalRef = ref(null);
 const cartStore = useCartStore()
 const finalTotalFromPinia = computed(() => cartStore.finalTotal);
+const memberInfo = ref({})
+const pickupTime = ref(new Date().toISOString().substring(0, 10))
+const paymentMethod = ref("門市付款")
 
 // 用來觸發 modal 的打開方法
 function handleOpenModal() {
@@ -16,6 +20,13 @@ function handleOpenModal() {
   }
 }
 
+const getMemberInfo = () => {
+    axiosInstanceForInsertHeader.get('/memberPage/getById').then((res) => { 
+        memberInfo.value = res.data
+        console.log(memberInfo.value);
+                
+    })
+}
 
 const productimg = { imageUrl: '../../public/imgZip/Sample/cake1.jpg' };
 const productname = "雙重莓果饗宴蛋糕";
@@ -84,6 +95,7 @@ const topStyle = computed(() => ({
 
 onMounted(() => {
     console.log(finalTotalFromPinia.value);
+    getMemberInfo()
     
 })
 
@@ -162,11 +174,11 @@ onMounted(() => {
                 <div class="InfoContainer bg-white">
                     <form>
                         <div class="inputText">顧客姓名</div>
-                        <input type="text" name="customerName" placeholder="直接帶入會員姓名" disabled class="infoInput">  
+                        <input type="text" name="customerName" placeholder="直接帶入會員姓名" disabled class="infoInput" v-model="memberInfo.name">  
                         <div class="inputText">電子信箱</div>
-                        <input type="email" name="mail" placeholder="直接帶入會員信箱" disabled class="infoInput">
+                        <input type="email" name="mail" placeholder="直接帶入會員信箱" disabled class="infoInput" v-model="memberInfo.email">
                         <div class="inputText">電話號碼</div>
-                        <input type="tel" name="mail" placeholder="直接帶入會員電話" disabled class="infoInput">
+                        <input type="tel" name="mail" placeholder="直接帶入會員電話" disabled class="infoInput" v-model="memberInfo.phone">
                     </form>
                 </div>
 
@@ -180,7 +192,7 @@ onMounted(() => {
                         <div class="inputText">取貨方式</div>
                         <input type="text" name="pickupWay" placeholder="門市取貨" disabled class="infoInput">
                         <div class="inputText">取貨日期</div>
-                        <input type="date" name="pickupDate" placeholder="請選擇取貨日期" class="infoInput">
+                        <input type="date" name="pickupDate" placeholder="請選擇取貨日期" class="infoInput" v-model="pickupTime">
                     </form>
                 </div>
             </div>
@@ -189,9 +201,9 @@ onMounted(() => {
                 <div class="InfoContainer bg-white">
                     <form>
                         <div class="inputText">付款方式</div>
-                        <select name="payment" class="payWay infoInput" >
-                            <option value="cash">門市付款</option>
-                            <option value="creditCard">信用卡付款</option>
+                        <select name="payment" class="payWay infoInput" v-model="paymentMethod">
+                            <option value="門市付款">門市付款</option>
+                            <option value="信用卡付款">信用卡付款</option>
                         </select>
                     </form>
                 </div>
@@ -206,7 +218,10 @@ onMounted(() => {
         <RouterLink to="Cart" class="continueBuyBtn">
             <button class="btn1">上一步</button>
         </RouterLink>
-        <RouterLink to="pay" class="goToBuyBtn">
+        <RouterLink to="orderList" class="goToBuyBtn" v-if="paymentMethod == '門市付款'">
+            <button class="btn2">提交訂單</button>
+        </RouterLink>
+        <RouterLink to="pay" class="goToBuyBtn" v-else>
             <button class="btn2">提交訂單</button>
         </RouterLink>
     </div>
