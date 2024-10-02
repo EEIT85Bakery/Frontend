@@ -1,5 +1,19 @@
 <script setup>
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 
+const searchInput = ref('');
+const router = useRouter();
+
+const searchMember = () => {
+  if (searchInput.value) {
+    // 使用 router.push 將電話號碼作為查詢參數傳遞
+    router.push({ name: '會員管理頁面', query: { phone: searchInput.value } });
+  } else {
+    // 如果搜尋框為空，則移除查詢參數
+    router.push({ name: '會員管理頁面' });
+  }
+};
 </script>
 
 <template>
@@ -47,17 +61,17 @@
 
                 <div class="navbarIconContainer d-flex ms-auto">
                     <div class="nabarSearchContainer">
-                        <form class="d-flex" role="search">
-                            <input class="navbarSearchInput" type="search" placeholder="搜尋會員">
-                            <button class="btn" type="submit">
-                                <i class="navbarIcon navbarSearchIcon bi bi-search"></i>
-                            </button>
+                        <form class="d-flex" role="search" @submit.prevent="searchMember">
+                        <input v-model="searchInput" class="navbarSearchInput" placeholder="搜尋會員">
+                        <button class="btn" type="submit">
+                            <i class="navbarIcon navbarSearchIcon bi bi-search"></i>
+                        </button>
                         </form>
                     </div>
-                    <RouterLink to="/">
-                        <i class="navbarIcon bi bi-box-arrow-right"></i>
-                    </RouterLink>
-                </div>
+      <RouterLink to="/">
+        <i class="navbarIcon bi bi-box-arrow-right"></i>
+      </RouterLink>
+    </div>
 
             </div>
 

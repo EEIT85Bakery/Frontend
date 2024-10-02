@@ -1,6 +1,8 @@
+<!-- MemberView.vue -->
 <script setup>
-import { ref, onMounted } from 'vue';
-import axiosInstanceForInsertHeader from '@/axios/axiosInstanceForInsertHeader.js'; // 使用自定義的 axios 實例
+import { ref, onMounted, watch } from 'vue';
+import { useRoute } from 'vue-router';
+import axiosInstanceForInsertHeader from '@/axios/axiosInstanceForInsertHeader.js';
 import PaginationComponent from '@/components/PaginationComponent.vue';
 import MemberModal from '@/components/MemberModal.vue';
 import { SwalHandle } from '@/stores/sweetAlertStore';
@@ -12,6 +14,48 @@ const members = ref([]); // 用來存放從後端取得的會員資料
 const currentPage = ref(1); // 當前頁數，初始化為1
 const pageSize = ref(10); // 每頁顯示多少筆
 const totalPages = ref(0); // 總頁數
+const route = useRoute(); // 使用 useRoute 來獲取當前路由資訊
+const noResults = ref(false);  // 標記是否沒有搜尋結果
+
+
+// 從後端抓取會員資料，根據電話號碼進行查詢
+const fetchMembers = (page = 1, size = 10, phone = '') => {
+  const params = { page, size };
+  if (phone) {
+    params.userPhone = phone; // 如果有查詢電話號碼，則帶入查詢參數
+  }
+
+  console.log(`Fetching members with params:`, params); // Debug
+
+  axiosInstanceForInsertHeader
+    .get(`/admin/members`, { params })
+    .then((response) => {
+      const data = response.data;
+      console.log('Fetched members data:', data);
+      members.value = data.content;
+      totalPages.value = data.totalPages;
+      currentPage.value = page; // 更新當前頁數
+      noResults.value = members.value.length === 0;  // 檢查是否有搜尋結果
+    })
+    .catch((error) => {
+      console.error('Error fetching members:', error);
+      noResults.value = true;  // 發生錯誤時也視為無結果
+    });
+};
+
+// 監聽路由查詢參數(電話號碼)變化
+watch(
+  () => route.query.phone,
+  (newPhone) => {
+    if (newPhone) {
+      fetchMembers(1, pageSize.value, newPhone);
+    } else {
+      fetchMembers(currentPage.value, pageSize.value); // 沒有查詢電話時抓取所有資料
+    }
+  },
+  { immediate: true }
+);
+
 
 // 格式化日期
 const formatDate = (dateArray) => {
@@ -25,7 +69,7 @@ const formatDate = (dateArray) => {
   return `${year}/${formattedMonth}/${formattedDay}`;
 };
 
-// 打開修改會員等級的 modal
+// 打開修改會員等級 modal
 const openMemberModal = (member) => {
   currentItem.value = member; // 確保這裡是傳入了正確的會員數據
   console.log('Opening modal for editing member:', member);
@@ -34,7 +78,6 @@ const openMemberModal = (member) => {
   }
 };
 
-// 新增: 創建 levels 數組和 levelMap
 const levels = [
   { value: 'level1', label: '白兔會員' },
   { value: 'level2', label: '金兔會員' },
@@ -47,39 +90,16 @@ const levelMap = levels.reduce((acc, level) => {
   return acc;
 }, {});
 
-// 新增: 用於接收更新後的會員資料
+// 用於接收更新後的會員資料
 const handleMemberUpdated = (updatedMember) => {
   const index = members.value.findIndex(member => member.id === updatedMember.id);
   if (index !== -1) {
-    members.value[index] = updatedMember; // 更新會員資料
+    members.value[index] = updatedMember;
   }
-};
-
-// 從後端抓取會員資料
-const fetchMembers = (page = 1, size = 10) => {
-  console.log(`Fetching members for page: ${page}, size: ${size}`);
-  axiosInstanceForInsertHeader
-    .get(`/admin/members`, {
-      params: {
-        page: page,
-        size: size,
-      },
-    })
-    .then((response) => {
-      const data = response.data;
-      console.log('Fetched members data:', data);
-      members.value = data.content;
-      totalPages.value = data.totalPages;
-      currentPage.value = page; // 更新當前頁數
-    })
-    .catch((error) => {
-      console.error('Error fetching members:', error);
-    });
 };
 
 // 刪除會員
 const deleteMember = (member) => {
-  console.log(`Attempting to delete member: ${member.name} (ID: ${member.id})`);
   SwalHandle.confirm(
     '確認刪除',
     `您確定要刪除 ${member.name} 嗎？`,
@@ -88,7 +108,6 @@ const deleteMember = (member) => {
       axiosInstanceForInsertHeader
         .delete(`/admin/members/${member.id}`)
         .then(() => {
-          console.log(`Successfully deleted member: ${member.name}`);
           SwalHandle.showSuccessMsg(`成功刪除 ${member.name}`);
           fetchMembers(currentPage.value, pageSize.value); // 刪除成功後重新抓取資料
         })
@@ -101,55 +120,56 @@ const deleteMember = (member) => {
 
 // 頁數變更時觸發
 const handlePageChange = (newPage) => {
-  fetchMembers(newPage); // 根據新頁碼抓取數據
+  fetchMembers(newPage, pageSize.value, route.query.phone || '');
 };
 
 // 組件初始化時抓取資料
 onMounted(() => {
   fetchMembers();
 });
-
 </script>
 
 <template>
-
   <DashBoardNavBarMember />
 
-    <div class="pageContainer">
-        <div class="contentContainer">
-            <table class="contentTable">
-                <thead>
-                    <tr class="content">
-                        <th>會員姓名</th>
-                        <th>性別</th>
-                        <th>電話號碼</th>
-                        <th>電子信箱</th>
-                        <th>生日</th>
-                        <th>會員等級</th>
-                        <th>編輯</th>
-                        <th>刪除</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="(member, index) in members" :key="index">
-                        <td>{{ member.name }}</td>
-                        <td>{{ member.gender }}</td>
-                        <td>{{ member.phone }}</td>
-                        <td>{{ member.email }}</td>
-                        <td>{{ formatDate(member.birthday) }}</td>
-                        <td>{{ levelMap[member.userVip] || member.userVip }}</td>
-                        <td><i class="bi bi-pencil-square" style="color: darkgrey;" @click="openMemberModal(member)"></i></td>
-                        <td><i class="bi bi-trash3" style="color: darkred;" @click="deleteMember(member)"></i></td>
-                    </tr>
-                </tbody>
-            </table>
+  <div class="pageContainer">
+    <div class="contentContainer">
+      <div v-if="noResults" class="no-results">
+        查無此人，請確認電話號碼是否正確。
+      </div>
+      <table class="contentTable">
+        <thead>
+          <tr class="content">
+            <th>會員姓名</th>
+            <th>性別</th>
+            <th>電話號碼</th>
+            <th>電子信箱</th>
+            <th>生日</th>
+            <th>會員等級</th>
+            <th>編輯</th>
+            <th>刪除</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(member, index) in members" :key="index">
+            <td>{{ member.name }}</td>
+            <td>{{ member.gender }}</td>
+            <td>{{ member.phone }}</td>
+            <td>{{ member.email }}</td>
+            <td>{{ formatDate(member.birthday) }}</td>
+            <td>{{ levelMap[member.userVip] || member.userVip }}</td>
+            <td><i class="bi bi-pencil-square" style="color: darkgrey;" @click="openMemberModal(member)"></i></td>
+            <td><i class="bi bi-trash3" style="color: darkred;" @click="deleteMember(member)"></i></td>
+          </tr>
+        </tbody>
+      </table>
 
-            <!-- 確保將 pageChange 事件綁定至 handlePageChange -->
-            <PaginationComponent :totalPages="totalPages" :currentPage="currentPage" @pageChange="handlePageChange" />
-        </div>
-
-        <MemberModal ref="memberModalRef" :member="currentItem" @updatedMember="handleMemberUpdated" />
+      <!-- 確保將 pageChange 事件綁定至 handlePageChange -->
+      <PaginationComponent :totalPages="totalPages" :currentPage="currentPage" @pageChange="handlePageChange" />
     </div>
+
+    <MemberModal ref="memberModalRef" :member="currentItem" @updatedMember="handleMemberUpdated" />
+  </div>
 </template>
 
 

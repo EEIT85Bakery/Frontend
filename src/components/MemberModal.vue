@@ -65,12 +65,6 @@ watch(
 // 新增: 定義 memberUpdated 事件
 const emit = defineEmits(['memberUpdated']);
 
-// 新增: 創建 levelMap 用於轉換 value 到 label
-const levelMap = levels.reduce((acc, level) => {
-  acc[level.value] = level.label;
-  return acc;
-}, {});
-
 // 表單提交的函數，用於更新會員等級
 const submitForm = async () => {
   if (!props.member || !props.member.id) {
@@ -88,7 +82,8 @@ const submitForm = async () => {
     if (response.status === 200) {
       SwalHandle.showSuccessMsg('會員等級變更成功');
       hideModal();
-      emit('memberUpdated', { ...props.member, userVip: formData.value.level }); 
+      emit('memberUpdated', { ...props.member, userVip: formData.value.level });
+      
       
     } else {
       SwalHandle.showErrorMsg('更新失敗');
