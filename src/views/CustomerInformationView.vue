@@ -1,61 +1,126 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { SwalHandle } from '@/stores/sweetAlertStore';
 import Loading from '@/components/Loading.vue';
 import SetPasswordModal from '@/components/SetPasswordModal.vue';
+import axiosInstanceForInsertHeader from "@/axios/axiosInstanceForInsertHeader.js";
 
 const modalRef = ref(null);
-
 const isLoading = ref(false);
 const router = useRouter();
 
-// 用來觸發 modal 的打開方法
-function handleOpenModal() {
-  if (modalRef.value) {
-    modalRef.value.openModal(); // 調用 modal 的 openModal 方法
-  }
-}
+// 會員資料
+const memberData = ref({
+  id: null, // 確保會員 ID 被初始化
+  name: '',
+  gender: '',
+  birthday: '',
+  phone: '',
+  email: '' // 假設此為信箱，原始值不應修改
+});
 
-// 按下按鈕後的處理邏輯
-const startProcess = () => {
-    isLoading.value = true;
+// 獲取會員資料
+const fetchMemberData = () => {
+  axiosInstanceForInsertHeader
+    .get('/memberPage')
+    .then((response) => {
+      // 確保從後端返回的資料正確賦值到 memberData
+      memberData.value = response.data;
 
-    // 處理過程
-    setTimeout(() => {
-        isLoading.value = false;
-        // 處理完成後跳轉
-        router.push('/');
-    }, 2100); // 改成實際處理時間
+      // 檢查是否有 ID，並確保 ID 被賦值
+      if (!memberData.value.id) {
+        console.error('會員 ID 未定義'); // 提示錯誤
+        SwalHandle.showErrorMsg('獲取會員資料失敗，ID 未定義');
+        return;
+      }
+
+      // 確保生日格式正確
+      if (memberData.value.birthday) {
+        memberData.value.birthday = formatDate(memberData.value.birthday); // 使用格式化函數
+      }
+    })
+    .catch((error) => {
+      console.error('Error fetching member data:', error);
+      SwalHandle.showErrorMsg('獲取會員資料失敗，請重試');
+    });
 };
 
-const showSuccess = () => {
-  SwalHandle.showSuccessMsg('變更成功！');
+// 格式化日期為 YYYY-MM-DD
+const formatDate = (dateString) => {
+  const date = new Date(dateString);
+
+  // 確保輸出為 yyyy-MM-dd 格式
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0'); // 確保月是兩位數
+  const day = String(date.getDate()).padStart(2, '0'); // 確保日是兩位數
+  return `${year}-${month}-${day}`;
 };
 
-const showError = () => {
-  SwalHandle.showErrorMsg('變更已取消');
+
+
+// 更新會員資料
+const updateMemberData = () => {
+  isLoading.value = true;
+
+  const updatedData = {
+    name: memberData.value.name,
+    gender: memberData.value.gender,
+    birthday: memberData.value.birthday,
+    phone: memberData.value.phone,
+    // 信箱不包含在內，保持原始值
+  };
+
+  axiosInstanceForInsertHeader
+    .put('/memberPage/update', updatedData) // 更新為正確的 API 路徑
+    .then(() => {
+      SwalHandle.showSuccessMsg('會員資料更新成功！');
+    })
+    .catch((error) => {
+      console.error('Error updating member data:', error);
+      SwalHandle.showErrorMsg('更新失敗，請重試。');
+    })
+    .finally(() => {
+      isLoading.value = false;
+    });
 };
 
+// 刪除會員
+const deleteMember = () => {
+  SwalHandle.confirm(
+    '確認刪除',
+    '您確定要刪除帳號嗎？',
+    '刪除成功！',
+    () => {
+      isLoading.value = true;
+      const userId = memberData.value.id; // 獲取會員 ID
+      if (!userId) {
+        console.error('會員 ID 未定義');
+        SwalHandle.showErrorMsg('刪除失敗，會員 ID 不存在。');
+        return;
+      }
 
-const deleteItem = () => {
-    SwalHandle.confirm(
-        '確認刪除',
-        `您確定要刪除帳號嗎？`,
-        '刪除成功！',
-        () => {
-            SwalHandle.showSuccessMsg('成功刪除帳號')
-
-            // 使用 setTimeout 模擬延遲
-            setTimeout(() => {
-                // 延遲 2 秒後啟動 Loading 並執行跳轉
-                startProcess();
-            }, 2000); // 等待 2 秒
-
+      axiosInstanceForInsertHeader
+        .delete(`/api/memberPage/${userId}`) // 使用正確的會員 ID 發送刪除請求
+        .then(() => {
+          SwalHandle.showSuccessMsg('成功刪除帳號');
+          router.push('/'); // 刪除成功後回到首頁
+        })
+        .catch((error) => {
+          console.error('Error deleting member:', error);
+          SwalHandle.showErrorMsg('刪除失敗，請重試。');
+        })
+        .finally(() => {
+          isLoading.value = false;
         });
-}
+    }
+  );
+};
 
-
+// 組件初始化後獲取會員資料
+onMounted(() => {
+  fetchMemberData();
+});
 
 </script>
 
@@ -96,43 +161,41 @@ const deleteItem = () => {
                 <div class="insideContentContainer">
                     <div class="leftSide">
                         <div class="inputText">姓名</div>
-                        <input type="text" class="inputContent" />
+                        <input type="text" class="inputContent" v-model="memberData.name" />
                         <div class="inputText">性別</div>
-                        <select name="gender" class="inputContent">
+                        <select v-model="memberData.gender" class="inputContent">
                             <option value=""></option>
                             <option value="man">男</option>
                             <option value="woman">女</option>
                         </select>
                         <div class="inputText">生日</div>
-                        <input type="date" class="inputContent">
+                        <input type="date" class="inputContent" v-model="memberData.birthday">
                     </div>
                     <div class="rightSide">
                         <div class="inputText">手機號碼</div>
-                        <input type="tel" class="inputContent" />
+                        <input type="tel" class="inputContent" v-model="memberData.phone" />
                         <div class="inputText">電子信箱</div>
-                        <input type="email" disabled class="inputContent" placeholder="BunnySugar@service.com">
-
+                        <input type="email" class="inputContent" v-model="memberData.email" disabled placeholder="BunnySugar@service.com">
                         <div class="inputText">帳戶管理</div>
                         <div class="innerText" @click="handleOpenModal">
-                            <u style="color: rgba(50, 67, 95, 1); cursor: pointer;">設定新的密碼</u>
+                            <RouterLink style="color: rgba(50, 67, 95, 1);">設定新密碼</RouterLink>
                         </div>
-                        <div class="innerText" @click="deleteItem">
-                            <RouterLink style="color: rgba(50, 67, 95, 1);">刪除帳號</RouterLink>
+                        <div class="innerText" @click="deleteMember">
+                            <div @click="deleteMember" style="color: rgba(50, 67, 95, 1); cursor: pointer;">刪除帳號</div>                        </div>
                         </div>
                     </div>
-                </div>
                 <hr />
                 <div class="btns">
                     <button class="btnLeft" @click="showError">取消</button>
-                    <button class="btnRight" @click="showSuccess">儲存變更</button>
+                    <button class="btnRight" @click="updateMemberData">儲存變更</button>
                 </div>
             </div>
         </div>
     </div>
     <Loading v-if="isLoading" />
     <SetPasswordModal ref="modalRef" />
-
 </template>
+
 
 <style scoped>
 .outsideContainer {
