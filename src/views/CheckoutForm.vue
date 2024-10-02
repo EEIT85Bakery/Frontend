@@ -1,22 +1,28 @@
 <script setup>
-import axios from 'axios';
+import axiosInstanceForInsertHeader from '@/axios/axiosInstanceForInsertHeader';
+import { useCartStore } from '@/stores/cartStore';
 import { onMounted } from 'vue';
 import { ref, watch } from 'vue'; 
 
+
 const checkoutForm = ref({})
-const sendCheckoutForm = ref({})
+const sendCheckoutForm  = ref({})
 const merchantTradeNo = ref({})
 const isSubmitted = ref(false)
+const cartStore = useCartStore()
 
 
 const once = () => {
 
     if (!isSubmitted.value) {
-        axios.post('/ecpayCheckout', {
-            total: 85,
-
-
+        console.log(cartStore.paymentPrice);
+        console.log(cartStore.merchantNo);
+        
+        axiosInstanceForInsertHeader.post('/ecpayCheckout', {            
+            total: cartStore.paymentPrice,
+            merchantNo: cartStore.merchantNo,
         }).then((res) => {
+                        
             checkoutForm.value = res.data;
             const parser = new DOMParser();
             const doc = parser.parseFromString(checkoutForm.value, 'text/html');
@@ -24,8 +30,12 @@ const once = () => {
             if (merchantTradeNoElement) {
                 merchantTradeNo.value = merchantTradeNoElement.value;
             }
-            return axios.post(`/products`, { merchantTradeNo: merchantTradeNo.value });
-        }).then(() => {
+            // return axiosInstanceForInsertHeader.post(`/products`, { merchantTradeNo: merchantTradeNo.value });
+        }).catch((err) => {
+            console.log(err);
+            
+        })
+        .then(() => {
             sendCheckoutForm.value = checkoutForm.value;
             isSubmitted.value = true; // 設定已提交
         }).catch((err) => {
@@ -35,7 +45,7 @@ const once = () => {
 }
 
 onMounted(() => {
-    once();
+    once();    
 });
    
  

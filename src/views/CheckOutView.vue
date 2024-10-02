@@ -7,6 +7,7 @@ import { onMounted } from 'vue';
 import axiosInstanceForInsertHeader from '@/axios/axiosInstanceForInsertHeader';
 import { SwalHandle } from '@/stores/sweetAlertStore';
 import { format, parse, isValid} from 'date-fns';
+import router from '@/router';
 
 const modalRef = ref(null);
 const cartStore = useCartStore();
@@ -15,6 +16,9 @@ const paymentMethod = ref("門市付款")
 
 const pickupDate = ref('');
 const pickupTime = ref('');
+
+
+
 const combinedDateTime = computed(() => {
       if (pickupDate.value && pickupTime.value) {
         const dateTimeString = `${pickupDate.value}T${pickupTime.value}:00`;
@@ -27,15 +31,28 @@ const combinedDateTime = computed(() => {
     });
 
 const submitOrders = () => {
+    const randomOrderId = () => {
+  return Math.random().toString(36).substring(2, 10).toUpperCase();
+};
+        cartStore.merchantNo = randomOrderId()
+        console.log(cartStore.merchantNo);
+        
         axiosInstanceForInsertHeader.post('/orders', {
         paymentMethod: paymentMethod.value,
         pickupTime: combinedDateTime.value,
         paymentPrice: cartStore.paymentPrice,
         total: cartStore.total,
         couponName: cartStore.couponName,
-        usedBunnyCoins: cartStore.usedBunnyCoins
+        usedBunnyCoins: cartStore.usedBunnyCoins,
+        merchantNo: cartStore.merchantNo
     }).then(() => { 
-        SwalHandle.showSuccessMsg("成功新增訂單")
+        if (paymentMethod.value == "門市付款") {
+            SwalHandle.showSuccessMsg("訂單已成立")
+            router.push("/orderDetail")
+            }else if (paymentMethod.value == "信用卡付款") {
+                router.push("/pay")
+                SwalHandle.showSuccessMsg("已建立訂單，可以去結帳囉！")
+            }
     }).catch(() => {
         SwalHandle.showErrorMsg("新增訂單異常，請聯繫網站管理員")
     })
@@ -202,7 +219,7 @@ onMounted(() => {
                         <input type="tel" name="mail" placeholder="直接帶入會員電話" disabled class="infoInput" v-model="memberInfo.phone">
                     </form>
                 </div>
-
+                <RouterLink to="/testPay" style="position: absolute;">123</RouterLink>
             </div>
         </div>
         <div class="pickupAndCreditInfo">
@@ -241,12 +258,12 @@ onMounted(() => {
         <RouterLink to="Cart" class="continueBuyBtn">
             <button class="btn1">上一步</button>
         </RouterLink>
-        <RouterLink to="orderDetail" class="goToBuyBtn" v-if="paymentMethod == '門市付款'">
+        <div  class="goToBuyBtn" v-if="paymentMethod == '門市付款'">
             <button class="btn2" @click="submitOrders">提交訂單</button>
-        </RouterLink>
-        <RouterLink to="pay" class="goToBuyBtn" v-else>
-            <button class="btn2" @click="submitOrders">提交訂單</button>
-        </RouterLink>
+        </div>
+        <div to="pay" class="goToBuyBtn" v-else-if="paymentMethod == '信用卡付款'">
+            <button class="btn2" @click="submitOrders">去結帳</button>
+        </div>
     </div>
 
     <MemberLevelModal ref="modalRef" />

@@ -110,6 +110,11 @@ const routes = [
         path: '/pay',
         name: '付款頁面',
         component: () => import('../views/CheckoutForm.vue')
+      },
+      {
+        path: '/testPay',
+        name: '測試處理付款頁面',
+        component: () => import('../views/TestPay.vue')
       }
       
     ]

@@ -7,14 +7,15 @@ export const useCartStore = defineStore('cartStore', () => {
   const paymentPrice = ref(0)
   const couponName = ref("")
   const usedBunnyCoins = ref(0)
-
+  const merchantNo = ref("")
  
   return {
     carts,
     total,
     paymentPrice,
     couponName,
-    usedBunnyCoins
+    usedBunnyCoins,
+    merchantNo
   }
 })
 
