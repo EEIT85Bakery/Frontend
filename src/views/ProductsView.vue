@@ -2,6 +2,7 @@
 import { onMounted, ref, watch } from 'vue';
 import axios from 'axios';
 import Loading from '@/components/Loading.vue';
+import PaginationComponent from '@/components/PaginationComponent.vue';
 
 const isLoading = ref(true);
 const products = ref([]);
@@ -9,22 +10,23 @@ const categories = ref([]);
 const categoryFlavors = ref({});
 const field = ref("全部商品");
 const rank = ref("由新到舊");
-
-// 新增：當前選中的種類和風味
 const selectedCategory = ref(null);
 const selectedFlavor = ref(null);
+const currentPage = ref(0);
+const pageSize = ref(10); // 每頁顯示9個產品
+const totalPages = ref(0);
+
 
 onMounted(async () => {
   try {
-    const [productsRes, categoriesRes] = await Promise.all([
-      axios.get('/api/products'),
+    const [categoriesRes] = await Promise.all([
       axios.get('/api/products/categories')
     ]);
     
-    products.value = productsRes.data;
     categories.value = categoriesRes.data;
     
     await fetchAllFlavors();
+    await fetchProducts(); // 使用新的fetchProducts函數
   } catch (err) {
     console.error('Error fetching data:', err);
   } finally {
@@ -47,48 +49,63 @@ const fetchAllFlavors = async () => {
   }
 };
 
-const fetchProductsByCategory = async (category) => {
+const fetchProducts = async () => {
   try {
     isLoading.value = true;
-    const response = await axios.get(`/api/products/category/${category}`);
-    products.value = response.data;
-    field.value = `${category}專區`;
-    selectedCategory.value = category;
-    selectedFlavor.value = null; // Reset flavor when category changes
+    let url = '/api/products';
+    let params = { page: currentPage.value - 1, size: pageSize.value }; //後端 API 可能使用從 0 開始的頁碼
+
+    if (selectedCategory.value) {
+      url = `/api/products/category/${selectedCategory.value}`;
+    }
+
+    if (selectedFlavor.value) {
+      url = `/api/products/flavor/${selectedFlavor.value}`;
+    }
+
+    const response = await axios.get(url, { params });
+    products.value = response.data.content;
+    totalPages.value = response.data.totalPages;
+    
+    updateFieldValue();
   } catch (err) {
-    console.error('Error fetching products by category:', err);
+    console.error('Error fetching products:', err);
   } finally {
     isLoading.value = false;
   }
+};
+
+const updateFieldValue = () => {
+  if (selectedFlavor.value) {
+    field.value = `${selectedFlavor.value}風味`;
+  } else if (selectedCategory.value) {
+    field.value = `${selectedCategory.value}專區`;
+  } else {
+    field.value = "全部商品";
+  }
+};
+
+const fetchProductsByCategory = async (category) => {
+  selectedCategory.value = category;
+  selectedFlavor.value = null;
+  currentPage.value = 0; // 重置頁碼
+  await fetchProducts();
 };
 
 const fetchProductsByFlavor = async (flavor) => {
-  try {
-    if (!selectedCategory.value) return; // Ensure a category is selected
-
-    isLoading.value = true;
-    const response = await axios.get(`/api/products/flavor/${flavor}`, { params: { categoryName: selectedCategory.value } });
-    products.value = response.data;
-    field.value = `${flavor}風味`;
-    selectedFlavor.value = flavor;
-  } catch (err) {
-    console.error('Error fetching products by flavor:', err);
-  } finally {
-    isLoading.value = false;
-  }
+  if (!selectedCategory.value) return;
+  selectedFlavor.value = flavor;
+  currentPage.value = 0; // 重置頁碼
+  await fetchProducts();
 };
 
-watch(selectedCategory, (newCategory) => {
-  if (newCategory) {
-    fetchProductsByCategory(newCategory);
-  }
+const handlePageChange = async (newPage) => {
+  currentPage.value = newPage;
+  await fetchProducts();
+};
+watch([selectedCategory, selectedFlavor], () => {
+  fetchProducts();
 });
-
-watch(selectedFlavor, (newFlavor) => {
-  if (newFlavor) {
-    fetchProductsByFlavor(newFlavor);
-  }
-})
 </script>
 
 <template>
@@ -126,7 +143,8 @@ watch(selectedFlavor, (newFlavor) => {
             <div class="products-price">價格：{{ product.price }}元</div>
           </div>
         </div>
-        <div class="switchPage">I'm page switch</div>
+        <!-- 使用分頁組件 -->
+        <PaginationComponent :currentPage="currentPage" :totalPages="totalPages" @pageChange="handlePageChange"/>
       </div>
     </div>
   </div>
@@ -168,6 +186,7 @@ watch(selectedFlavor, (newFlavor) => {
     font-size: 2.2vw;
     font-weight: bold;
     margin-bottom: 3%;
+    cursor: pointer;
 }
 
 .categoryImg {
@@ -183,6 +202,7 @@ watch(selectedFlavor, (newFlavor) => {
     font-weight: bold;
     padding-left: 25%;
     padding-bottom: 3%;
+    cursor: pointer;
     /* padding-left: 5%; */
 }
 
