@@ -1,119 +1,135 @@
 <script setup>
 import { onMounted, ref, watch } from 'vue';
 import axios from 'axios';
-
-import { useRoute } from 'vue-router';
 import Loading from '@/components/Loading.vue';
 
-// 定义加载状态
 const isLoading = ref(true);
-
-// 使用 useRoute 来获取当前路由
-const route = useRoute();
-
-// 定义开始加载的方法
-const startLoading = () => {
-  setTimeout(() => {
-    isLoading.value = false;
-  }, 2100); // 2.1 秒后停止加载
-};
-
-// 监听路由变化
-watch(route, () => {
-  isLoading.value = true;
-  startLoading();
-});
-
-
-const products = ref({})
-const field = ref("蛋糕專區");
+const products = ref([]);
+const categories = ref([]);
+const categoryFlavors = ref({});
+const field = ref("全部商品");
 const rank = ref("由新到舊");
 
-//之後抓資料庫分類 再改刪掉下面的citems
-const citems = [
-    {
-        title: '蛋糕專區',
-        products: ['戚風蛋糕', '戚風蛋糕', '戚風蛋糕', '戚風蛋糕']
-    },
-    {
-        title: '蛋糕專區',
-        products: ['戚風蛋糕', '戚風蛋糕', '戚風蛋糕', '戚風蛋糕']
-    },
-    {
-        title: '蛋糕專區',
-        products: ['戚風蛋糕', '戚風蛋糕', '戚風蛋糕', '戚風蛋糕']
-    }
-];
+// 新增：當前選中的種類和風味
+const selectedCategory = ref(null);
+const selectedFlavor = ref(null);
 
-onMounted(() => {
-  axios.get('/products').then((res) => {
-     
-    products.value = res.data;
+onMounted(async () => {
+  try {
+    const [productsRes, categoriesRes] = await Promise.all([
+      axios.get('/api/products'),
+      axios.get('/api/products/categories')
+    ]);
+    
+    products.value = productsRes.data;
+    categories.value = categoriesRes.data;
+    
+    await fetchAllFlavors();
+  } catch (err) {
+    console.error('Error fetching data:', err);
+  } finally {
     isLoading.value = false;
+  }
+});
 
+const fetchAllFlavors = async () => {
+  try {
+    const flavorPromises = categories.value.map(category => 
+      axios.get('/api/products/categories/flavors', { params: { categoryName: category } })
+    );
+    const flavorResponses = await Promise.all(flavorPromises);
     
-  }).catch((err) => {
-    console.log(err);
+    flavorResponses.forEach((res, index) => {
+      categoryFlavors.value[categories.value[index]] = res.data;
+    });
+  } catch (err) {
+    console.error('Error fetching flavors:', err);
+  }
+};
+
+const fetchProductsByCategory = async (category) => {
+  try {
+    isLoading.value = true;
+    const response = await axios.get(`/api/products/category/${category}`);
+    products.value = response.data;
+    field.value = `${category}專區`;
+    selectedCategory.value = category;
+    selectedFlavor.value = null; // Reset flavor when category changes
+  } catch (err) {
+    console.error('Error fetching products by category:', err);
+  } finally {
     isLoading.value = false;
-    
-    
-  })
+  }
+};
+
+const fetchProductsByFlavor = async (flavor) => {
+  try {
+    if (!selectedCategory.value) return; // Ensure a category is selected
+
+    isLoading.value = true;
+    const response = await axios.get(`/api/products/flavor/${flavor}`, { params: { categoryName: selectedCategory.value } });
+    products.value = response.data;
+    field.value = `${flavor}風味`;
+    selectedFlavor.value = flavor;
+  } catch (err) {
+    console.error('Error fetching products by flavor:', err);
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+watch(selectedCategory, (newCategory) => {
+  if (newCategory) {
+    fetchProductsByCategory(newCategory);
+  }
+});
+
+watch(selectedFlavor, (newFlavor) => {
+  if (newFlavor) {
+    fetchProductsByFlavor(newFlavor);
+  }
 })
-
-
 </script>
 
 <template>
-
-
-
-<div class="PContainer">
-
-
+  <div class="PContainer">
     <div class="categoryText1">商品列表 >> {{ field }}</div>
-
     <Loading v-if="isLoading" />
-
-    <div class="d-flex">
-         <!-- 側邊分類欄 -->
-        <div class="flexItemCategory w-100">
-            <div class="d-flexbox">
-                <div class="categoryItem" v-for="(item, index) in citems" :key="index">
-                    <div class="categoryTitle">
-                        <div>
-                            <img src="../../public/imgZip/Logo/bunnyBlue.png" alt="bunnyBlue" class="categoryImg">
-                            
-                        </div>
-                        <div>{{ item.title }}</div>
-                    </div>
-                    <div class="categoryContent" v-for="(product, prodIndex) in item.products" :key="prodIndex">
-                        {{ product }}
-                    </div>
-                </div>
+    <div v-else class="d-flex">
+      <!-- 側邊分類欄 -->
+      <div class="flexItemCategory w-100">
+        <div class="d-flexbox">
+          <div v-for="category in categories" :key="category" class="categoryItem">
+            <div class="categoryTitle" @click="fetchProductsByCategory(category)">
+              <img src="../../public/imgZip/Logo/bunnyBlue.png" alt="bunnyBlue" class="categoryImg">
+              <div>{{ category }}專區</div>
             </div>
-        </div>
-
-        <!-- 商品列表 -->
-        <div class="productsList d-flexbox w-100">
-            <div class="productsPageTop"></div>
-            <div class="categoryText2">商品排序 >> {{ rank }}</div>
-            <div>
-                <div class="ProductsContainer">
-                    <div v-for="(item, index) in products" :key="'products' + index" class="products-item">
-                        <img :src="item.imageUrl" :alt="item.name" class="products-image" />
-                        <div class="products-name">{{ item.name }}</div>
-                        <div class="products-price">{{ item.price }}</div>
-                    </div>
-                </div>
-                <div class="switchPage">
-                    I'm page switch
-                </div>
+            <div class="categoryContent">
+              <div 
+                v-for="flavor in categoryFlavors[category]" :key="flavor" @click="fetchProductsByFlavor(flavor)">
+                {{ flavor }}
+              </div>
             </div>
+          </div>
         </div>
+      </div>
 
+      <!-- 商品列表 -->
+      <div class="productsList d-flexbox w-100">
+        <div class="productsPageTop"></div>
+        <div class="categoryText2">商品排序 >> {{ rank }}</div>
+        <div class="ProductsContainer">
+          <div v-for="product in products" :key="product.id" class="products-item">
+            <img :src="product.imageUrl" :alt="product.name" class="products-image" />
+            <div class="products-name">{{ product.productName }}</div>
+            <div class="products-name">{{ product.description }}</div>
+            <div class="products-price">價格：{{ product.price }}元</div>
+          </div>
+        </div>
+        <div class="switchPage">I'm page switch</div>
+      </div>
     </div>
-</div>    
-
+  </div>
 </template>
 
 <style scoped>
