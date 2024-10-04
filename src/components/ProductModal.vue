@@ -9,10 +9,35 @@ import axiosInstanceForInsertHeader from '@/axios/axiosInstanceForInsertHeader';
 
 const cartStore = useCartStore()
 
-
-const showSuccess = () => {
-    SwalHandle.showSuccessMsg('變更成功！');
-};
+const editProduct = () => {
+    
+    formData.value.img1 = cartStore.img1
+    formData.value.img2 = cartStore.img2
+    formData.value.img3 = cartStore.img3
+    formData.value.img4 = cartStore.img4
+        
+    axiosInstanceForInsertHeader.put(`/admin/products/${formData.value.id}`, {
+        productName: formData.value.productName,
+  stocks: formData.value.stocks,
+  description: formData.value.description,
+  price: formData.value.price,
+  materialDescription: formData.value.materialDescription,
+  categoryDescription: formData.value.categoryDescription,
+  enable: formData.value.enable,
+  categoryName: formData.value.categoryName,
+  flavor: formData.value.flavor,
+  img1: formData.value.img1,
+  img2: cartStore.img2,
+  img3: cartStore.img3,
+  img4: cartStore.img4
+    }).then((res) => {
+        console.log(res);
+            SwalHandle.showSuccessMsg("編輯產品成功")
+            getProducts()
+    }).catch(() => {
+        SwalHandle.showErrorMsg("編輯產品失敗 請檢查必填參數")
+    })
+}
 
 const { openModal, hideModal, modalRef } = useModal()
 
@@ -38,8 +63,6 @@ onMounted(() => {
 })
 
 const addPrdocut = () => {
-    // console.log(formData.value);
-
     formData.value.img1 = cartStore.img1
     formData.value.img2 = cartStore.img2
     formData.value.img3 = cartStore.img3
@@ -271,13 +294,18 @@ watch(
 
 // 表單提交
 const submitForm = () => {
-
-    addPrdocut()
+    if (!formData.value.description) {
+        SwalHandle.showErrorMsg("請填寫商品描述")
+        return;
+    }
+   
 
     
     if (props.product) {
+        editProduct();
         console.log('編輯商品', formData.value);
     } else {
+        addPrdocut()
         console.log('新增商品', formData.value);
     }
     // 這裡可以觸發保存或新增的操作
@@ -376,13 +404,13 @@ const submitForm = () => {
                             <textarea type="text" v-model="formData.description" name="productDetail"
                                 class="inputContent" placeholder="請輸入商品描述"></textarea>
                             <div class="inputText">商品成分</div>
-                            <textarea type="text" v-model="formData.materialDescription" name="composition" class="inputContent"
+                            <textarea type="text" v-model="formData.materialDescription" name="composition1" class="inputContent"
                                 placeholder="請輸入商品成分"></textarea>
                                 <div class="inputText">商品成份描述</div>
-                            <textarea type="text" v-model="formData.categoryDescription" name="composition" class="inputContent"
+                            <textarea type="text" v-model="formData.categoryDescription" name="composition2" class="inputContent"
                                 placeholder="請輸入商品成分"></textarea>
                                 <div class="inputText">商品口味</div>
-                            <textarea type="text" v-model="formData.flavor" name="composition" class="inputContent"
+                            <textarea type="text" v-model="formData.flavor" name="composition3" class="inputContent"
                                 placeholder="請輸入商品成分"></textarea>
                         </div>
                     </div>
