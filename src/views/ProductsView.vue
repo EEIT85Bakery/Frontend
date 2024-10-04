@@ -3,7 +3,9 @@ import { onMounted, ref, watch } from 'vue';
 import axios from 'axios';
 import Loading from '@/components/Loading.vue';
 import PaginationComponent from '@/components/PaginationComponent.vue';
+import { useRouter, useRoute } from 'vue-router';
 
+// 狀態變量
 const isLoading = ref(true);
 const products = ref([]);
 const categories = ref([]);
@@ -12,101 +14,132 @@ const field = ref("全部商品");
 const rank = ref("由新到舊");
 const selectedCategory = ref(null);
 const selectedFlavor = ref(null);
-const currentPage = ref(0);
-const pageSize = ref(10); // 每頁顯示9個產品
+const currentPage = ref(1);
+const pageSize = ref(9); 
 const totalPages = ref(0);
+const router = useRouter();
+const route = useRoute();
+const keyword = ref(route.query.keyword || '');
 
-
-onMounted(async () => {
-  try {
-    const [categoriesRes] = await Promise.all([
-      axios.get('/api/products/categories')
-    ]);
-    
-    categories.value = categoriesRes.data;
-    
-    await fetchAllFlavors();
-    await fetchProducts(); // 使用新的fetchProducts函數
-  } catch (err) {
-    console.error('Error fetching data:', err);
-  } finally {
-    isLoading.value = false;
-  }
+// 組件加載時初始化數據
+onMounted(() => {
+  initializeData();
 });
 
-const fetchAllFlavors = async () => {
-  try {
-    const flavorPromises = categories.value.map(category => 
-      axios.get('/api/products/categories/flavors', { params: { categoryName: category } })
-    );
-    const flavorResponses = await Promise.all(flavorPromises);
-    
-    flavorResponses.forEach((res, index) => {
-      categoryFlavors.value[categories.value[index]] = res.data;
+// 初始化數據抓取分類、風味和產品
+const initializeData = () => {
+  fetchCategories()
+    .then(() => fetchAllFlavors())
+    .then(() => fetchProducts())
+    .then(() => {
+      isLoading.value = false;
+    })
+    .catch(err => {
+      console.error('Error initializing data:', err);
+      isLoading.value = false;
     });
-  } catch (err) {
-    console.error('Error fetching flavors:', err);
-  }
 };
 
-const fetchProducts = async () => {
-  try {
-    isLoading.value = true;
-    let url = '/api/products';
-    let params = { page: currentPage.value - 1, size: pageSize.value }; //後端 API 可能使用從 0 開始的頁碼
-
-    if (selectedCategory.value) {
-      url = `/api/products/category/${selectedCategory.value}`;
-    }
-
-    if (selectedFlavor.value) {
-      url = `/api/products/flavor/${selectedFlavor.value}`;
-    }
-
-    const response = await axios.get(url, { params });
-    products.value = response.data.content;
-    totalPages.value = response.data.totalPages;
-    
-    updateFieldValue();
-  } catch (err) {
-    console.error('Error fetching products:', err);
-  } finally {
-    isLoading.value = false;
-  }
+// 獲取所有產品分類名稱
+const fetchCategories = () => {
+  return axios.get('/api/products/categories')
+    .then(response => {
+      categories.value = response.data;
+    });
 };
 
+// 獲取所有風味名稱
+const fetchAllFlavors = () => {
+  const flavorPromises = categories.value.map(category =>
+    axios.get('/api/products/categories/flavors', { params: { categoryName: category } })
+  );
+  return Promise.all(flavorPromises)
+    .then(responses => {
+      responses.forEach((res, index) => {
+        categoryFlavors.value[categories.value[index]] = res.data;
+      });
+    });
+};
+
+// 獲取產品列表
+const fetchProducts = () => {
+  isLoading.value = true;
+  let url = '/api/products';
+  let params = { page: currentPage.value - 1, size: pageSize.value };
+
+  if (selectedFlavor.value) {
+    url = `/api/products/flavor/${selectedFlavor.value}`;
+  } else if (selectedCategory.value) {
+    url = `/api/products/category/${selectedCategory.value}`;
+  } else if (keyword.value) {
+    url = `/api/products/search`;
+    params.keyword = keyword.value;
+  }
+
+  return axios.get(url, { params })
+    .then(response => {
+      products.value = response.data.content;
+      totalPages.value = response.data.totalPages;
+      updateFieldValue();
+      isLoading.value = false;
+    })
+    .catch(err => {
+      console.error('Error fetching products:', err);
+      isLoading.value = false;
+    });
+};
+
+// 更新顯示的分類/風味字段
 const updateFieldValue = () => {
   if (selectedFlavor.value) {
     field.value = `${selectedFlavor.value}風味`;
   } else if (selectedCategory.value) {
     field.value = `${selectedCategory.value}專區`;
+  } else if (keyword.value) {
+    field.value = `搜尋結果: ${keyword.value}`;
   } else {
     field.value = "全部商品";
   }
 };
 
-const fetchProductsByCategory = async (category) => {
+// 按分類獲取產品
+const fetchProductsByCategory = (category) => {
   selectedCategory.value = category;
   selectedFlavor.value = null;
-  currentPage.value = 0; // 重置頁碼
-  await fetchProducts();
-};
-
-const fetchProductsByFlavor = async (flavor) => {
-  if (!selectedCategory.value) return;
-  selectedFlavor.value = flavor;
-  currentPage.value = 0; // 重置頁碼
-  await fetchProducts();
-};
-
-const handlePageChange = async (newPage) => {
-  currentPage.value = newPage;
-  await fetchProducts();
-};
-watch([selectedCategory, selectedFlavor], () => {
+  keyword.value = ''; //清空 keyword然後再次執行fetchProducts()
+  currentPage.value = 1;
   fetchProducts();
+};
+
+// 按風味獲取產品
+const fetchProductsByFlavor = (flavor) => {
+  selectedFlavor.value = flavor;
+  selectedCategory.value = null;  // 重置分類選擇
+  keyword.value = ''; //清空 keyword然後再次執行fetchProducts()
+  currentPage.value = 1;
+  fetchProducts();
+};
+
+// 處理頁碼
+const handlePageChange = (newPage) => {
+  currentPage.value = newPage;
+  fetchProducts();
+};
+
+// 監聽路由變化，處理搜索關鍵字的變化
+watch(() => route.query.keyword, (newKeyword) => {
+  if (newKeyword !== keyword.value) {
+    keyword.value = newKeyword || '';
+    currentPage.value = 1;
+    selectedCategory.value = null;
+    selectedFlavor.value = null;
+    fetchProducts();
+  }
 });
+
 </script>
+
+
 
 <template>
   <div class="PContainer">

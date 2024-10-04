@@ -15,7 +15,7 @@ export const useCartStore = defineStore('cartStore', () => {
     paymentPrice,
     couponName,
     usedBunnyCoins,
-    merchantNo
+    merchantNo,
   }
 })
 

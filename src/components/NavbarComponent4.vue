@@ -1,7 +1,10 @@
 <script setup>
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 
 const isMenuOpen = ref(false); // 用來控制菜單的狀態
+const router = useRouter();
+const keyword = ref('');
 
 const toggleMenu = () => {
     isMenuOpen.value = !isMenuOpen.value; // 切換狀態
@@ -10,6 +13,18 @@ const toggleMenu = () => {
 function scrollToTop() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
+
+// 抓取關鍵字並跳轉至商品頁
+const handleSearch = () => {
+    if (keyword.value) {
+        console.log(`Navigating to products with keyword: ${keyword.value}`);
+        router.push({ path: 'products', query: { keyword: keyword.value } });
+    } else {
+        console.log('Navigating to products without keyword');
+        router.push({ path: 'products' });
+    }
+}
+
 
 </script>
 
@@ -73,8 +88,8 @@ function scrollToTop() {
 
                 <div class="navbarIconContainer d-flex ms-auto">
                     <div class="navbarSearchContainer">
-                        <form class="d-flex" role="search">
-                            <!-- <input class="navbarSearchInput" type="search" placeholder="找商品"> -->
+                        <form class="d-flex" role="search" @submit.prevent="handleSearch">
+                            <input v-model="keyword" class="navbarSearchInput" type="search" placeholder="找商品">
                             <button class="btn" type="submit">
                                 <i class="navbarIcon navbarSearchIcon bi bi-search"></i>
                             </button>
