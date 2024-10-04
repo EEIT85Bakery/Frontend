@@ -8,6 +8,10 @@ export const useCartStore = defineStore('cartStore', () => {
   const couponName = ref("")
   const usedBunnyCoins = ref(0)
   const merchantNo = ref("")
+  const img1 = ref("")
+  const img2 = ref("")
+  const img3 = ref("")
+  const img4 = ref("")
  
   return {
     carts,
@@ -16,6 +20,10 @@ export const useCartStore = defineStore('cartStore', () => {
     couponName,
     usedBunnyCoins,
     merchantNo,
+    img1,
+    img2,
+    img3,
+    img4
   }
 })
 

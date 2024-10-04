@@ -55,7 +55,8 @@ const resetDiscount = () => {
 
 const getCart = () => {
     axiosInstanceForInsertHeader.get('/cart').then((res) => {
-        items.value = res.data
+        
+        items.value = res.data        
         const data = res.data;
         if (items.value.length !== 0) {
 
