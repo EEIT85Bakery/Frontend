@@ -30,8 +30,7 @@ const props = defineProps({
 })
 
 onMounted(() => {
-   
-    
+       
 })
 
 const addPrdocut = () => {
@@ -46,7 +45,7 @@ const addPrdocut = () => {
         productName: formData.value.productName,
   stocks: formData.value.stocks,
   description: formData.value.description,
-  price: 2999,
+  price: formData.value.price,
   materialDescription: formData.value.materialDescription,
   categoryDescription: formData.value.categoryDescription,
   enable: formData.value.enable,
@@ -58,7 +57,9 @@ const addPrdocut = () => {
   img4: cartStore.img4
     }).then((res) => {
         console.log(res);
-        
+            SwalHandle.showSuccessMsg("新增產品成功")
+    }).catch(() => {
+        SwalHandle.showErrorMsg("新增產品失敗 請檢查必填參數")
     })
 }
 
@@ -87,7 +88,6 @@ const formData = ref({
 //把前端傳進來的圖片存進file
 const handleFileChange = (event) => {
     console.log(event);
-    
         const file = event.target.files[0];
         if (file) {
           if (file.size > 5 * 1024 * 1024) {
@@ -322,22 +322,22 @@ const submitForm = () => {
                         <div class="imgItemUploadText">
                             <span style="flex: 25%;">圖片一：</span>
                             <input type="file" name="imgFile" class="inputContent file" id="fileInput" @change="handleFileChange"/>
-                            <button @click="uploadImage">Upload</button>
+                            <button @click="uploadImage">上傳圖片</button>
                         </div>
                         <div class="imgItemUploadText">
                             <span style="flex: 25%;">圖片二：</span>
                             <input type="file" name="imgFile" class="inputContent file" id="fileInput" @change="handleFileChange2"/>
-                            <button @click="uploadImage2">upload2</button>
+                            <button @click="uploadImage2">上傳圖片</button>
                         </div>
                         <div class="imgItemUploadText">
                             <span style="flex: 25%;">圖片三：</span>
                             <input type="file" name="imgFile" class="inputContent file" id="fileInput" @change="handleFileChange3"/>
-                            <button @click="uploadImage3">upload3</button>
+                            <button @click="uploadImage3">上傳圖片</button>
                         </div>
                         <div class="imgItemUploadText">
                             <span style="flex: 25%;">圖片四：</span>
                             <input type="file" name="imgFile" class="inputContent file" id="fileInput" @change="handleFileChange4"/>
-                            <button @click="uploadImage4">upload4</button>
+                            <button @click="uploadImage4">上傳圖片</button>
                         </div>
                     </div>
 

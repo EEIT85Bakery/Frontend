@@ -50,6 +50,8 @@ const openproductModal = () => {
 
 // 打開編輯 modal
 const openEditproductModal = (item) => {
+    
+    
   currentItem.value = item; // 設置選中的商品
   if (productModalRef.value) {
     productModalRef.value.openModal();
@@ -57,16 +59,16 @@ const openEditproductModal = (item) => {
 };
 
 const deleteItem = (item) => {
-  SwalHandle.confirm(
-    '確認刪除',
-    `您確定要刪除 ${item.name} 嗎？`,
-    '刪除成功！', // 自定義的成功消息
-    () => {
-      // 執行刪除操作，例如：
-      items.value = items.value.filter(i => i !== item);
-      SwalHandle.showSuccessMsg(`成功刪除 ${item.name}`);
-    }
-  );
+   SwalHandle.confirm('刪除商品',`確認要刪除${item.productName}這個產品?`,'',
+    () =>  {
+  axiosInstanceForInsertHeader.delete(`/admin/products/${item.id}`).then(() => {
+    SwalHandle.showSuccessMsg(`已刪除${item.productName}`)
+    getProducts()
+  }).catch((err) => {
+    console.log(err);
+    
+  })
+})
 };
 
     
