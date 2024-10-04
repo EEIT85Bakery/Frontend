@@ -72,6 +72,11 @@ const routes = [
         component: () => import('../views/shopInformationView.vue')
       },
       {
+        path: '/aboutUs',
+        name: '關於我們',
+        component: () => import('../views/AboutUsView.vue')
+      },
+      {
         path: '/theLastestNews',
         name: '最新消息',
         component: () => import('../views/theLastestNewsView.vue')

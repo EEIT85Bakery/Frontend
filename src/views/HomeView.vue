@@ -1,5 +1,22 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
+import { useRoute } from 'vue-router';
+import Loading from '@/components/Loading.vue';
+
+const isLoading = ref(true);
+
+const route = useRoute();
+
+const startLoading = () => {
+  setTimeout(() => {
+    isLoading.value = false;
+  }, 600);
+};
+
+watch(route, () => {
+  isLoading.value = true;
+  startLoading();
+});
 
 const imgArray = ref([
   { imageUrl: '../../public/imgZip/HomePageImg/Img1.png' },
@@ -15,10 +32,14 @@ const imgArray = ref([
 const images = ref([]); // 用來儲存所有圖片 DOM
 
 onMounted(() => {
+
+  isLoading.value = true;
+  startLoading();
+
   const options = {
     root: null,
     rootMargin: '0px',
-    threshold: 0.1 // 當圖片進入可視區域的 10% 時觸發
+    threshold: 0.1
   };
 
   const observer = new IntersectionObserver((entries) => {
@@ -41,25 +62,30 @@ onMounted(() => {
 
 <template>
 
+  <Loading v-if="isLoading" />
+
   <!-- Carousel -->
   <div id="demo" class="carousel slide" data-bs-ride="carousel">
 
     <div class="carousel-inner">
       <RouterLink to="products">
-      <div class="carousel-item active">
-        <img src="../../public/imgZip/HomePageCarousel/carousel1.png" alt="perform1" class="d-block" style="width:100%">
-      </div>
-    </RouterLink>
-    <RouterLink to="products">
-      <div class="carousel-item">
-        <img src="../../public/imgZip/HomePageCarousel/carousel2.png" alt="perform2" class="d-block" style="width:100%">
-      </div>
-    </RouterLink>
-    <RouterLink to="products">
-      <div class="carousel-item">
-        <img src="../../public/imgZip/HomePageCarousel/carousel3.png" alt="perform3" class="d-block" style="width:100%">
-      </div>
-    </RouterLink>
+        <div class="carousel-item active">
+          <img src="../../public/imgZip/HomePageCarousel/carousel1.png" alt="perform1" class="d-block"
+            style="width:100%">
+        </div>
+      </RouterLink>
+      <RouterLink to="products">
+        <div class="carousel-item">
+          <img src="../../public/imgZip/HomePageCarousel/carousel2.png" alt="perform2" class="d-block"
+            style="width:100%">
+        </div>
+      </RouterLink>
+      <RouterLink to="products">
+        <div class="carousel-item">
+          <img src="../../public/imgZip/HomePageCarousel/carousel3.png" alt="perform3" class="d-block"
+            style="width:100%">
+        </div>
+      </RouterLink>
     </div>
 
     <button class="carousel-control-prev" type="button" data-bs-target="#demo" data-bs-slide="prev">
@@ -77,25 +103,25 @@ onMounted(() => {
   </div>
 
   <div class="rankListImg">
-    <RouterLink to="products"  class="rankListItem">
-    <img src="../../public/imgZip/HomePageImg/HomePageImgP1.png" class="ListImg" alt="HomePageImgP1" ref="images">
+    <RouterLink to="products" class="rankListItem">
+      <img src="../../public/imgZip/HomePageImg/HomePageImgP1.png" class="ListImg" alt="HomePageImgP1" ref="images">
     </RouterLink>
-    <RouterLink to="products"  class="rankListItem">
-     <img src="../../public/imgZip/HomePageImg/HomePageImgP2.png" class="ListImg" alt="HomePageImgP2"> 
+    <RouterLink to="products" class="rankListItem">
+      <img src="../../public/imgZip/HomePageImg/HomePageImgP2.png" class="ListImg" alt="HomePageImgP2">
     </RouterLink>
-    <RouterLink to="products"  class="rankListItem">
-     <img src="../../public/imgZip/HomePageImg/HomePageImgP3.png" class="ListImg" alt="HomePageImg3">
+    <RouterLink to="products" class="rankListItem">
+      <img src="../../public/imgZip/HomePageImg/HomePageImgP3.png" class="ListImg" alt="HomePageImg3">
     </RouterLink>
-   </div>
-    
-    
+  </div>
+
+
 
   <!-- 標語大圖 -->
   <RouterLink to="products">
-  <div class="pic">
-    <img class="HomePagePic" src="../../public/imgZip/HomePageImg/HomePageImgBig.png" alt="" ref="images">
-  </div>
-</RouterLink>
+    <div class="pic">
+      <img class="HomePagePic" src="../../public/imgZip/HomePageImg/HomePageImgBig.png" alt="" ref="images">
+    </div>
+  </RouterLink>
   <div class="rankList">
     <div class="rankListTitle">選擇多樣化</div>
     <div class="line"></div>
@@ -122,29 +148,36 @@ onMounted(() => {
 </template>
 
 <style scoped>
-
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(20px); /* 向下位移一點增加動態效果 */
+    transform: translateY(20px);
+    /* 向下位移一點增加動態效果 */
   }
+
   to {
     opacity: 1;
-    transform: translateY(0); /* 完全顯示時不位移 */
+    transform: translateY(0);
+    /* 完全顯示時不位移 */
   }
 }
 
-.ImgGalleryItems, 
+.ImgGalleryItems,
 .ListImg,
 .sayingText {
-  opacity: 0; /* 初始隱藏 */
-  transform: translateY(20px); /* 初始位置稍微向下移動 */
-  transition: opacity 1s ease, transform 1s ease; /* 過渡效果 */
+  opacity: 0;
+  /* 初始隱藏 */
+  transform: translateY(20px);
+  /* 初始位置稍微向下移動 */
+  transition: opacity 1s ease, transform 1s ease;
+  /* 過渡效果 */
 }
 
 .fadeIn {
-  opacity: 1; /* 當添加動畫 class 時，圖片逐漸顯示 */
-  transform: translateY(0); /* 回到初始位置 */
+  opacity: 1;
+  /* 當添加動畫 class 時，圖片逐漸顯示 */
+  transform: translateY(0);
+  /* 回到初始位置 */
 }
 
 
@@ -327,7 +360,7 @@ onMounted(() => {
     height: fit-content;
     flex-direction: column;
     justify-items: center;
-    align-items: center ;
+    align-items: center;
     margin-bottom: 10%;
   }
 
@@ -358,7 +391,7 @@ onMounted(() => {
 
   .sayingImg {
     border-radius: 10px 10px 0px 0px;
-  } 
+  }
 
   .sayingTextContainer {
     padding: 5%;

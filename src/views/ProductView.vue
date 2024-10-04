@@ -38,7 +38,7 @@ const route = useRoute();
 const startLoading = () => {
     setTimeout(() => {
         isLoading.value = false;
-    }, 2100);
+    }, 600);
 };
 
 watch(route, () => {

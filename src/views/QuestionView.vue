@@ -1,8 +1,25 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import Collapse from 'bootstrap/js/dist/collapse';
 import PrivateRightModal from '@/components/PrivateRightModal.vue';
 import UserRightModal from '@/components/UserRightModal.vue';
+import { useRoute } from 'vue-router';
+import Loading from '@/components/Loading.vue';
+
+const isLoading = ref(true);
+
+const route = useRoute();
+
+const startLoading = () => {
+    setTimeout(() => {
+        isLoading.value = false;
+    }, 600);
+};
+
+watch(route, () => {
+    isLoading.value = true;
+    startLoading();
+});
 
 const privateRightModalRef = ref(null);
 const userRightModalRef = ref(null);
@@ -37,6 +54,10 @@ const isExpanded = ref(Array(accordionItems.value.length).fill(false));
 const collapseInstances = ref([]);
 
 onMounted(() => {
+
+    isLoading.value = true;
+    startLoading();
+
     // 確保每個 collapse 元素都初始化
     const collapseElements = document.querySelectorAll('.accordion-collapse');
     collapseElements.forEach((collapseEl, index) => {
@@ -89,6 +110,9 @@ const additionalContentItems = {
 </script>
 
 <template>
+
+    <Loading v-if="isLoading" />
+
     <div class="imgContainer">
         <img src="../../public/imgZip/header/QandA.png" alt="header" class="headerImg">
     </div>
@@ -221,7 +245,8 @@ const additionalContentItems = {
                         <div :id="'collapseTerms' + index" class="accordion-collapse collapse"
                             :class="{ show: isExpanded[index] }" :aria-labelledby="'headingTerms' + index">
                             <div class="accordion-body">
-                                {{ item.content }}<u @click="openUserRightModal" style="cursor: pointer;">Bunny Sugar使用者條款</u>
+                                {{ item.content }}<u @click="openUserRightModal" style="cursor: pointer;">Bunny
+                                    Sugar使用者條款</u>
                             </div>
                         </div>
                     </div>

@@ -49,7 +49,7 @@ function scrollToTop() {
                         <div class="line"></div>
                     </div>
                     <li class="navItem">
-                        <RouterLink class="navLink" to="product" @click="toggleMenu">關於我們</RouterLink>
+                        <RouterLink class="navLink" to="aboutUs" @click="toggleMenu">關於我們</RouterLink>
                     </li>
                     <li class="navItem">
                         <RouterLink class="navLink" to="theLastestNews" @click="toggleMenu">最新消息</RouterLink>

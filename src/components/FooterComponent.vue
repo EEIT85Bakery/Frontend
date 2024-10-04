@@ -22,7 +22,7 @@ import { onMounted, ref, watch } from 'vue';
             </RouterLink>
             <div class="flex bottom-socialMedia">
                 <i class="bi bi-facebook socialMedia"></i>
-                <i class="bi bi-instagram socialMedia"></i>
+                <RouterLink to="product"><i class="bi bi-instagram socialMedia"></i></RouterLink>
                 <i class="bi bi-line socialMedia"></i>
             </div>
         </div>
