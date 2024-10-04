@@ -25,9 +25,13 @@ const props = defineProps({
     product: {
         type: Object,
         default: null
-    },
-
+    } 
 })
+
+const emit = defineEmits(['getProducts'])
+const getProducts = () => {
+  emit('getProducts')
+}
 
 onMounted(() => {
        
@@ -58,6 +62,7 @@ const addPrdocut = () => {
     }).then((res) => {
         console.log(res);
             SwalHandle.showSuccessMsg("新增產品成功")
+            getProducts()
     }).catch(() => {
         SwalHandle.showErrorMsg("新增產品失敗 請檢查必填參數")
     })

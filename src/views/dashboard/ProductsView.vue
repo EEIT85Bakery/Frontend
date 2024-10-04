@@ -176,7 +176,7 @@ onMounted(() => {
 
         </div>
         
-        <ProductModal ref="productModalRef" :product="currentItem" />
+        <ProductModal ref="productModalRef" :product="currentItem" @getProducts="getProducts"/>
 
 
     </div>
