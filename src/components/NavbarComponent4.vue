@@ -33,10 +33,10 @@ const handleSearch = () => {
 
 <template>
 
-    <nav class="navbar navbar-expand-lg sticky-top">
+    <nav class="navbar navbar-expand-lg sticky-top w-100">
 
 
-        <nav class="navbar navbar-expand-lg sticky-top">
+        <!-- <nav class="navbar navbar-expand-lg sticky-top"> -->
             <div class="navbarAd">
                     <div>
                         <i class="bi bi-megaphone me-2"></i>
@@ -46,7 +46,7 @@ const handleSearch = () => {
                         </span>
                     </div>
             </div>
-        </nav>
+        <!-- </nav> -->
 
         <div class="navbarContainer container-fluid d-flex">
 
@@ -148,13 +148,8 @@ const handleSearch = () => {
     background-color: rgba(143, 134, 129, 0.9);
 }
 
-
-
-
-
-
-
 .navbarContainer {
+    width: 100%;
     margin-top: -10px;
     padding: 3.5% 2% 1% 2%;
     align-items: stretch;
