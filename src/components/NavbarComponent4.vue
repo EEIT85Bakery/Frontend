@@ -23,6 +23,8 @@ const handleSearch = () => {
         console.log('Navigating to products without keyword');
         router.push({ path: 'products' });
     }
+
+    keyword.value = '';
 }
 
 
