@@ -1,12 +1,33 @@
 <script setup>
+import { onMounted, onUnmounted } from 'vue';
 
+onMounted(() => {
+    const offcanvasElement = document.getElementById('offcanvasRight');
+
+    const removeBackdrop = () => {
+        const backdrop = document.querySelector('.offcanvas-backdrop');
+        if (backdrop) {
+            backdrop.remove();
+        }
+    };
+
+    offcanvasElement.addEventListener('hidden.bs.offcanvas', removeBackdrop);
+
+    onUnmounted(() => {
+        offcanvasElement.removeEventListener('hidden.bs.offcanvas', removeBackdrop);
+    });
+});
+
+function scrollToTop() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
 
 </script>
 
 <template>
     <div class="navBar">
         <div class="AdContainer">
-            <span>「您記不住的，Bunny Sugar幫你記住」，趕緊加入會員，前往會員中心
+            <span class="Ad">「您記不住的，Bunny Sugar幫你記住」，趕緊加入會員，</span><span>前往會員中心
                 <RouterLink to="anniversary" style="color: white; font-weight: bold;">紀念日專區</RouterLink>
                 寫下屬於您的日子吧！
             </span>
@@ -67,59 +88,74 @@
 
             <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasRight"
                 aria-labelledby="offcanvasRightLabel">
-                <div class="offcanvas-header">
-                    <h5 class="offcanvas-title" id="offcanvasRightLabel">Offcanvas right</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                <div class="offcanvas-header offHeader">
+                    <h5 class="offcanvas-title offTitle" id="offcanvasRightLabel">Menu</h5>
+                    <button type="button" class="btn-close closeBtn" data-bs-dismiss="offcanvas"
+                        aria-label="Close"></button>
                 </div>
                 <div class="offcanvas-body">
 
-                    <div class="navItemsContainer">
-                        <RouterLink class="navItemOff" to="AboutUs">
-                            <div>關於我們</div>
-                        </RouterLink>
-                        <RouterLink class="navItemOff" to="theLastestNews">
-                            <div>最新消息</div>
-                        </RouterLink>
-                        <RouterLink class="navItemOff" to="products">
-                            <div>商品列表</div>
-                        </RouterLink>
-                        <RouterLink class="navItemOff" to="shopInformation">
-                            <div>門市資訊</div>
-                        </RouterLink>
-                        <RouterLink class="navItemOff" to="question">
-                            <div>常見問題</div>
-                        </RouterLink>
-                        <RouterLink class="navItemOff" to="wishList">
-                            <div>我的收藏</div>
-                        </RouterLink>
-                    </div>
-
-                    <div class="navIconsContainer">
-                        <form class="searchContainer">
-                            <input type="search" class="searchInput" placeholder="找商品" />
-                            <button type="submit" class="searchBtnContainer">
+                    <div class="navIconsContainerOff">
+                        <form class="searchContainerOff">
+                            <input type="search" class="searchInputOff" placeholder="找商品" />
+                            <button type="submit" class="searchBtnContaineOff">
                                 <i class="bi bi-search searchBtn"></i>
                             </button>
                         </form>
 
-                        <RouterLink class="memberContainer" to="login">
-                            <i class="bi bi-person-fill memberBtn"></i>
-                        </RouterLink>
+                        <div class="navItemsContainerOff">
+                            <RouterLink class="navItemOff" to="AboutUs">
+                                <div>關於我們</div>
+                            </RouterLink>
+                            <hr />
+                            <RouterLink class="navItemOff" to="theLastestNews">
+                                <div>最新消息</div>
+                            </RouterLink>
+                            <hr />
+                            <RouterLink class="navItemOff" to="products">
+                                <div>商品列表</div>
+                            </RouterLink>
+                            <hr />
+                            <RouterLink class="navItemOff" to="shopInformation">
+                                <div>門市資訊</div>
+                            </RouterLink>
+                            <hr />
+                            <RouterLink class="navItemOff" to="question">
+                                <div>常見問題</div>
+                            </RouterLink>
+                            <hr />
+                            <RouterLink class="navItemOff" to="wishList">
+                                <div>我的收藏</div>
+                            </RouterLink>
+                            <hr />
+                        </div>
 
-                        <RouterLink class="cartContainer" to="cart">
-                            <i class="bi bi-cart4 cartBtn"></i>
-                        </RouterLink>
                     </div>
 
                 </div>
             </div>
         </div>
-
-
-
-
-
     </div>
+
+    <RouterLink to="backProducts">
+        <div class="mangerContainer">
+            <i class="bi bi-gear-fill fixIcon"></i>
+        </div>
+    </RouterLink>
+
+    <RouterLink to="game">
+        <div class="gameContainer">
+            <i class="bi bi-controller fixIcon"></i>
+        </div>
+    </RouterLink>
+
+    <div>
+        <div class="goTopContainer" @click="scrollToTop">
+            <i class="bi bi-arrow-up-circle-fill goTopIcon fixIcon"></i>
+        </div>
+    </div>
+
+
 </template>
 
 <style scoped>
@@ -128,12 +164,104 @@
 }
 
 @media (max-width: 768px) {
+
+    .navBarContainer {
+        padding: 0.5% 2%;
+    }
+
+    .Ad {
+        font-size: xx-small;
+        display: none;
+    }
+
+    .offHeader {
+        padding: 3% 5%;
+    }
+
+    .offTitle {
+        color: rgba(166, 127, 120, 1);
+        font-weight: bolder;
+    }
+
+    .closeBtn {
+        font-size: small;
+        color: rgba(50, 67, 95, 0.3);
+    }
+
     .offcanvasBtn {
         display: block;
+        border: rgba(50, 67, 95, 0.2) solid 1px;
+        font-size: medium;
+        background-color: transparent;
+        color: rgba(50, 67, 95, 1);
     }
 
     .navItem {
         display: none;
+    }
+
+    .searchInput {
+        display: none;
+    }
+
+    .searchBtnContainer {
+        display: none;
+    }
+
+    .memberBtn {
+        font-size: x-large;
+        margin-right: 50%;
+    }
+
+    .cartBtn {
+        font-size: x-large;
+        margin-right: 5%;
+    }
+
+    .searchContainerOff {
+        display: flex;
+        justify-content: end;
+        margin-bottom: 10%;
+    }
+
+    .searchInputOff {
+        border: 0;
+        border-bottom: rgba(50, 67, 95, 0.7) solid 1px;
+    }
+
+    .searchInputOff::placeholder {
+        color: rgba(50, 67, 95, 0.5);
+        font-size: small;
+    }
+
+    .searchBtnContaineOff {
+        color: rgba(50, 67, 95, 0.7);
+        font-size: x-large;
+        border: none;
+        background-color: transparent;
+    }
+
+    .searchInputOff:focus {
+        outline: none;
+    }
+
+    .navItemsContainerOff {
+        text-align: center;
+    }
+
+    .navItemOff {
+        color: rgba(50, 67, 95, 1);
+        text-decoration: none;
+        font-weight: bold;
+    }
+
+    .navItemOff:hover {
+        color: rgba(166, 127, 120, 1);
+        text-decoration: underline;
+    }
+
+    .fixIcon {
+        font-size: x-large;
     }
 
 }
@@ -143,7 +271,7 @@
     position: sticky;
     top: 0;
     z-index: 100;
-    background-color:  rgba(255, 255, 255, 0.9);
+    background-color: rgba(255, 255, 255, 0.9);
     box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
 }
 
@@ -162,7 +290,7 @@
 }
 
 .logoContainer {
-    flex: 25%;
+    flex: 20%;
     display: flex;
     object-fit: contain;
     padding: 0.5% 1%;
@@ -174,11 +302,13 @@
 }
 
 .navItemsContainer {
-    flex: 50%;
+    flex: 60%;
     display: flex;
     justify-content: space-around;
     align-items: center;
     font-weight: bold;
+    padding: 0% 2%;
+    /* background-color: lightcoral; */
 }
 
 .navItem {
@@ -192,7 +322,7 @@
 }
 
 .navIconsContainer {
-    flex: 25%;
+    flex: 20%;
     display: flex;
     justify-content: space-around;
     align-items: center;
@@ -246,5 +376,45 @@
 
 .cartContainer:hover {
     opacity: 0.7;
+}
+
+.gameContainer {
+    position: fixed;
+    bottom: 10%;
+    right: 2%;
+    color: rgba(255, 255, 255, 1);
+    /* color: rgba(166, 127, 120, 1); */
+    z-index: 2000;
+    font-size: 3vw;
+    text-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+    /* background-color: rgba(255, 255, 255, 0.8); */
+    border-radius: 50px;
+    /* padding: 0 0.8%; */
+}
+
+.mangerContainer {
+    position: fixed;
+    bottom: 18%;
+    right: 2%;
+    color: rgba(255, 255, 255, 1);
+    /* color: rgba(166, 127, 120, 1); */
+    z-index: 2000;
+    font-size: 3vw;
+    text-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+    /* background-color: rgba(255, 255, 255, 0.8); */
+    border-radius: 50px;
+    /* padding: 0 0.8%; */
+}
+
+.goTopContainer {
+    position: fixed;
+    bottom: 2%;
+    right: 2%;
+    color: rgba(255, 255, 255, 0.8);
+    /* color: rgba(143, 134, 129, 0.5); */
+    z-index: 2000;
+    font-size: 3vw;
+    text-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+    cursor: pointer;
 }
 </style>

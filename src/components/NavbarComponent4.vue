@@ -102,9 +102,6 @@ const handleSearch = () => {
                     </RouterLink>
                     <RouterLink to="cart">
                         <i class="navbarIcon bi bi-cart4"></i>
-
-
-
                         <span class="cartCount"></span>
                     </RouterLink>
                 </div>
