@@ -1,5 +1,6 @@
 <script setup>
 import { onMounted, onUnmounted } from 'vue';
+import { useRouter } from 'vue-router';
 
 onMounted(() => {
     const offcanvasElement = document.getElementById('offcanvasRight');
@@ -22,6 +23,22 @@ function scrollToTop() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
+const router = useRouter();
+
+const handleMemberClick = () => {
+  const userRole = localStorage.getItem('user');
+
+  if (userRole === 'ADMIN') {
+    // 如果是 ADMIN，跳轉到後台首頁
+    router.push({ path: '/admin' });
+  } else if (userRole === 'USER') {
+    // 如果是 USER，跳轉到會員資訊頁面
+    router.push({ path: '/customerInformation' });
+  } else {
+    // 如果沒有這個欄位，則跳轉回登入頁面
+    router.push({ path: '/login' });
+  }
+};
 </script>
 
 <template>
@@ -71,8 +88,8 @@ function scrollToTop() {
                     </button>
                 </form>
 
-                <RouterLink class="memberContainer" to="login">
-                    <i class="bi bi-person-fill memberBtn"></i>
+                <RouterLink class="memberContainer" to="#" @click.prevent="handleMemberClick">
+                <i class="bi bi-person-fill memberBtn"></i>
                 </RouterLink>
 
                 <RouterLink class="cartContainer" to="cart">

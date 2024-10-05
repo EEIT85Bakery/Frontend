@@ -31,8 +31,10 @@ const usersLogin = async () => {
 
     if (response.status === 200) {
       const token = response.data.token;
+      const role = response.data.user;
       // 儲存 token 到 localStorage裡面
       localStorage.setItem('jwt', token);
+      localStorage.setItem('user', role);
       console.log('成功獲得 JWT token:', token);
 
       // 顯示 SweetAlert，持續 2 秒
@@ -73,7 +75,7 @@ const loginWithGoogle = async () => {
 
     // 發送 ID Token 到後端進行驗證
     const response = await axios.post('http://localhost:8080/user/googleLogin', {
-      googleToken: token // 确保字段名称与后端一致
+      googleToken: token
     });
 
     // 後端驗證成功後的回應
@@ -82,7 +84,10 @@ const loginWithGoogle = async () => {
     // 根據後端回傳的結果，處理前端邏輯
     if (response.data.status === 'success') { // 檢查狀態是否成功
       const jwt = response.data.token; // 確保從後端獲取 JWT
+      const role = response.data.user;
       localStorage.setItem('jwt', jwt); // 儲存 JWT 到 localStorage
+      localStorage.setItem('user', role);
+
       console.log('用戶登入成功，跳轉到首頁');
 
       // 顯示 SweetAlert，持續 2 秒
@@ -97,6 +102,7 @@ const loginWithGoogle = async () => {
       });
 
       router.push({ name: '首頁' });
+
     } else {
       console.error('後端驗證失敗:', response.data.message);
       Swal.fire({
