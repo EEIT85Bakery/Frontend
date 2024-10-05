@@ -40,7 +40,9 @@ const clearInput = (e) => {
 }
 
 const countTotal = () => {
-    cartStore.total = totalPrice
+    console.log(totalPrice.value);
+    
+    cartStore.updateTotal(totalPrice)
 }
 
 const resetDiscount = () => {
@@ -50,7 +52,7 @@ const resetDiscount = () => {
     isDiscountCodeVisible.value = false;
     Generaldiscount.value = 0;
     memberdiscount.value = 0;
-    cartStore.couponName = "";
+    cartStore.updateCouponName("")
 };
 
 const getCart = () => {
@@ -125,7 +127,7 @@ const totalPrice = computed(() => {
 });
 
 const calculateDiscount = () => {
-    const price = totalPrice.value;
+    const price = totalPrice;
     if (validDiscountCode.value && price >= 1000
         && memberlevel.value == "白兔") {
         let discount = Math.floor(price / 1000) * 50;
@@ -165,8 +167,7 @@ function applyDiscountCode() {
             isDiscountCodeVisible.value = true;
             calculateDiscount()
             SwalHandle.showSuccessMsg("套用折扣碼成功");
-            cartStore.couponName = inputDiscountCode
-            // cartStore.
+            cartStore.updateCouponName(inputDiscountCode)
         } else {
             validDiscountCode.value = false;
             isDiscountApplied.value = false;
@@ -196,7 +197,7 @@ function applyBunnyCoin() {
         appliedBunnyQuantity.value = Math.min(bunnyquantity.value, maxBunnyQuantity.value);
         if (bunnyquantity.value > 0) {
             SwalHandle.showSuccessMsg('套用BunnyCoin成功！');
-            cartStore.usedBunnyCoins = bunnyquantity.value
+            cartStore.updatecoin(bunnyquantity.value)
         }
     }
 }
@@ -255,8 +256,8 @@ const updateCart = (item) => {
     axiosInstanceForInsertHeader.put(`/cart/${item.id}`, {
         quantity: item.quantity
     }).then(() => {
-        getCart()
-        cartStore.total = totalPrice.value;
+        getCart()                
+        cartStore.updateTotal(totalPrice.value)
         resetDiscount()
     }).catch(() => {
         SwalHandle.showErrorMsg("更新購物車失敗，請聯繫網站管理員")
@@ -272,12 +273,12 @@ watch(
         } else {
             newTotal = totalPrice.value - Generaldiscount.value - appliedBunnyQuantity.value;
         }
-        cartStore.paymentPrice = newTotal
+        cartStore.updatePaymentPrice(newTotal)
     }
 );
 
-watch(totalPrice, (newTotal) => {
-    cartStore.total = newTotal;
+watch(totalPrice, (newTotal) => {    
+    cartStore.updateTotal(newTotal)
     calculateDiscount();
 });
 

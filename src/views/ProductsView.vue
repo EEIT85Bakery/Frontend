@@ -82,6 +82,8 @@ const fetchProducts = () => {
       totalPages.value = response.data.totalPages;
       updateFieldValue();
       isLoading.value = false;
+      // console.log(products.value.img1);
+      
     })
     .catch(err => {
       console.error('Error fetching products:', err);
@@ -170,7 +172,7 @@ watch(() => route.query.keyword, (newKeyword) => {
         <div class="categoryText2">商品排序 >> {{ rank }}</div>
         <div class="ProductsContainer">
           <div v-for="product in products" :key="product.id" class="products-item">
-            <img :src="product.imageUrl" :alt="product.name" class="products-image" />
+            <img :src="`data:${mimeType};base64,${product.img1}`" :alt="product.name" class="products-image" />
             <div class="products-name">{{ product.productName }}</div>
             <div class="products-name">{{ product.description }}</div>
             <div class="products-price">價格：{{ product.price }}元</div>
