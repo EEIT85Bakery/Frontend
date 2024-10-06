@@ -56,8 +56,6 @@ const formatDate = (dateString) => {
   return `${year}-${month}-${day}`;
 };
 
-
-
 // 更新會員資料
 const updateMemberData = () => {
   isLoading.value = true;
@@ -199,7 +197,7 @@ onMounted(() => {
                             <RouterLink style="color: rgba(50, 67, 95, 1);">設定新密碼</RouterLink>
                         </div>
                         <div class="innerText" @click="deleteMember">
-                            <div @click="deleteMember" style="color: rgba(50, 67, 95, 1); cursor: pointer;">刪除帳號</div>                        </div>
+                            <span @click="deleteMember" style="color: rgba(50, 67, 95, 1); cursor: pointer;">刪除帳號</span>                        </div>
                         </div>
                     </div>
                 <hr />

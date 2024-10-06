@@ -1,9 +1,8 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { Swiper, SwiperSlide } from 'swiper/vue';
 import 'swiper/swiper-bundle.css';
 
-// 定義你的圖片數組
 const images = ref([
   {
     imageUrl: '../../public/imgZip/Sample/cheeseCake.jpg',
@@ -20,26 +19,16 @@ const images = ref([
   {
     imageUrl: '../../public/imgZip/Sample/hand-made cookies.jpg',
     name: '招牌手工餅乾'
-  },
-  {
-    imageUrl: '../../public/imgZip/Sample/cheeseCake.jpg',
-    name: '草莓起司蛋糕'
   }
 ])
 
-// 用一個數組來追蹤每個圖片的懸停狀態
 const hoveredIndex = ref(null);
-
-// 用於追蹤每個圖片是否已經被點擊 "喜歡" 的狀態
 const likedIndexes = ref([]);
 
-// 切換心形圖示狀態的函數
 const toggleLike = (index) => {
   if (likedIndexes.value.includes(index)) {
-    // 如果已經是 "喜歡" 狀態，則從陣列中移除
     likedIndexes.value = likedIndexes.value.filter(i => i !== index);
   } else {
-    // 否則，添加到 "喜歡" 狀態的陣列中
     likedIndexes.value.push(index);
   }
 };
@@ -48,7 +37,14 @@ const toggleLike = (index) => {
 
 
 <template>
-  <swiper :slides-per-view="3" :space-between="10" pagination navigation>
+  <div style="position: relative;">
+  <swiper 
+    :slides-per-view="4" 
+    :space-between="1" 
+    pagination 
+    :grab-cursor="false"  
+    :allow-touch-move="false"
+    ref="swiperRef">
     <swiper-slide v-for="(item, index) in images" :key="index">
       <div class="imgWrapper" @mouseenter="hoveredIndex = index" @mouseleave="hoveredIndex = null">
         <RouterLink style="text-decoration: none;" to="/">
@@ -69,28 +65,28 @@ const toggleLike = (index) => {
       </RouterLink>
     </swiper-slide>
   </swiper>
+</div>
 </template>
 
 
 
 <style>
 .swiper {
-  width: 70%;
+  display: flex;
+  width: 85%;
   height: auto;
-
+  margin-bottom: 5%;
 }
 
 .imgWrapper {
   position: relative;
   display: inline-block;
-  /* background-color: lightblue; */
 }
 
 .moreImg {
   width: 100%;
   height: auto;
   padding: 10% 5% 1% 5%;
-  cursor: grab;
   transition: opacity 0.3s ease;
 }
 
@@ -140,15 +136,10 @@ const toggleLike = (index) => {
 .moreProductName {
   text-align: center;
   color: rgba(50, 67, 95, 1);
-  margin-bottom: 20%;
   font-weight: bold;
 }
 
-.swiper-button-prev {
-  display: none;
-}
 
-.swiper-button-next {
-  display: none;
-}
+
+
 </style>

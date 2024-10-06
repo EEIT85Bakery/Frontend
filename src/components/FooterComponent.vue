@@ -28,9 +28,9 @@ import { onMounted, ref, watch } from 'vue';
         </div>
         <div class="bottom-item">
             營業時間<br />
-            週一至週日 11:30-19:30<br /><br />
-            最後取貨時間<br />
-            週一至週日 19:00<br /><br />
+            週一至週日 00:00-24:00<br /><br />
+            取貨時間<br />
+            24小時開放取貨<br /><br />
             門市地址<br />
             408台中市南屯區公益路二段51號18樓
         </div>

@@ -91,7 +91,7 @@ const additionalContentItems = {
         },
         {
             title: '取貨時間是？',
-            content: '取貨時間為每天的11:30到19:00。'
+            content: '目前24小時開放取貨。'
         }
     ],
     content4: [

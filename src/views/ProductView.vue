@@ -201,8 +201,6 @@ onMounted(() => {
     </div>
 
     <div class="moreProductTitle">推薦商品</div>
-    <div style="text-align: center;
-                color: rgba(143, 134, 129, 0.7);">(左右滑動可顯示更多商品)</div>
 
     <div class="lineContainer">
         <div class="Line"></div>

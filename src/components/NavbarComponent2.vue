@@ -199,7 +199,7 @@ const goToProducts = () => {
         </div>
     </RouterLink>
 
-    <RouterLink to="game">
+    <RouterLink to="gameTest">
         <div class="gameContainer">
             <i class="bi bi-controller fixIcon"></i>
         </div>

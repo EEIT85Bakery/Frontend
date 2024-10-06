@@ -10,7 +10,7 @@
 
 
             <RouterLink class="navbarBrand" to="/">
-                <img src="../../../public/imgZip/Logo/logo.png" alt="navbarLogo" class="navbarLogo">
+                <img src="../../public/imgZip/Logo/logo.png" alt="navbarLogo" class="navbarLogo">
             </RouterLink>
 
             <!-- 漢堡選單 -->

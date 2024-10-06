@@ -112,6 +112,11 @@ const routes = [
         component: () => import('../components/Game.vue')
       },
       {
+        path: '/gameTest',
+        name: '遊戲測試頁面',
+        component: () => import('../components/GameTest.vue')
+      },
+      {
         path: '/pay',
         name: '付款頁面',
         component: () => import('../views/CheckoutForm.vue')

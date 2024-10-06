@@ -83,16 +83,16 @@ onMounted(() => {
                     <span>營業時間</span>
                 </div>
                 <div class="openTimeTW"><span>週ㄧ至週日</span></div>
-                <div class="openTime"><span>Monday - Sunday</span><span>11:30 - 19:30</span></div>
+                <div class="openTime"><span>Monday - Sunday</span><span>00:00 - 24:00</span></div>
 
                 <hr />
 
                 <div class="openTimeTitle">
                     <span><i class="bi bi-bag-fill me-2"></i></span>
-                    <span>最後取貨時間</span>
+                    <span>取貨時間</span>
                 </div>
                 <div class="openTimeTW"><span>週ㄧ至週日</span></div>
-                <div class="openTime"><span>Monday - Sunday</span><span>19:00</span></div>
+                <div class="openTime"><span>Monday - Sunday</span><span>24小時開放取貨</span></div>
 
                 <hr />
 

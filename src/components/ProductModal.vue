@@ -353,24 +353,24 @@ const submitForm = () => {
                         </div>
                         <div class="inputText">新增或變更圖片</div>
                         <div class="imgItemUploadText">
-                            <span style="flex: 25%;">圖片一：</span>
-                            <input type="file" name="imgFile" class="inputContent file" id="fileInput" @change="handleFileChange"/>
-                            <button @click="uploadImage">上傳圖片</button>
+                            <span style="flex: 20%;">圖片一：</span>
+                            <input type="file" name="imgFile" class="inputContentFile file" id="fileInput" @change="handleFileChange"/>
+                            <button class="uploadBtn" @click="uploadImage">上傳</button>
                         </div>
                         <div class="imgItemUploadText">
-                            <span style="flex: 25%;">圖片二：</span>
-                            <input type="file" name="imgFile" class="inputContent file" id="fileInput" @change="handleFileChange2"/>
-                            <button @click="uploadImage2">上傳圖片</button>
+                            <span style="flex: 20%;">圖片二：</span>
+                            <input type="file" name="imgFile" class="inputContentFile file" id="fileInput" @change="handleFileChange2"/>
+                            <button class="uploadBtn" @click="uploadImage2">上傳</button>
                         </div>
                         <div class="imgItemUploadText">
-                            <span style="flex: 25%;">圖片三：</span>
-                            <input type="file" name="imgFile" class="inputContent file" id="fileInput" @change="handleFileChange3"/>
-                            <button @click="uploadImage3">上傳圖片</button>
+                            <span style="flex: 20%;">圖片三：</span>
+                            <input type="file" name="imgFile" class="inputContentFile file" id="fileInput" @change="handleFileChange3"/>
+                            <button class="uploadBtn" @click="uploadImage3">上傳</button>
                         </div>
                         <div class="imgItemUploadText">
-                            <span style="flex: 25%;">圖片四：</span>
-                            <input type="file" name="imgFile" class="inputContent file" id="fileInput" @change="handleFileChange4"/>
-                            <button @click="uploadImage4">上傳圖片</button>
+                            <span style="flex: 20%;">圖片四：</span>
+                            <input type="file" name="imgFile" class="inputContentFile file" id="fileInput" @change="handleFileChange4"/>
+                            <button class="uploadBtn" @click="uploadImage4">上傳</button>
                         </div>
                     </div>
 
@@ -497,6 +497,7 @@ input[type="number"]::-webkit-inner-spin-button {
 }
 
 .inputContent {
+    flex: 50%;
     width: 100%;
     padding: 1%;
     margin-bottom: 5%;
@@ -513,6 +514,17 @@ input[type="number"]::-webkit-inner-spin-button {
     color: rgba(50, 67, 95, 0.5);
 }
 
+.uploadBtn {
+    flex: 0 0 20%;
+    color: white;
+    background-color: rgba(143, 134, 129, 1);
+    border: transparent solid 1px;
+    border-radius: 5px;
+    font-size: small;
+    padding: 1%;
+    box-shadow: 0 4px 4px rgba(0, 0, 0, 0.1);
+}
+
 .inputRadio {
     accent-color: rgba(166, 127, 120, 0.3);
 }
@@ -527,7 +539,6 @@ input[type="number"]::-webkit-inner-spin-button {
     flex: 48%;
     box-sizing: border-box;
     margin: 1%;
-    /* display: flex; */
     object-fit: contain;
 }
 
@@ -544,7 +555,24 @@ input[type="number"]::-webkit-inner-spin-button {
 
 .imgItemUploadText {
     display: flex;
+    justify-content: center;
+    align-items: center;
+    object-fit: contain;
     color: rgba(143, 134, 129, 0.8);
+    margin-bottom: 5%;
+}
+
+.inputContentFile {
+    flex: 55%;
+    width: 100%;
+    padding: 1%;
+    margin-right: 2%;
+    border: rgba(143, 134, 129, 0.5) solid 1px;
+    border-radius: 5px;
+    color: rgba(50, 67, 95, 1);
+    text-align: center;
+    resize: vertical;
+    font-size: small;
 }
 
 .file {
