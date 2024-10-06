@@ -1,14 +1,32 @@
 <script setup>
 import { ref, onMounted, watch, computed } from 'vue';
 import { useRoute } from 'vue-router';
-// import { useRouter } from 'vue-router';
 import Loading from '@/components/Loading.vue';
-// import { useCartStore } from '@/stores/cartStore';
 
 import Swiper from '@/components/Swiper.vue';
 import MemberLevelModal from '@/components/MemberLevelModal.vue';
 
 import { SwalHandle } from '@/stores/sweetAlertStore';
+import axiosInstanceForInsertHeader from '@/axios/axiosInstanceForInsertHeader';
+
+const route = useRoute();
+const productId = ref(0);
+const product = ref({})
+const isGetImge = ref(false)
+
+const getProduct = () => {
+    axiosInstanceForInsertHeader.get(`/products/${productId.value}`).then((res) => {
+        product.value = res.data
+        imgItems.value[0].imageUrl = product.value.img1
+        imgItems.value[1].imageUrl = product.value.img2
+        imgItems.value[2].imageUrl = product.value.img3
+        imgItems.value[3].imageUrl = product.value.img4
+        selectedImage.value = imgItems.value[0].imageUrl
+        isGetImge.value = true
+    }).catch((err) => {
+        console.log(err);
+    })
+}
 
 const showSuccess = () => {
     SwalHandle.showSuccessMsg('加入成功！');
@@ -18,7 +36,6 @@ const isIconA = ref(true);
 
 function toggleIcon() {
     isIconA.value = !isIconA.value; // 切換狀態
-
 }
 
 
@@ -33,7 +50,6 @@ function handleOpenModal() {
 
 const isLoading = ref(true);
 
-const route = useRoute();
 
 const startLoading = () => {
     setTimeout(() => {
@@ -55,13 +71,14 @@ const imgItems = ref([
     { imageUrl: '../../public/imgZip/Sample/cheeseCake.jpg' }
 ]);
 
-const selectedImage = ref(imgItems.value[0]);
+const selectedImage = ref(imgItems.value);
 
-const productName = "草莓乳酪杯子蛋糕";
-const productDescription = "訂購天數需要3~7個工作天（不含訂購當天）為保持風味最佳，請於隔日內享用完畢";
-const productIngredients = "| 新鮮草莓 | 動物性鮮奶油 | 奶油乳酪 | 海綿蛋糕 | ";
+
+// const productName = "草莓乳酪杯子蛋糕";
+// const productDescription = "訂購天數需要3~7個工作天（不含訂購當天）為保持風味最佳，請於隔日內享用完畢";
+// const productIngredients = "| 新鮮草莓 | 動物性鮮奶油 | 奶油乳酪 | 海綿蛋糕 | ";
 const discountExp = "2024/11/30";
-const price = "160";
+// const price = "160";
 
 const moreItems = ref([
     {
@@ -80,12 +97,13 @@ const moreItems = ref([
 ]);
 
 function selectImage(item) {
-    selectedImage.value = item;
+    selectedImage.value = item.imageUrl;
 }
 
 onMounted(() => {
-    isLoading.value = true;
     startLoading();
+    productId.value = route.params.id
+    getProduct()
 });
 
 </script>
@@ -100,12 +118,12 @@ onMounted(() => {
 
             <!-- 產品小圖 -->
             <div class="productImgItems">
-
+                <div v-if="isGetImge">
                 <div v-for="(item, index) in imgItems" :key="index" class="productImgItem"
-                    :class="{ selected: selectedImage === item }" @click="selectImage(item)">
-                    <img class="productImg" :src="item.imageUrl" alt="Product Image">
+                     @click="selectImage(item)">
+                    <img class="productImg" :src="`data:;base64,${item.imageUrl}`" alt="Product Image">
                 </div>
-
+            </div>
                 <!-- :class="'Item' + (index + 1)" -->
 
                 <!-- 下一張小圖按鈕 -->
@@ -115,7 +133,9 @@ onMounted(() => {
             <!-- 產品大圖 -->
             <div class="productImgItemDisplay">
                 <div class="displayItem">
-                    <img class="productImg" :src="selectedImage.imageUrl" alt="">
+                    <div v-if="isGetImge">  
+                    <img  class="productImg" :src="`data:;base64,${selectedImage}`" alt="">
+                    </div>
                 </div>
                 <div class="addWishList" @click="toggleIcon">
                     <i v-if="isIconA" class="bi bi-suit-heart heartIcon"></i>
@@ -129,16 +149,16 @@ onMounted(() => {
         <div class="productTextContainer">
 
             <div class="productName">
-                <span>{{ productName }}</span>
+                <span>{{ product.productName }}</span>
             </div>
 
             <div class="productDescription">
-                <span>{{ productDescription }}</span>
+                <span>{{ product.description }}</span>
             </div>
 
             <div class="productIngredients">
                 <div>原料包含: </div>
-                <span>{{ productIngredients }}</span>
+                <span>{{ product.materialDescription }}</span>
             </div>
 
             <div class="CutLine"></div>
@@ -159,7 +179,7 @@ onMounted(() => {
             <div class="CutLine"></div>
 
             <div class="productPrice">
-                <div>商品金額: <span class="price">{{ price }}</span> 元</div>
+                <div>商品金額: <span class="price">{{ product.price }}</span> 元</div>
             </div>
 
             <div class="productQuantity">
@@ -173,7 +193,7 @@ onMounted(() => {
                         加入購物車
                     </button>
                 </div>
-                <RouterLink class="buyBtn" to="cart">
+                <RouterLink class="buyBtn" to="/cart">
                     <button class="btnBuy">直接購買</button>
                 </RouterLink>
             </div>

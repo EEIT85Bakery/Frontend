@@ -41,7 +41,7 @@ export const useCartStore = defineStore('cart', {
 
     updateMerchantNo(newMerchantNo) {
       this.merchantNo = newMerchantNo;
-    }
+    },
 
     // 可以根據需求添加更多方法來更新其他 state
   }
