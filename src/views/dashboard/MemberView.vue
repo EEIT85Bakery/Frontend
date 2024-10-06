@@ -19,8 +19,8 @@ const noResults = ref(false);  // 標記是否沒有搜尋結果
 
 
 // 從後端抓取會員資料，根據電話號碼進行查詢
-const fetchMembers = (page = 1, size = 10, phone = '') => {
-  const params = { page, size };
+const fetchMembers = (page = 1, pageSize = 10, phone = '') => {
+  const params = { page, pageSize };
   
   console.log(`Fetching members with params:`, params); // Debug
 

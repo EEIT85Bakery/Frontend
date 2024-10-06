@@ -1,13 +1,18 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import PaginationComponent from '@/components/PaginationComponent.vue';
 import OrderModal from '@/components/OrderModal.vue';
 import DashBoardNavBarOrder from '@/components/DashBoardNavBarOrder.vue';
-
 import { SwalHandle } from '@/stores/sweetAlertStore';
+import axiosInstanceForInsertHeader from '@/axios/axiosInstanceForInsertHeader';
 
 const orderModalRef = ref(null);
 const currentItem = ref(null); 
+const orders = ref([]);
+const totalElements = ref(0);
+const totalPages = ref(0);
+const size = ref(10); // 每頁顯示10
+const currentPage = ref(1);  // 當前頁碼
 
 // 打開新增 modal
 const openOrderModal = () => {
@@ -25,74 +30,46 @@ const openOrderModal = () => {
 //   }
 // };
 
-const deleteItem = (item) => {
+const deleteItem = (order) => {
   SwalHandle.confirm(
     '確認刪除',
-    `您確定要刪除訂單 ${item.orderNumber} 嗎？`,
+    `您確定要刪除訂單 ${order.orderNumber} 嗎？`,
     '刪除成功！', 
     () => {
       // 執行刪除操作，例如：
-      items.value = items.value.filter(i => i !== item);
-      SwalHandle.showSuccessMsg(`成功刪除 ${item.orderNumber}`);
+      orders.value = orders.value.filter(i => i !== order);
+      SwalHandle.showSuccessMsg(`成功刪除 ${orders.orderNumber}`);
     }
   );
 };
 
+// 從後端取得訂單資料
+const fetchOrders = () => {
+  axiosInstanceForInsertHeader.get('/admin/orders', {
+    page: currentPage.value - 1 ,
+    size: size.value,
+  })
+  .then((response) => {
+    const { content, totalElements: total, totalPages: pages } = response.data;
+    orders.value = content; // 設定訂單資料
+    totalElements.value = total; // 總資料數
+    totalPages.value = pages; // 總頁數
+  })
+  .catch((error) => {
+    SwalHandle.showErrorMsg('無法取得訂單資料', error.response?.data?.message || error.message);
+  });
+};
 
-const items = ref([
-    {
-        orderNumber: '2024010101',
-        userName: '吉伊卡哇',
-        tel: '0912-345-678',
-        productNames: [
-            '經典紐約起司蛋糕 (數量: 1 顆)',
-            '經典抹茶起司蛋糕 (數量: 2 顆)',
-            '季節草莓起司蛋糕 (數量: 3 顆)'
-        ],
-        price: '3600元',
-        isPaid: '已付款',
-        orderStatus: '已確認'
-    },
-    {
-        orderNumber: '2024010101',
-        userName: '吉伊卡哇',
-        tel: '0912-345-678',
-        productNames: [
-            '經典紐約起司蛋糕 (數量: 1 顆)',
-            '經典抹茶起司蛋糕 (數量: 2 顆)',
-            '季節草莓起司蛋糕 (數量: 3 顆)'
-        ],
-        price: '3600元',
-        isPaid: '已付款',
-        orderStatus: '已確認'
-    },
-    {
-        orderNumber: '2024010101',
-        userName: '吉伊卡哇',
-        tel: '0912-345-678',
-        productNames: [
-            '經典紐約起司蛋糕 (數量: 1 顆)',
-            '經典抹茶起司蛋糕 (數量: 2 顆)',
-            '季節草莓起司蛋糕 (數量: 3 顆)'
-        ],
-        price: '3600元',
-        isPaid: '已付款',
-        orderStatus: '已確認'
-    },
-    {
-        orderNumber: '2024010101',
-        userName: '吉伊卡哇',
-        tel: '0912-345-678',
-        productNames: [
-            '經典紐約起司蛋糕 (數量: 1 顆)',
-            '經典抹茶起司蛋糕 (數量: 2 顆)',
-            '季節草莓起司蛋糕 (數量: 3 顆)'
-        ],
-        price: '3600元',
-        isPaid: '已付款',
-        orderStatus: '已確認'
-    }
-]);
+// 頁數變更時觸發
+const handlePageChange = (newPage) => {
+    currentPage.value = newPage; // 更新頁碼
+    fetchOrders(); // 重新取得資料
+};
+
+// 初始化時載入訂單資料
+onMounted(() => {
+  fetchOrders();
+});
 
 
 </script>
@@ -119,27 +96,27 @@ const items = ref([
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="(item, index) in items" :key="index">
-                        <td>{{ item.orderNumber }}</td>
-                        <td>{{ item.userName }}</td>
-                        <td>{{ item.tel }}</td>
+                    <tr v-for="(order, index) in orders" :key="index">
+                        <td>{{ order.orderNumber }}</td>
+                        <td>{{ order.userName }}</td>
+                        <td>{{ order.userPhone }}</td>
                         <td class="listContainer">
                             <ul class="list">
-                                <li class="listItem" v-for="(product, prodIndex) in item.productNames" :key="prodIndex">
-                                    {{ product }}
+                                <li class="listItem" v-for="(product, prodIndex) in order.orderDetails" :key="prodIndex">
+                                    {{ product.productName }} 數量:{{ product.quantity }}
                                 </li>
                             </ul>
                         </td>
-                        <td>{{ item.price }}</td>
-                        <td>{{ item.isPaid }}</td>
-                        <td>{{ item.orderStatus }}</td>
+                        <td>{{ order.paidPrice }}</td>
+                        <td>{{ order.paymentStatus }}</td>
+                        <td>{{ order.pickupStatus }}</td>
                         <td><i class="bi bi-pencil-square" style="color: darkgrey;" @click="openOrderModal(item)"></i></td>
                         <td><i class="bi bi-trash3" style="color: darkred;" @click="deleteItem(item)"></i></td>
                     </tr>
                 </tbody>
             </table>
 
-            <PaginationComponent />
+            <PaginationComponent :totalPages="totalPages" :currentPage="currentPage" @pageChange="handlePageChange" />
 
         </div>
 
