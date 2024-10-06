@@ -1,126 +1,164 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
+import axiosInstanceForInsertHeader from '@/axios/axiosInstanceForInsertHeader.js';
 import PaginationComponent from '@/components/PaginationComponent.vue';
 import Loading from '@/components/Loading.vue';
 
+// 用來儲存是否在加載中的狀態
 const isLoading = ref(false);
+const orders = ref([]);
+const currentPage = ref(1);
+const totalPages = ref(0);
+const pageSize = ref(10); // 每頁顯示10筆資料
 const router = useRouter();
 
-// 按下按鈕後的處理邏輯
-const startProcess = () => {
-    isLoading.value = true;
+// 當頁面被掛載時，自動請求資料
+onMounted(() => {
+  fetchOrders();
+});
 
-    // 處理過程
-    setTimeout(() => {
-        isLoading.value = false;
-        // 處理完成後跳轉
-        router.push('orderDetail');
-    }, 2100); // 改成實際處理時間
+// 獲取訂單列表
+const fetchOrders = () => {
+  isLoading.value = true;
+  let url = '/orders';
+  let params = { page: currentPage.value - 1, size: pageSize.value };
+
+  console.log('發送請求，參數:', params);
+
+  axiosInstanceForInsertHeader.get(url, { params })
+    .then(response => {
+      console.log('API 響應:', response.data);
+      console.log('獲取到的訂單資料:', response.data.content);
+      console.log('總頁數:', response.data.totalPages);
+      console.log('當前頁碼:', response.data.number + 1);
+      console.log('每頁大小:', response.data.size);
+      console.log('總元素數:', response.data.totalElements);
+
+      orders.value = response.data.content;
+      totalPages.value = response.data.totalPages;
+      currentPage.value = response.data.number + 1; // 確保當前頁碼與後端一致
+
+      isLoading.value = false;
+    })
+    .catch(err => {
+      console.error('Error fetching orders:', err);
+      isLoading.value = false;
+    });
 };
 
-const items = ref([
-  {
-    orderNumber: '2024010101',
-    date: '2024-01-01',
-    price: '3600元',
-    orderStatus: '已付款'
-  },
-  {
-    orderNumber: '2024010102',
-    date: '2024-01-02',
-    price: '3600元',
-    orderStatus: '已付款'
-  },
-  {
-    orderNumber: '2024010103',
-    date: '2024-01-03',
-    price: '3600元',
-    orderStatus: '已付款'
-  },
-  {
-    orderNumber: '2024010104',
-    date: '2024-01-04',
-    price: '3600元',
-    orderStatus: '已付款'
-  },
-  {
-    orderNumber: '2024010105',
-    date: '2024-01-05',
-    price: '3600元',
-    orderStatus: '已付款'
+
+// 格式化日期函數
+const formatDate = (dateArray) => {
+  if (!Array.isArray(dateArray) || dateArray.length < 6) {
+    return '日期不可用'; // 如果日期為空或格式不正確，返回提示
   }
-]);
+
+  // 提取年、月、日、時、分、秒
+  const [year, month, day, hour, minute, second] = dateArray;
+
+  // 格式化為 YYYY-MM-DD HH:mm:ss
+  const formattedDate = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')} ` +
+                        `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}:${String(second).padStart(2, '0')}`;
+
+  return formattedDate;
+};
+
+// 按下查看詳情按鈕
+const startProcess = (orderNumber) => {
+  isLoading.value = true;
+  setTimeout(() => {
+    isLoading.value = false;
+    router.push({ 
+      name: '訂單詳細頁面', 
+      query: { orderNumber: orderNumber }
+    });
+  }, 1000); 
+};
+
+
+// 處理頁碼
+const handlePageChange = (newPage) => {
+  if (newPage >= 1 && newPage <= totalPages.value && newPage !== currentPage.value) {
+    currentPage.value = newPage;
+    console.log('頁碼已更新，準備獲取新數據');
+    fetchOrders();
+  } else {
+    console.log('新頁碼無效或與當前頁碼相同，不執行操作');
+  }
+};
 
 </script>
 
 <template>
-    <div class="outsideContainer">
-        <div class="infoContainer">
-            <div class="menuContainer">
-                <div class="menuOption">
-                    <div class="customerInfo">
-                        <RouterLink to="customerInformation" class="textColor">個人資訊</RouterLink>
-                    </div>
-                    <div class="orderInfo">
-                        <RouterLink to="orderList" class="textColor">訂單</RouterLink>
-                    </div>
-                    <div class="wishList">
-                        <RouterLink to="wishList" class="textColor">我的收藏</RouterLink>
-                    </div>
-                    <div class="levelAndCoin">
-                        <RouterLink to="discount" class="textColor">優惠專區</RouterLink>
-                    </div>
-                    <div class="myDay">
-                        <RouterLink to="anniversary" class="textColor">紀念日</RouterLink>
-                    </div>
-                </div>
-                <div class="bottomOption">
-                    <div class="line"></div>
-                    <div class="logoutOption">
-                        <RouterLink to="/" class="textColor">登出</RouterLink>
-                    </div>
-                </div>
-            </div>
-            <div class="cutLine"></div>
-            <div class="contentContainer">
-                <div class="contentTitleContainer">
-                    <div class="title">訂單</div>
-                    <div class="line"></div>
-                </div>
-                <div class="insideContentContainer">
-
-                    <table class="contentTable">
-                        <thead>
-                            <tr class="content">
-                                <th>訂單號碼</th>
-                                <th>訂單日期</th>
-                                <th>合計</th>
-                                <th>訂單狀態</th>
-                                <th>訂單內容</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="(item, index) in items" :key="index">
-                                <td>{{ item.orderNumber }}</td>
-                                <td>{{ item.date }}</td>
-                                <td>{{ item.price }}</td>
-                                <td>{{ item.orderStatus }}</td>
-                                <td>
-                                    <div @click="startProcess"><i class="bi bi-info-circle-fill" style="color: darkgray;"></i>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <PaginationComponent />
-                <Loading v-if="isLoading" />
-            </div>
+  <div class="outsideContainer">
+    <div class="infoContainer">
+      <div class="menuContainer">
+        <div class="menuOption">
+          <div class="customerInfo">
+            <RouterLink to="customerInformation" class="textColor">個人資訊</RouterLink>
+          </div>
+          <div class="orderInfo">
+            <RouterLink to="orderList" class="textColor">訂單</RouterLink>
+          </div>
+          <div class="wishList">
+            <RouterLink to="wishList" class="textColor">我的收藏</RouterLink>
+          </div>
+          <div class="levelAndCoin">
+            <RouterLink to="discount" class="textColor">優惠專區</RouterLink>
+          </div>
+          <div class="myDay">
+            <RouterLink to="anniversary" class="textColor">紀念日</RouterLink>
+          </div>
         </div>
+        <div class="bottomOption">
+          <div class="line"></div>
+          <div class="logoutOption">
+            <RouterLink to="/" class="textColor">登出</RouterLink>
+          </div>
+        </div>
+      </div>
+      <div class="cutLine"></div>
+      <div class="contentContainer">
+        <div class="contentTitleContainer">
+          <div class="title">訂單</div>
+          <div class="line"></div>
+        </div>
+        <div class="insideContentContainer">
+          <table class="contentTable">
+            <thead>
+              <tr class="content">
+                <th>訂單號碼</th>
+                <th>訂單日期</th>
+                <th>合計</th>
+                <th>訂單狀態</th>
+                <th>訂單內容</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(order, index) in orders" :key="index">
+                <td>{{ order.orderNumber }}</td>
+                <!-- 使用格式化函數來顯示訂單日期 -->
+                <td>{{ formatDate(order.createTime) }}</td>
+                <td>{{ order.paidPrice }} 元</td>
+                <td>{{ order.pickupStatus }}</td>
+                <td>
+                  <div @click="startProcess(order.orderNumber)">
+                    <i class="bi bi-info-circle-fill" style="color: darkgray;"></i>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <!-- 分頁元件，當頁數改變時觸發 changePage 函數 -->
+        <PaginationComponent :currentPage="currentPage" :totalPages="totalPages" @changePage="handlePageChange" />
+        <Loading v-if="isLoading" />
+      </div>
     </div>
-
+  </div>
 </template>
+
 
 <style scoped>
 
