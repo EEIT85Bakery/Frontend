@@ -118,12 +118,28 @@ const deleteMember = () => {
     }
   );
 };
+const logout = () => {
+  SwalHandle.confirm(
+      '確認登出?',
+      '您確定要登出嗎？',
+      '登出成功！',
+      () => {
+        localStorage.removeItem('jwt');
+        localStorage.removeItem('user');
+
+        router.push({ name: '首頁' }).then(() => {
+          SwalHandle.showSuccessMsg('您已成功登出，返回首頁。');
+        }).catch((error) => {
+          console.error('登出跳轉失敗:', error);
+        });
+      }
+  );
+};
 
 // 組件初始化後獲取會員資料
 onMounted(() => {
   fetchMemberData();
 });
-
 </script>
 
 <template>
@@ -150,7 +166,7 @@ onMounted(() => {
                 <div class="bottomOption">
                     <div class="line"></div>
                     <div class="logoutOption">
-                        <RouterLink to="/" class="textColor">登出</RouterLink>
+                      <RouterLink to="#" class="textColor" @click="logout">登出</RouterLink>
                     </div>
                 </div>
             </div>
