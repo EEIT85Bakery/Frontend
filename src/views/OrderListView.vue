@@ -10,7 +10,7 @@ const isLoading = ref(false);
 const orders = ref([]);
 const currentPage = ref(1);
 const totalPages = ref(0);
-const pageSize = ref(10); // 每頁顯示10筆資料
+const pageSize = ref(20); // 每頁顯示10筆資料
 const router = useRouter();
 
 // 當頁面被掛載時，自動請求資料

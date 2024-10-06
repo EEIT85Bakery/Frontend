@@ -22,6 +22,7 @@ const route = useRoute(); // 獲取當前路由
 const orderDetail = ref(null); // 用來存儲訂單詳細資料
 const isLoading = ref(false); // 加載狀態
 const orderNumber = ref(route.query.orderNumber); // 從路由參數中獲取訂單號碼
+const orderDetails = computed(() => orderDetail.value?.orderDetails || []);
 
 
 // 用來觸發 modal 的打開方法
@@ -91,12 +92,12 @@ const fetchOrderDetail = () => {
 
 // 格式化日期函數
 const formatDate = (dateArray) => {
-  if (!Array.isArray(dateArray) || dateArray.length < 6) {
-    return '日期不可用'; // 如果日期為空或格式不正確，返回提示
+  if (!Array.isArray(dateArray) || dateArray.length < 5) {
+    return null; // 如果日期為空或格式不正確，返回提示
   }
 
-  // 提取年、月、日、時、分、秒
-  const [year, month, day, hour, minute, second] = dateArray;
+  // 提取時間並檢查是否有秒
+  const [year, month, day, hour, minute, second = '00'] = dateArray; // 如果沒有秒，默認為 '00'
 
   // 格式化為 YYYY-MM-DD HH:mm:ss
   const formattedDate = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')} ` +
@@ -104,6 +105,7 @@ const formatDate = (dateArray) => {
 
   return formattedDate;
 };
+
 
 
 </script>
@@ -135,7 +137,7 @@ const formatDate = (dateArray) => {
                         <div class="productInfo">{{ item.productName }}</div>
                         <div class="priceInfo">{{ item.price }} 元</div>
                         <div class="quantityInfo">{{ item.quantity }}</div>
-                        <div class="totalInfo">{{ item.subtotal }} 元</div>
+                        <div class="totalInfo">{{ item.price * item.quantity }} 元</div>
                         <div class="delInfo"></div>
                     </div>
                     <div class="cartLine"></div>
@@ -217,7 +219,11 @@ const formatDate = (dateArray) => {
                     <div class="inputText"><span class="info">訂單號碼:</span><span>{{ orderDetail.orderNumber }}</span></div>
                     <div class="inputText"><span class="info">訂單日期:</span><span>{{ formatDate(orderDetail.createTime) }}</span></div>
                     <div class="inputText"><span class="info">訂單狀態:</span><span>{{ orderDetail.pickupStatus }}</span></div>
-                    <div class="inputText"><span class="info">取貨日期:</span><span>{{ formatDate(orderDetail.pickupTime) }}</span></div>
+                    <div class="inputText">
+                        <span class="info">取貨日期:</span>
+                        <span v-if="orderDetail.pickupTime">{{ formatDate(orderDetail.pickupTime) }}</span>
+                        <span v-else>未取貨</span>
+                    </div>
 
 
                 </div>

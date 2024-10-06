@@ -28,6 +28,7 @@ onMounted(() => {
 
 // 初始化數據抓取分類、風味和產品
 const initializeData = () => {
+  isLoading.value = true;
   fetchCategories()
     .then(() => fetchAllFlavors())
     .then(() => {
@@ -36,7 +37,9 @@ const initializeData = () => {
       return fetchProducts();
     })
     .then(() => {
-      isLoading.value = false;
+      setTimeout(() => {
+        isLoading.value = false;
+      }, 5000); 
     })
     .catch(err => {
       console.error('Error initializing data:', err);

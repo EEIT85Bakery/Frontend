@@ -67,7 +67,10 @@ const submitOrders = () => {
     }).then(() => { 
         if (paymentMethod.value == "門市付款") {
             SwalHandle.showSuccessMsg("訂單已成立")
-            router.push("/orderDetail")
+            router.push({
+                path: '/orderDetail',
+                query: { orderNumber: cartStore.merchantNo } // 訂單號作為 query 參數傳遞
+            });
             }else if (paymentMethod.value == "信用卡付款") {
                 router.push("/pay")
                 SwalHandle.showSuccessMsg("已建立訂單，可以去結帳囉！")

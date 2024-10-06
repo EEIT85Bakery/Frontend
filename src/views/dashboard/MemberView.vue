@@ -26,7 +26,7 @@ const fetchMembers = (page = 1, size = 10, phone = '') => {
 
   let endpoint = '/admin/members';
   if (phone) {
-    endpoint += `/search?userPhone=${phone}`; // 如果有電話號碼，則拼接到 URL
+    endpoint += `?userPhone=${phone}`; // 如果有電話號碼，則拼接到 URL
   }
 
   axiosInstanceForInsertHeader
@@ -170,7 +170,7 @@ onMounted(() => {
       <PaginationComponent :totalPages="totalPages" :currentPage="currentPage" @pageChange="handlePageChange" />
     </div>
 
-    <MemberModal ref="memberModalRef" :member="currentItem" @updatedMember="handleMemberUpdated" />
+    <MemberModal ref="memberModalRef" :member="currentItem" @memberUpdated="handleMemberUpdated" />
   </div>
 </template>
 

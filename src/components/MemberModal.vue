@@ -21,6 +21,19 @@ defineExpose({
   hideModal
 });
 
+// 格式化日期
+const formatDate = (dateArray) => {
+  if (!Array.isArray(dateArray) || dateArray.length !== 3) {
+    console.warn('Invalid date format:', dateArray);
+    return '';
+  }
+  const [year, month, day] = dateArray;
+  const formattedMonth = String(month).padStart(2, '0');
+  const formattedDay = String(day).padStart(2, '0');
+  return `${year}/${formattedMonth}/${formattedDay}`;
+};
+
+
 // 表單資料，包含會員等級
 const formData = ref({
   level: ''
@@ -34,17 +47,6 @@ const levels = [
   { value: 'level4', label: '鑽石兔會員' }
 ];
 
-// 格式化日期
-const formatDate = (dateArray) => {
-  if (!Array.isArray(dateArray) || dateArray.length !== 3) {
-    console.warn('Invalid date format:', dateArray);
-    return '';
-  }
-  const [year, month, day] = dateArray;
-  const formattedMonth = String(month).padStart(2, '0');
-  const formattedDay = String(day).padStart(2, '0');
-  return `${year}/${formattedMonth}/${formattedDay}`;
-};
 
 // 監聽 props.member 的變化，以抓取會員資料並初始化表單
 watch(
@@ -53,7 +55,7 @@ watch(
     if (newMember && newMember.id) {
       console.log('新會員資料:', newMember);
       openModal();
-      formData.value.level = newMember.userVip || '';
+      formData.value.level = newMember.userVip;
     } else {
       formData.value.level = '';
     }
@@ -61,8 +63,7 @@ watch(
   { immediate: true, deep: true }
 );
 
-
-// 新增: 定義 memberUpdated 事件
+// memberUpdated 事件
 const emit = defineEmits(['memberUpdated']);
 
 // 表單提交的函數，用於更新會員等級
@@ -83,6 +84,7 @@ const submitForm = async () => {
       SwalHandle.showSuccessMsg('會員等級變更成功');
       hideModal();
       emit('memberUpdated', { ...props.member, userVip: formData.value.level });
+
       
       
     } else {
