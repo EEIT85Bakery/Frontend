@@ -19,7 +19,7 @@ const pageSize = ref(9);
 const totalPages = ref(0);
 const router = useRouter();
 const route = useRoute();
-const keyword = ref(route.query.keyword || '');
+const keyword = ref('');
 
 // 組件加載時初始化數據
 onMounted(() => {
@@ -30,7 +30,11 @@ onMounted(() => {
 const initializeData = () => {
   fetchCategories()
     .then(() => fetchAllFlavors())
-    .then(() => fetchProducts())
+    .then(() => {
+      // 使用路由中的 keyword 進行初始搜索
+      keyword.value = route.query.keyword || '';
+      return fetchProducts();
+    })
     .then(() => {
       isLoading.value = false;
     })
@@ -67,6 +71,7 @@ const fetchProducts = () => {
   let url = '/api/products';
   let params = { page: currentPage.value - 1, size: pageSize.value };
 
+  // 如果 flavor、category 和 keyword 都為空，顯示全部商品
   if (selectedFlavor.value) {
     url = `/api/products/flavor/${selectedFlavor.value}`;
   } else if (selectedCategory.value) {
@@ -76,14 +81,14 @@ const fetchProducts = () => {
     params.keyword = keyword.value;
   }
 
+  console.log('Fetching products with URL:', url, 'and params:', params);
+
   return axios.get(url, { params })
     .then(response => {
       products.value = response.data.content;
       totalPages.value = response.data.totalPages;
       updateFieldValue();
       isLoading.value = false;
-      // console.log(products.value.img1);
-      
     })
     .catch(err => {
       console.error('Error fetching products:', err);
@@ -104,11 +109,21 @@ const updateFieldValue = () => {
   }
 };
 
+// 監聽路由變化，重置篩選條件並重新加載產品
+watch(() => route.query, (newQuery) => {
+  console.log('Route query changed:', newQuery);
+  keyword.value = newQuery.keyword || '';
+  selectedCategory.value = null;
+  selectedFlavor.value = null;
+  currentPage.value = 1;
+  fetchProducts();
+}, { immediate: true, deep: true });
+
 // 按分類獲取產品
 const fetchProductsByCategory = (category) => {
   selectedCategory.value = category;
   selectedFlavor.value = null;
-  keyword.value = ''; //清空 keyword然後再次執行fetchProducts()
+  keyword.value = '';
   currentPage.value = 1;
   fetchProducts();
 };
@@ -116,8 +131,8 @@ const fetchProductsByCategory = (category) => {
 // 按風味獲取產品
 const fetchProductsByFlavor = (flavor) => {
   selectedFlavor.value = flavor;
-  selectedCategory.value = null;  // 重置分類選擇
-  keyword.value = ''; //清空 keyword然後再次執行fetchProducts()
+  selectedCategory.value = null;
+  keyword.value = '';
   currentPage.value = 1;
   fetchProducts();
 };
@@ -128,24 +143,12 @@ const handlePageChange = (newPage) => {
   fetchProducts();
 };
 
-// 監聽路由變化，處理搜索關鍵字的變化
-watch(() => route.query.keyword, (newKeyword) => {
-  if (newKeyword !== keyword.value) {
-    keyword.value = newKeyword || '';
-    currentPage.value = 1;
-    selectedCategory.value = null;
-    selectedFlavor.value = null;
-    fetchProducts();
-  }
-});
-
 </script>
-
 
 
 <template>
   <div class="PContainer">
-    <div class="categoryText1">商品列表 >> {{ field }}</div>
+    <div class="categoryText1" @click="fetchProducts">商品列表 >> {{ field }}</div>
     <Loading v-if="isLoading" />
     <div v-else class="d-flex">
       <!-- 側邊分類欄 -->
@@ -172,7 +175,7 @@ watch(() => route.query.keyword, (newKeyword) => {
         <div class="categoryText2">商品排序 >> {{ rank }}</div>
         <div class="ProductsContainer">
           <div v-for="product in products" :key="product.id" class="products-item">
-            <img :src="`data:${mimeType};base64,${product.img1}`" :alt="product.name" class="products-image" />
+            <img :src="`data:image/jpeg;base64,${product.img1}`" :alt="product.name" class="products-image" />
             <div class="products-name">{{ product.productName }}</div>
             <div class="products-name">{{ product.description }}</div>
             <div class="products-price">價格：{{ product.price }}元</div>
@@ -184,6 +187,7 @@ watch(() => route.query.keyword, (newKeyword) => {
     </div>
   </div>
 </template>
+
 
 <style scoped>
 

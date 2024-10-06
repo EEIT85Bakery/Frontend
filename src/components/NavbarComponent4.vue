@@ -27,6 +27,14 @@ const handleSearch = () => {
     keyword.value = '';
 }
 
+// 回到全商品頁面
+const goToProducts = () => {
+    router.push({
+        path: 'products',
+        query: { t: Date.now() } // 使用時間戳來強制 Vue Router 視為不同的路由
+    });
+    toggleMenu(); // 關閉菜單
+};
 
 </script>
 
@@ -72,7 +80,7 @@ const handleSearch = () => {
                         <RouterLink class="navLink" to="theLastestNews" @click="toggleMenu">最新消息</RouterLink>
                     </li>
                     <li class="navItem">
-                        <RouterLink class="navLink" to="products" @click="toggleMenu">商品列表</RouterLink>
+                        <RouterLink class="navLink" to="products"  @click="goToProducts" >商品列表</RouterLink>
                     </li>
                     <li class="navItem">
                         <RouterLink class="navLink" to="shopInformation" @click="toggleMenu">門市資訊</RouterLink>

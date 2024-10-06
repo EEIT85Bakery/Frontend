@@ -1,6 +1,11 @@
 <script setup>
-import { onMounted, onUnmounted } from 'vue';
+import { onMounted, onUnmounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
+
+const isMenuOpen = ref(false); // 用來控制菜單的狀態
+const router = useRouter();
+const keyword = ref('');
+
 
 onMounted(() => {
     const offcanvasElement = document.getElementById('offcanvasRight');
@@ -23,8 +28,6 @@ function scrollToTop() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-const router = useRouter();
-
 const handleMemberClick = () => {
   const userRole = localStorage.getItem('user');
 
@@ -39,6 +42,43 @@ const handleMemberClick = () => {
     router.push({ path: '/login' });
   }
 };
+
+// 切換菜單狀態
+const toggleMenu = () => {
+    isMenuOpen.value = !isMenuOpen.value; // 切換狀態
+};
+
+// 根據關鍵字進行商品查詢並跳轉到商品頁面
+const handleSearch = () => {
+    if (keyword.value) {
+        console.log(`Navigating to products with keyword: ${keyword.value}`);
+        router.push({ 
+            path: '/products', 
+            query: { keyword: keyword.value, t: Date.now() } 
+        });
+    } else {
+        console.log('Navigating to products without keyword');
+        router.push({ 
+            path: '/products',
+            query: { t: Date.now() }
+        });
+    }
+
+    keyword.value = '';
+};
+
+// 回到全商品頁面並清空篩選條件
+const goToProducts = () => {
+    keyword.value = ''; 
+    router.push({
+        path: '/products',
+        query: { t: Date.now() }
+    });
+    toggleMenu();
+};
+
+
+
 </script>
 
 <template>
@@ -49,7 +89,6 @@ const handleMemberClick = () => {
                 寫下屬於您的日子吧！
             </span>
         </div>
-
 
         <div class="navBarContainer">
             <div class="logoContainer">
@@ -66,7 +105,7 @@ const handleMemberClick = () => {
                 <RouterLink class="navItem" to="theLastestNews">
                     <div>最新消息</div>
                 </RouterLink>
-                <RouterLink class="navItem" to="products">
+                <RouterLink class="navItem" to="products" @click="goToProducts">
                     <div>商品列表</div>
                 </RouterLink>
                 <RouterLink class="navItem" to="shopInformation">
@@ -81,15 +120,15 @@ const handleMemberClick = () => {
             </div>
 
             <div class="navIconsContainer">
-                <form class="searchContainer">
-                    <input type="search" class="searchInput" placeholder="找商品" />
+                <form class="searchContainer" @submit.prevent="handleSearch">
+                    <input v-model="keyword" type="search" class="searchInput" placeholder="找商品" />
                     <button type="submit" class="searchBtnContainer">
                         <i class="bi bi-search searchBtn"></i>
                     </button>
                 </form>
 
                 <RouterLink class="memberContainer" to="#" @click.prevent="handleMemberClick">
-                <i class="bi bi-person-fill memberBtn"></i>
+                    <i class="bi bi-person-fill memberBtn"></i>
                 </RouterLink>
 
                 <RouterLink class="cartContainer" to="cart">
@@ -113,8 +152,8 @@ const handleMemberClick = () => {
                 <div class="offcanvas-body">
 
                     <div class="navIconsContainerOff">
-                        <form class="searchContainerOff">
-                            <input type="search" class="searchInputOff" placeholder="找商品" />
+                        <form class="searchContainerOff" @submit.prevent="handleSearch">
+                            <input v-model="keyword" type="search" class="searchInputOff" placeholder="找商品" />
                             <button type="submit" class="searchBtnContaineOff">
                                 <i class="bi bi-search searchBtn"></i>
                             </button>
@@ -129,7 +168,7 @@ const handleMemberClick = () => {
                                 <div>最新消息</div>
                             </RouterLink>
                             <hr />
-                            <RouterLink class="navItemOff" to="products">
+                            <RouterLink class="navItemOff" to="products" @click="goToProducts">
                                 <div>商品列表</div>
                             </RouterLink>
                             <hr />
@@ -171,7 +210,6 @@ const handleMemberClick = () => {
             <i class="bi bi-arrow-up-circle-fill goTopIcon fixIcon"></i>
         </div>
     </div>
-
 
 </template>
 
