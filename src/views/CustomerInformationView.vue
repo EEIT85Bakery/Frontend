@@ -101,7 +101,7 @@ const deleteMember = () => {
       }
 
       axiosInstanceForInsertHeader
-        .delete(`/api/memberPage/${userId}`) // 使用正確的會員 ID 發送刪除請求
+        .delete("/memberPage") // 使用正確的會員 ID 發送刪除請求
         .then(() => {
           SwalHandle.showSuccessMsg('成功刪除帳號');
           router.push('/'); // 刪除成功後回到首頁
