@@ -23,15 +23,25 @@ const toNewProduct = (item) => {
   });
   
   emit('getProduct')
+  getAllProducts()
 }
 
 const getAllProducts = () => {
   axiosInstanceForInsertHeader.get('/admin/products').then((res) => {
-    otherProducts.value = res.data.filter(item => item.id != cartStore.productId)
-  }).catch((err) => {
-    console.log(err);
+    // 先過濾掉購物車中的商品
+    const filterProducts = res.data.filter(item => item.id != cartStore.productId);
     
-  })
+    // 使用 Fisher-Yates 洗牌算法打亂陣列
+    const shuffled = [...filterProducts];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    
+    // 直接取前4個元素(或更少如果陣列長度小於4)
+    otherProducts.value = shuffled.slice(0, Math.min(4, shuffled.length));
+  }).catch(err => console.log(err)
+  )
 }
 
 const addToCart = (item) => {

@@ -25,8 +25,6 @@ const clearInput = () => {
 }
 
 const getProduct = async () => {
-    console.log(cartStore.productId);
-    
     try {
         // 使用 await 獲取產品資料
         const res = await axiosInstanceForInsertHeader.get(`/products/${cartStore.productId}`);
@@ -47,6 +45,7 @@ const getProduct = async () => {
         isGetImage.value = true; // 確保這裡的變數名稱一致
         otherProductsLoaded.value = true;
         isGetProduct.value = true
+        isLoading.value = false
     } catch (err) {
         console.log(err); // 輸出錯誤到控制台
     }
@@ -96,15 +95,14 @@ function handleOpenModal() {
 const isLoading = ref(true);
 
 
-const startLoading = () => {
-    setTimeout(() => {
-        isLoading.value = false;
-    }, 600);
-};
+// const startLoading = () => {
+//     setTimeout(() => {
+//         isLoading.value = false;
+//     }, 600);
+// };
 
 watch(route, () => {
     isLoading.value = true;
-    startLoading();
 });
 
 
@@ -148,7 +146,6 @@ function selectImage(item) {
 }
 
 onMounted(() => {
-    startLoading();
     cartStore.productId = route.params.id
     getProduct()    
 });
