@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import CartTopComponent2 from '@/components/CartTopComponent2.vue';
 import MemberLevelModal from '@/components/MemberLevelModal.vue';
 import { useCartStore } from '@/stores/cartStore';
@@ -13,11 +13,30 @@ const modalRef = ref(null);
 const cartStore = useCartStore();
 const memberInfo = ref({})
 const paymentMethod = ref("門市付款")
+const times = ref(0)
 
-const pickupDate = ref('');
+const pickupDate = ref(Date.now);
 const pickupTime = ref('');
 
+const getTomorrowDate = () => {
+  const tomorrow = new Date()
+  tomorrow.setDate(tomorrow.getDate() + 1)
+  return tomorrow.toISOString().split('T')[0]
+}
 
+watch(pickupDate, (newDate) => {
+  const tomorrow = getTomorrowDate()
+  
+  // 如果選擇的日期在明天之前
+  if (newDate < tomorrow) {
+    // 自動設定為明天
+    times.value += 1
+    pickupDate.value = tomorrow
+  }
+  if(times.value >= 2 && newDate < tomorrow) {
+    SwalHandle.showErrorMsg("不能選擇明天以前的日期")
+  }
+})
 
 const combinedDateTime = computed(() => {
       if (pickupDate.value && pickupTime.value) {
@@ -136,6 +155,13 @@ const topStyle = computed(() => ({
 
 onMounted(() => {
     getMemberInfo()
+    const today = new Date();
+  pickupDate.value = today.toISOString().split('T')[0];
+  
+  // 設定現在的時間 (HH:MM 格式)
+  const hours = String(today.getHours()).padStart(2, '0');
+  const minutes = String(today.getMinutes()).padStart(2, '0');
+  pickupTime.value = `${hours}:${minutes}`;
 })
 
 
