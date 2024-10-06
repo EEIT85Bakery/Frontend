@@ -9,15 +9,15 @@ import MemberLevelModal from '@/components/MemberLevelModal.vue';
 import { SwalHandle } from '@/stores/sweetAlertStore';
 import axiosInstanceForInsertHeader from '@/axios/axiosInstanceForInsertHeader';
 import router from '@/router';
+import { useCartStore } from '@/stores/cartStore';
 
 const route = useRoute();
-const productId = ref(0);
 const product = ref({})
 const isGetImage = ref(false)
 const productAmount = ref(1)
 const otherProductsLoaded = ref(false)
 const isGetProduct = ref(false)
-
+const cartStore = useCartStore()
 
 
 const clearInput = () => {
@@ -25,9 +25,11 @@ const clearInput = () => {
 }
 
 const getProduct = async () => {
+    console.log(cartStore.productId);
+    
     try {
         // 使用 await 獲取產品資料
-        const res = await axiosInstanceForInsertHeader.get(`/products/${productId.value}`);
+        const res = await axiosInstanceForInsertHeader.get(`/products/${cartStore.productId}`);
         
         // 設置 product 為響應數據
         product.value = res.data;
@@ -147,7 +149,7 @@ function selectImage(item) {
 
 onMounted(() => {
     startLoading();
-    productId.value = route.params.id
+    cartStore.productId = route.params.id
     getProduct()    
 });
 
@@ -256,7 +258,7 @@ onMounted(() => {
     </div>
 
     <div v-if="isGetProduct">
-    <Swiper :productId="Number(route.params.id)"/>
+    <Swiper @getProduct="getProduct"/>
 </div>
     <MemberLevelModal ref="modalRef" />
 

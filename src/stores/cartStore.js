@@ -12,7 +12,13 @@ export const useCartStore = defineStore('cart', {
     img1: "",
     img2: "",
     img3: "",
-    img4: ""
+    img4: "",
+    productId: 0,
+    product: {},
+    otherProducts: [],
+  
+   
+  
   }),
   
   actions: {
@@ -42,6 +48,19 @@ export const useCartStore = defineStore('cart', {
     updateMerchantNo(newMerchantNo) {
       this.merchantNo = newMerchantNo;
     },
+     // 設置當前的產品 ID
+     setProductId(id){
+      this.productId = id;
+    },
+  
+    // 設置當前產品的數據
+    setProduct(data){
+      this.product = data;
+    },  
+    // 設置其他產品的數據
+    setOtherProducts(data){
+      this.otherProducts = data;
+    }
 
     // 可以根據需求添加更多方法來更新其他 state
   }

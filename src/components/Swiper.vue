@@ -4,19 +4,30 @@ import 'swiper/swiper-bundle.css';
 import axiosInstanceForInsertHeader from '@/axios/axiosInstanceForInsertHeader';
 import { ref, onMounted } from 'vue';
 import { SwalHandle } from '@/stores/sweetAlertStore';
+import { useRouter } from 'vue-router';
+import { useCartStore } from '@/stores/cartStore';
 
-const props = defineProps({
-productId: {
-    type: Number, // 根據實際情況設置類型
-    required: true
-  }
-});
+const router = useRouter()
+
+const cartStore = useCartStore();
+
+const emit = defineEmits(['getProduct']); // 定義事件
 
 const otherProducts = ref({})
 
+const toNewProduct = (item) => {
+  cartStore.setProductId(item.id)
+  router.push({ 
+    name: '單一產品頁面', // 目標路由的名稱
+    params: { id: item.id }  // 傳遞路由參數
+  });
+  
+  emit('getProduct')
+}
+
 const getAllProducts = () => {
   axiosInstanceForInsertHeader.get('/admin/products').then((res) => {
-    otherProducts.value = res.data.filter(item => item.id != props.productId)
+    otherProducts.value = res.data.filter(item => item.id != cartStore.productId)
   }).catch((err) => {
     console.log(err);
     
@@ -24,6 +35,7 @@ const getAllProducts = () => {
 }
 
 const addToCart = (item) => {
+  
   axiosInstanceForInsertHeader.post('/cart', {
         productId: item.id,
         quantity: 1,
@@ -82,9 +94,9 @@ onMounted(() => {
     ref="swiperRef">
     <swiper-slide v-for="(item, index) in otherProducts" :key="index">
       <div class="imgWrapper" @mouseenter="hoveredIndex = index" @mouseleave="hoveredIndex = null">
-        <RouterLink style="text-decoration: none;" to="/">
-          <img :src="`data:;base64,${item.img2}`" alt="Image" class="moreImg" :class="{ 'hovered': hoveredIndex === index }" />
-        </RouterLink>
+        <div style="text-decoration: none;" >
+          <img :src="`data:;base64,${item.img2}`" alt="Image" class="moreImg" :class="{ 'hovered': hoveredIndex === index }" @click="toNewProduct(item)"/>
+        </div>
         <button type="button" class="moreImgBtn" :class="{ 'visible': hoveredIndex === index }" @click="addToCart(item)">
           加入購物車
         </button>
