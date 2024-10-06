@@ -12,12 +12,29 @@ import axiosInstanceForInsertHeader from '@/axios/axiosInstanceForInsertHeader';
 const productModalRef = ref(null);
 const currentItem = ref(null); 
 const items = ref({})
+const currentPage = ref(1);
+    const totalPages = ref(1);
+    const itemsPerPage = ref(10);
+    const totalItems = ref(0)
+// const cartStore = useCartStore()
 
-const cartStore = useCartStore()
+const handlePageChange = (page) => {
+    currentPage.value = page
+      getProducts(page);
+    };
 
-const getProducts = () => {
-    axiosInstanceForInsertHeader.get('/admin/products').then((res) => {
-        items.value = res.data        
+const getProducts = (page) => {
+    
+    axiosInstanceForInsertHeader.get('/admin/products/page', {
+        params: {page: page - 1, size: itemsPerPage.value}
+    }).then((res) => {
+        const { content, totalElements, totalPages: backendTotalPages, size, number } = res.data;
+        totalItems.value = totalElements;
+        totalPages.value = backendTotalPages;
+        currentPage.value = number + 1;  // 後端頁碼從0開始，所以加1
+        itemsPerPage.value = size;
+        
+        items.value = content      
         console.log(items.value);
         
         items.value.forEach(item => {
@@ -63,7 +80,7 @@ const deleteItem = (item) => {
     () =>  {
   axiosInstanceForInsertHeader.delete(`/admin/products/${item.id}`).then(() => {
     SwalHandle.showSuccessMsg(`已刪除${item.productName}`)
-    getProducts()
+    getProducts(currentPage.value)
   }).catch((err) => {
     console.log(err);
     
@@ -131,7 +148,7 @@ const deleteItem = (item) => {
 // ]);
 
 onMounted(() => {
-    getProducts()
+    getProducts(currentPage.value)
 })
 
 
@@ -172,11 +189,11 @@ onMounted(() => {
                 </tbody>
             </table>
 
-            <!-- <PaginationComponent :totalPages="totalPages" :currentPage="currentPage" @changePage="" /> -->
-
+            <PaginationComponent :totalPages="totalPages" :currentPage="currentPage" @pageChange="handlePageChange">
+            </PaginationComponent>
         </div>
         
-        <ProductModal ref="productModalRef" :product="currentItem" @getProducts="getProducts"/>
+        <ProductModal ref="productModalRef" :product="currentItem" @getProducts="getProducts(currentPage)" :currentPage="currentPage"/>
 
 
     </div>

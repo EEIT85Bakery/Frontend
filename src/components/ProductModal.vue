@@ -9,6 +9,18 @@ import axiosInstanceForInsertHeader from '@/axios/axiosInstanceForInsertHeader';
 
 const cartStore = useCartStore()
 
+const props = defineProps({
+    product: {
+        type: Object,
+        default: null
+    },
+    currentPage: {
+        type: Number,
+        default: 1
+    }
+})
+
+
 const editProduct = () => {
     
     formData.value.img1 = cartStore.img1
@@ -33,7 +45,7 @@ const editProduct = () => {
     }).then((res) => {
         console.log(res);
             SwalHandle.showSuccessMsg("編輯產品成功")
-            getProducts()
+            getProducts(props.currentPage)
     }).catch(() => {
         SwalHandle.showErrorMsg("編輯產品失敗 請檢查必填參數")
     })
@@ -46,12 +58,6 @@ defineExpose({
     hideModal
 });
 
-const props = defineProps({
-    product: {
-        type: Object,
-        default: null
-    } 
-})
 
 const emit = defineEmits(['getProducts'])
 const getProducts = () => {
@@ -85,7 +91,7 @@ const addPrdocut = () => {
     }).then((res) => {
         console.log(res);
             SwalHandle.showSuccessMsg("新增產品成功")
-            getProducts()
+            getProducts(props.currentPage)
     }).catch(() => {
         SwalHandle.showErrorMsg("新增產品失敗 請檢查必填參數")
     })
