@@ -8,28 +8,70 @@ import MemberLevelModal from '@/components/MemberLevelModal.vue';
 
 import { SwalHandle } from '@/stores/sweetAlertStore';
 import axiosInstanceForInsertHeader from '@/axios/axiosInstanceForInsertHeader';
+import router from '@/router';
 
 const route = useRoute();
 const productId = ref(0);
 const product = ref({})
-const isGetImge = ref(false)
+const isGetImage = ref(false)
+const productAmount = ref(1)
+const otherProductsLoaded = ref(false)
 
-const getProduct = () => {
-    axiosInstanceForInsertHeader.get(`/products/${productId.value}`).then((res) => {
-        product.value = res.data
-        imgItems.value[0].imageUrl = product.value.img1
-        imgItems.value[1].imageUrl = product.value.img2
-        imgItems.value[2].imageUrl = product.value.img3
-        imgItems.value[3].imageUrl = product.value.img4
-        selectedImage.value = imgItems.value[0].imageUrl
-        isGetImge.value = true
-    }).catch((err) => {
-        console.log(err);
-    })
+
+
+const clearInput = () => {
+    productAmount.value = ""
 }
 
-const showSuccess = () => {
-    SwalHandle.showSuccessMsg('加入成功！');
+const getProduct = async () => {
+    try {
+        // 使用 await 獲取產品資料
+        const res = await axiosInstanceForInsertHeader.get(`/products/${productId.value}`);
+        
+        // 設置 product 為響應數據
+        product.value = res.data;
+
+        // 更新 imgItems 的圖片 URL
+        imgItems.value[0].imageUrl = product.value.img1 || ''; // 加入默認值以防止 undefined
+        imgItems.value[1].imageUrl = product.value.img2 || '';
+        imgItems.value[2].imageUrl = product.value.img3 || '';
+        imgItems.value[3].imageUrl = product.value.img4 || '';
+        
+        // 設置選中的圖片
+        selectedImage.value = imgItems.value[0].imageUrl;
+
+        // 更新狀態
+        isGetImage.value = true; // 確保這裡的變數名稱一致
+        otherProductsLoaded.value = true;
+        
+    } catch (err) {
+        console.log(err); // 輸出錯誤到控制台
+    }
+}
+
+
+const addToCart = (buy) => {
+    if (isNaN(Number(productAmount.value)) || productAmount.value === "" || Number(productAmount.value) < 0) {
+  SwalHandle.showErrorMsg("請填入數字");
+  return
+}
+    if(productAmount.value <= product.value.stocks) {
+    axiosInstanceForInsertHeader.post('/cart', {
+        productId: product.value.id,
+        quantity: productAmount.value,
+        price: product.value.price
+    }).then(() => {
+        SwalHandle.showSuccessMsg("成功新增到購物車")
+        if(buy == "直接購買") {
+            router.push('/cart')
+        }
+    }).catch((err) => {
+        console.log(err);
+        
+    })
+}else {
+    SwalHandle.showErrorMsg(`超過庫存上限，剩餘庫存${product.value.stocks}`)
+}
 };
 
 const isIconA = ref(true);
@@ -61,6 +103,8 @@ watch(route, () => {
     isLoading.value = true;
     startLoading();
 });
+
+
 
 
 
@@ -118,7 +162,7 @@ onMounted(() => {
 
             <!-- 產品小圖 -->
             <div class="productImgItems">
-                <div v-if="isGetImge">
+                <div v-if="isGetImage">
                 <div v-for="(item, index) in imgItems" :key="index" class="productImgItem"
                      @click="selectImage(item)">
                     <img class="productImg" :src="`data:;base64,${item.imageUrl}`" alt="Product Image">
@@ -133,7 +177,7 @@ onMounted(() => {
             <!-- 產品大圖 -->
             <div class="productImgItemDisplay">
                 <div class="displayItem">
-                    <div v-if="isGetImge">  
+                    <div v-if="isGetImage">  
                     <img  class="productImg" :src="`data:;base64,${selectedImage}`" alt="">
                     </div>
                 </div>
@@ -177,25 +221,29 @@ onMounted(() => {
             </div>
 
             <div class="CutLine"></div>
+            <div style="display: flex;">
+            <div class="productPrice" style="display: flex;justify-content: start;">
+                <div>商品庫存: <span class="">{{ product.stocks }}</span> 份</div>
+            </div>
 
             <div class="productPrice">
                 <div>商品金額: <span class="price">{{ product.price }}</span> 元</div>
             </div>
-
+        </div>
             <div class="productQuantity">
                 <div class="quantityText">數量： </div>
-                <input type="number" min="0" class="quantityInput" placeholder="請選擇數量">
+                <input type="number" min="1" class="quantityInput" placeholder="請選擇數量" v-model="productAmount" @focus="clearInput">
             </div>
 
             <div class="buttons">
                 <div class="AddCartBtn">
-                    <button class="btnCart" @click="showSuccess">
+                    <button class="btnCart" @click="addToCart">
                         加入購物車
                     </button>
                 </div>
-                <RouterLink class="buyBtn" to="/cart">
-                    <button class="btnBuy">直接購買</button>
-                </RouterLink>
+                <div class="buyBtn" >
+                    <button class="btnBuy" @click="addToCart('直接購買')">直接購買</button>
+                </div>
             </div>
         </div>
     </div>
@@ -206,15 +254,19 @@ onMounted(() => {
         <div class="Line"></div>
     </div>
 
-
     <Swiper />
-
     <MemberLevelModal ref="modalRef" />
 
 
 </template>
 
 <style scoped>
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
 .productContainer {
     display: flex;
     width: 100%;
