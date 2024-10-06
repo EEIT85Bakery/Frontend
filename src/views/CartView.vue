@@ -33,6 +33,7 @@ const appliedBunnyQuantity = ref(0)
 
 const memberlevel = ref({})
 const accumulateSpent = ref(0)
+const isGetCart = ref(false)
 
 //點擊清空欄位
 const clearInput = (e) => {
@@ -57,7 +58,7 @@ const resetDiscount = () => {
 
 const getCart = () => {
     axiosInstanceForInsertHeader.get('/cart').then((res) => {
-        
+        isGetCart.value = true
         items.value = res.data        
         const data = res.data;
         if (items.value.length !== 0) {
@@ -79,6 +80,7 @@ const getCart = () => {
         }
 
     }).catch(() => {
+        isGetCart.value = true
         SwalHandle.showErrorMsg('取得購物車失敗')
     })
 }
@@ -91,7 +93,7 @@ const deleteItem = (cartItem) => {
         '',
         () => {
             // 執行刪除操作，例如：
-            axiosInstanceForInsertHeader.delete(`/cart/${cartItem.id}`).then((res) => {
+            axiosInstanceForInsertHeader.delete(`/cart/${cartItem.id}`).then(() => {
                 getCart()
             }).catch(() => {
                 SwalHandle.showErrorMsg('刪除失敗，請聯繫網站管理員')
@@ -292,7 +294,20 @@ onMounted(() => {
 
 <template>
     <div>
-        <div v-if="items.length != 0">
+        <div v-if="items.length == 0 && isGetCart == true">
+            <div class="nothingText">目前購物車中沒有商品呦</div>
+            <div class="nothingContainer">
+                <i class="bi bi-basket3 nothingInCart"></i>
+                <!-- <i class="bi bi-cart-x nothingInCart"></i> -->
+                <RouterLink to="/products" style="text-decoration: none;">
+                    <div class="btnContainer">
+                        <button class="nothingBtn">前往購物吧</button>
+                    </div>
+                </RouterLink>
+            </div>
+        </div>
+
+        <div v-else>
             <CartTopComponent1 />
 
             <!-- 購物車 -->
@@ -424,20 +439,7 @@ onMounted(() => {
             <MemberLevelModal ref="modalRef" />
         </div>
 
-        <div v-else>
-            <div class="nothingText">目前購物車中沒有商品呦</div>
-            <div class="nothingContainer">
-                <i class="bi bi-basket3 nothingInCart"></i>
-                <!-- <i class="bi bi-cart-x nothingInCart"></i> -->
-                <RouterLink to="/" style="text-decoration: none;">
-                    <div class="btnContainer">
-                        <button class="nothingBtn">前往購物吧</button>
-                    </div>
-                </RouterLink>
-            </div>
-
-
-        </div>
+       
 
     </div>
 

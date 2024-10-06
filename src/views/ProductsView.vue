@@ -174,11 +174,14 @@ const handlePageChange = (newPage) => {
         <div class="productsPageTop"></div>
         <div class="categoryText2">商品排序 >> {{ rank }}</div>
         <div class="ProductsContainer">
-          <div v-for="product in products" :key="product.id" class="products-item">
-            <img :src="`data:image/jpeg;base64,${product.img1}`" :alt="product.name" class="products-image" />
+         
+          <div v-for="product in products" :key="product.id" class="products-item"> 
+            <RouterLink :to="{ name: '單一產品頁面', params: { id: product.id } }">
+            <img :src="`data:${mimeType};base64,${product.img1}`" :alt="product.name" class="products-image" />
             <div class="products-name">{{ product.productName }}</div>
             <div class="products-name">{{ product.description }}</div>
             <div class="products-price">價格：{{ product.price }}元</div>
+          </RouterLink>
           </div>
         </div>
         <!-- 使用分頁組件 -->
@@ -190,6 +193,15 @@ const handlePageChange = (newPage) => {
 
 
 <style scoped>
+
+.router-link {
+  text-decoration: none; /* 去除下劃線 */
+  color: inherit; /* 繼承父元素顏色 */
+}
+
+.router-link:hover {
+  color: #f30a0a; /* 懸停時顏色改變 */
+}
 
 .PContainer {
     display: flex;

@@ -15,17 +15,17 @@ const routes = [
         name: '產品頁面',
         component: () => import('../views/ProductsView.vue')
       },
-      // {
-      //   path: 'product/:id',
-      //   name: '單一產品頁面',
-      //   component: () => import('../views/ProductView.vue')
-      // },
       {
-        // test
-        path: 'product',
+        path: ':id',
         name: '單一產品頁面',
         component: () => import('../views/ProductView.vue')
       },
+      // {
+      //   // test
+      //   path: 'product',
+      //   name: '單一產品頁面',
+      //   component: () => import('../views/ProductView.vue')
+      // },
       {
         path: 'cart',
         name: '購物車頁面',
