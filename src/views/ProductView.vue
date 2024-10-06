@@ -16,6 +16,7 @@ const product = ref({})
 const isGetImage = ref(false)
 const productAmount = ref(1)
 const otherProductsLoaded = ref(false)
+const isGetProduct = ref(false)
 
 
 
@@ -43,7 +44,7 @@ const getProduct = async () => {
         // 更新狀態
         isGetImage.value = true; // 確保這裡的變數名稱一致
         otherProductsLoaded.value = true;
-        
+        isGetProduct.value = true
     } catch (err) {
         console.log(err); // 輸出錯誤到控制台
     }
@@ -124,21 +125,21 @@ const selectedImage = ref(imgItems.value);
 const discountExp = "2024/11/30";
 // const price = "160";
 
-const moreItems = ref([
-    {
-        imageUrl: '../../public/imgZip/Sample/apple pie.jpg',
-        name: '商品一號'
-    },
-    {
-        imageUrl: '../../public/imgZip/Sample/cake1.jpg',
-        name: '商品二號'
-    },
-    {
-        imageUrl: '../../public/imgZip/Sample/cake2.jpg',
-        name: '商品三號'
-    },
+// const moreItems = ref([
+//     {
+//         imageUrl: '../../public/imgZip/Sample/apple pie.jpg',
+//         name: '商品一號'
+//     },
+//     {
+//         imageUrl: '../../public/imgZip/Sample/cake1.jpg',
+//         name: '商品二號'
+//     },
+//     {
+//         imageUrl: '../../public/imgZip/Sample/cake2.jpg',
+//         name: '商品三號'
+//     },
 
-]);
+// ]);
 
 function selectImage(item) {
     selectedImage.value = item.imageUrl;
@@ -147,7 +148,7 @@ function selectImage(item) {
 onMounted(() => {
     startLoading();
     productId.value = route.params.id
-    getProduct()
+    getProduct()    
 });
 
 </script>
@@ -254,7 +255,9 @@ onMounted(() => {
         <div class="Line"></div>
     </div>
 
-    <Swiper />
+    <div v-if="isGetProduct">
+    <Swiper :productId="Number(route.params.id)"/>
+</div>
     <MemberLevelModal ref="modalRef" />
 
 

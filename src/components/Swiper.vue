@@ -1,26 +1,57 @@
 <script setup>
-import { ref, onMounted } from 'vue';
 import { Swiper, SwiperSlide } from 'swiper/vue';
 import 'swiper/swiper-bundle.css';
+import axiosInstanceForInsertHeader from '@/axios/axiosInstanceForInsertHeader';
+import { ref, onMounted } from 'vue';
+import { SwalHandle } from '@/stores/sweetAlertStore';
 
-const images = ref([
-  {
-    imageUrl: '../../public/imgZip/Sample/cheeseCake.jpg',
-    name: '草莓起司蛋糕'
-  },
-  {
-    imageUrl: '../../public/imgZip/Sample/apple pie.jpg',
-    name: '肉桂蘋果派'
-  },
-  {
-    imageUrl: '../../public/imgZip/Sample/cranberry scone.jpg',
-    name: '蔓越莓司康'
-  },
-  {
-    imageUrl: '../../public/imgZip/Sample/hand-made cookies.jpg',
-    name: '招牌手工餅乾'
+const props = defineProps({
+productId: {
+    type: Number, // 根據實際情況設置類型
+    required: true
   }
-])
+});
+
+const otherProducts = ref({})
+
+const getAllProducts = () => {
+  axiosInstanceForInsertHeader.get('/admin/products').then((res) => {
+    otherProducts.value = res.data.filter(item => item.id != props.productId)
+  }).catch((err) => {
+    console.log(err);
+    
+  })
+}
+
+const addToCart = (item) => {
+  axiosInstanceForInsertHeader.post('/cart', {
+        productId: item.id,
+        quantity: 1,
+        price: item.price
+  }).then(() => {
+    SwalHandle.showSuccessMsg(`成功添加到購物車`)
+  }).catch(err => console.log(err)
+  )
+}
+
+// const images = ref([
+//   {
+//     imageUrl: '../../public/imgZip/Sample/cheeseCake.jpg',
+//     name: '草莓起司蛋糕'
+//   },
+//   {
+//     imageUrl: '../../public/imgZip/Sample/apple pie.jpg',
+//     name: '肉桂蘋果派'
+//   },
+//   {
+//     imageUrl: '../../public/imgZip/Sample/cranberry scone.jpg',
+//     name: '蔓越莓司康'
+//   },
+//   {
+//     imageUrl: '../../public/imgZip/Sample/hand-made cookies.jpg',
+//     name: '招牌手工餅乾'
+//   }
+// ])
 
 const hoveredIndex = ref(null);
 const likedIndexes = ref([]);
@@ -32,6 +63,10 @@ const toggleLike = (index) => {
     likedIndexes.value.push(index);
   }
 };
+
+onMounted(() => {
+  getAllProducts()
+})
 
 </script>
 
@@ -45,12 +80,12 @@ const toggleLike = (index) => {
     :grab-cursor="false"  
     :allow-touch-move="false"
     ref="swiperRef">
-    <swiper-slide v-for="(item, index) in images" :key="index">
+    <swiper-slide v-for="(item, index) in otherProducts" :key="index">
       <div class="imgWrapper" @mouseenter="hoveredIndex = index" @mouseleave="hoveredIndex = null">
         <RouterLink style="text-decoration: none;" to="/">
-          <img :src="item.imageUrl" alt="Image" class="moreImg" :class="{ 'hovered': hoveredIndex === index }" />
+          <img :src="`data:;base64,${item.img2}`" alt="Image" class="moreImg" :class="{ 'hovered': hoveredIndex === index }" />
         </RouterLink>
-        <button class="moreImgBtn" :class="{ 'visible': hoveredIndex === index }">
+        <button type="button" class="moreImgBtn" :class="{ 'visible': hoveredIndex === index }" @click="addToCart(item)">
           加入購物車
         </button>
         <i class="bi bi-suit-heart heartIcon1"
@@ -61,13 +96,12 @@ const toggleLike = (index) => {
             @click="toggleLike(index)"></i>
       </div>
       <RouterLink style="text-decoration: none;" to="/">
-      <div class="moreProductName">{{ item.name }}</div>
+      <div class="moreProductName">{{ item.productName }}</div>
       </RouterLink>
     </swiper-slide>
   </swiper>
 </div>
 </template>
-
 
 
 <style>
