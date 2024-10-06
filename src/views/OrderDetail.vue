@@ -1,9 +1,28 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted  } from 'vue';
 import CartTopComponent3 from '@/components/CartTopComponent3.vue';
 import MemberLevelModal from '@/components/MemberLevelModal.vue';
+import { useRoute } from 'vue-router'; // 導入 useRoute
+import axiosInstanceForInsertHeader from '@/axios/axiosInstanceForInsertHeader.js'; // 假設你有 axiosInstance
 
+// 畫面使用之變數
 const modalRef = ref(null);
+const discountCode = 'HappyHalloween'
+const productimg = { imageUrl: '../../public/imgZip/Sample/cake1.jpg' };
+const productname = "雙重莓果饗宴蛋糕";
+const productprice = ref(360);
+const quantity = ref(1);
+const memberdiscount = ref(60);
+const bunnyquantity = ref(null);
+const maxBunnyQuantity = ref(15);
+const appliedBunnyQuantity = ref(0);
+const memberlevel = ref("金兔");
+
+const route = useRoute(); // 獲取當前路由
+const orderDetail = ref(null); // 用來存儲訂單詳細資料
+const isLoading = ref(false); // 加載狀態
+const orderNumber = ref(route.query.orderNumber); // 從路由參數中獲取訂單號碼
+
 
 // 用來觸發 modal 的打開方法
 function handleOpenModal() {
@@ -12,18 +31,9 @@ function handleOpenModal() {
   }
 }
 
-const discountCode = 'HappyHalloween'
-
-const productimg = { imageUrl: '../../public/imgZip/Sample/cake1.jpg' };
-const productname = "雙重莓果饗宴蛋糕";
-const productprice = ref(360);
-
-const quantity = ref(1);
-
 const totalprice = computed(() => {
     return productprice.value * quantity.value;
 });
-
 
 const discount = computed(() => {
     const price = totalprice.value;
@@ -35,18 +45,9 @@ const discount = computed(() => {
     }
 });
 
-const memberdiscount = ref(60);
-
-const bunnyquantity = ref(null);
-const maxBunnyQuantity = ref(15);
-
-const appliedBunnyQuantity = ref(0);
-
 function applyBunnyCoin() {
     appliedBunnyQuantity.value = Math.min(bunnyquantity.value, maxBunnyQuantity.value);
 }
-
-const memberlevel = ref("金兔");
 
 const discountStyle = computed(() => {
     if (memberlevel.value !== '白兔') {
@@ -63,13 +64,57 @@ const finaltotal = computed(() => {
     }
 })
 
+// 當頁面掛載時請求訂單詳細資料
+onMounted(() => {
+  fetchOrderDetail(); // 頁面加載時調用
+});
+
+const fetchOrderDetail = () => {
+  isLoading.value = true; // 設置加載狀態為 true
+  
+  axiosInstanceForInsertHeader.get('/orders/byOrderNumber', {
+    params: { orderNumber: orderNumber.value } // 傳遞訂單號碼作為查詢參數
+  })
+  .then((response) => {
+    orderDetail.value = response.data; // 獲取訂單詳細資料
+    console.log('訂單詳細資料:', orderDetail.value);
+    console.log('訂單詳細資料中的商品:', orderDetail.value.orderDetails);
+
+  })
+  .catch((error) => {
+    console.error('Error fetching order details:', error); // 捕捉錯誤並輸出
+  })
+  .finally(() => {
+    isLoading.value = false; // 不論成功或失敗都停止加載
+  });
+};
+
+// 格式化日期函數
+const formatDate = (dateArray) => {
+  if (!Array.isArray(dateArray) || dateArray.length < 6) {
+    return '日期不可用'; // 如果日期為空或格式不正確，返回提示
+  }
+
+  // 提取年、月、日、時、分、秒
+  const [year, month, day, hour, minute, second] = dateArray;
+
+  // 格式化為 YYYY-MM-DD HH:mm:ss
+  const formattedDate = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')} ` +
+                        `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}:${String(second).padStart(2, '0')}`;
+
+  return formattedDate;
+};
+
+
 </script>
 
 <template>
-
+      <div v-if="isLoading">Loading...</div>
+      <div v-else-if="orderDetail">
     <CartTopComponent3 />
 
     <!-- 購物車 -->
+
     <div class="cartContainer">
         <div class="cart">
             <div class="cartTop">購物車</div>
@@ -82,15 +127,15 @@ const finaltotal = computed(() => {
                     <!-- <div class="delTitle"></div> -->
                 </div>
                 <div class="cartLine"></div>
-                <div class="itemContainer">
+                <div class="itemContainer" v-for="(item, index) in orderDetail.orderDetails" :key="index">
                     <div class="items">
                         <div class="productImg">
                             <img :src="productimg.imageUrl" alt="" class="itemImg">
                         </div>
-                        <div class="productInfo">{{ productname }}</div>
-                        <div class="priceInfo">{{ productprice }} 元</div>
-                        <div class="quantityInfo">1</div>
-                        <div class="totalInfo">{{ totalprice }} 元</div>
+                        <div class="productInfo">{{ item.productName }}</div>
+                        <div class="priceInfo">{{ item.price }} 元</div>
+                        <div class="quantityInfo">{{ item.quantity }}</div>
+                        <div class="totalInfo">{{ item.subtotal }} 元</div>
                         <div class="delInfo"></div>
                     </div>
                     <div class="cartLine"></div>
@@ -98,10 +143,10 @@ const finaltotal = computed(() => {
                 <div class="detailContainer">
                     <div class="total">
                         <span class="leftText">總計:</span>
-                        <span>{{ totalprice }} 元</span>
+                        <span>{{ orderDetail.total }} 元</span>
                     </div>
                     <div class="allDiscount" :style="discountStyle">
-                        <span class="leftText">折扣:<span style="font-size: small;"> (已使用折扣碼 {{ discountCode }} )</span></span>
+                        <span class="leftText">折扣:<span style="font-size: small;"> (已使用折扣碼 {{ orderDetail.couponName }} )</span></span>
                         <span>{{ discount }} 元</span>
                     </div>
                     <div class="ownDiscount" v-if="memberlevel != '白兔'">
@@ -116,7 +161,7 @@ const finaltotal = computed(() => {
                     </div>
                     <div class="cartLine"></div>
                     <div class="finalPrice">合計:
-                        <span class="finalTotalPrice">{{ finaltotal }}</span> 元
+                        <span class="finalTotalPrice">{{ orderDetail.paidPrice }}</span> 元
                     </div>
                     <div class="cartLine"></div>
                     <div class="promotion">
@@ -142,11 +187,11 @@ const finaltotal = computed(() => {
         <div class="customerAndPayInfoContainer">
             <div class="customerInfo">
                 <div class="top">顧客資訊</div>
-                <div class="InfoContainer bg-white">
+                <div class="InfoContainer bg-white" >
 
-                    <div class="inputText"><span class="info">顧客姓名:</span><span>VickyJhan</span></div>
-                    <div class="inputText"><span class="info">電話號碼:</span><span>0912-345-678</span></div>
-                    <div class="inputText"><span class="info">電子信箱:</span><span>BunnySugar@service.com</span></div>
+                    <div class="inputText"><span class="info">顧客姓名:</span><span>{{ orderDetail.userName }}</span></div>
+                    <div class="inputText"><span class="info">電話號碼:</span><span>{{ orderDetail.userPhone }}</span></div>
+                    <div class="inputText"><span class="info">電子信箱:</span><span>{{ orderDetail.userEmail }}</span></div>
 
 
                 </div>
@@ -156,9 +201,9 @@ const finaltotal = computed(() => {
                 <div class="top">付款資訊</div>
                 <div class="InfoContainer bg-white">
 
-                    <div class="inputText"><span class="info">付款方式:</span><span>信用卡付款</span></div>
+                    <div class="inputText"><span class="info">付款方式:</span><span>{{ orderDetail.paymentMethod }}</span></div>
 
-                    <div class="inputText"><span class="info">付款狀態:</span><span>已付款</span></div>
+                    <div class="inputText"><span class="info">付款狀態:</span><span>{{ orderDetail.paymentStatus }}</span></div>
 
                 </div>
                 <div></div>
@@ -169,10 +214,10 @@ const finaltotal = computed(() => {
                 <div class="top">訂單資訊</div>
                 <div class="InfoContainer bg-white">
 
-                    <div class="inputText"><span class="info">訂單號碼:</span><span>2024091812345</span></div>
-                    <div class="inputText"><span class="info">訂單日期:</span><span>2024-09-18</span></div>
-                    <div class="inputText"><span class="info">訂單狀態:</span><span>已確認</span></div>
-                    <div class="inputText"><span class="info">取貨日期:</span><span>2024-10-18</span></div>
+                    <div class="inputText"><span class="info">訂單號碼:</span><span>{{ orderDetail.orderNumber }}</span></div>
+                    <div class="inputText"><span class="info">訂單日期:</span><span>{{ formatDate(orderDetail.createTime) }}</span></div>
+                    <div class="inputText"><span class="info">訂單狀態:</span><span>{{ orderDetail.pickupStatus }}</span></div>
+                    <div class="inputText"><span class="info">取貨日期:</span><span>{{ formatDate(orderDetail.pickupTime) }}</span></div>
 
 
                 </div>
@@ -189,7 +234,7 @@ const finaltotal = computed(() => {
     </div>
 
     <MemberLevelModal ref="modalRef" />
-
+</div>
 </template>
 
 <style scoped>

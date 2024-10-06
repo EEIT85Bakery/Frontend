@@ -21,14 +21,16 @@ const noResults = ref(false);  // 標記是否沒有搜尋結果
 // 從後端抓取會員資料，根據電話號碼進行查詢
 const fetchMembers = (page = 1, size = 10, phone = '') => {
   const params = { page, size };
-  if (phone) {
-    params.userPhone = phone; // 如果有查詢電話號碼，則帶入查詢參數
-  }
-
+  
   console.log(`Fetching members with params:`, params); // Debug
 
+  let endpoint = '/admin/members';
+  if (phone) {
+    endpoint += `/search?userPhone=${phone}`; // 如果有電話號碼，則拼接到 URL
+  }
+
   axiosInstanceForInsertHeader
-    .get(`/admin/members`, { params })
+    .get(endpoint, { params })
     .then((response) => {
       const data = response.data;
       console.log('Fetched members data:', data);
