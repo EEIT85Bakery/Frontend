@@ -158,7 +158,7 @@ const loginWithGoogle = async () => {
       <div class="thirdLogin">
         <span class="thirdLoginText">或使用社群帳號登入</span>
         <div class="thirdLoginIcon">
-          <img class="loginImg" src="../../public/imgZip/Icon/FB.png" alt="Facebook" />
+<!--          <img class="loginImg" src="../../public/imgZip/Icon/FB.png" alt="Facebook" />-->
           <img class="loginImg" src="../../public/imgZip/Icon/GOOGLE.png" alt="Google" @click="loginWithGoogle" />
         </div>
       </div>

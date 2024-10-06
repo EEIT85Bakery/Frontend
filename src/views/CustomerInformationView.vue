@@ -27,7 +27,6 @@ const fetchMemberData = () => {
     .then((response) => {
       // 確保從後端返回的資料正確賦值到 memberData
       memberData.value = response.data;
-
       // 檢查是否有 ID，並確保 ID 被賦值
       if (!memberData.value.id) {
         console.error('會員 ID 未定義'); // 提示錯誤
@@ -104,6 +103,9 @@ const deleteMember = () => {
         .delete("/memberPage") // 使用正確的會員 ID 發送刪除請求
         .then(() => {
           SwalHandle.showSuccessMsg('成功刪除帳號');
+
+          localStorage.removeItem('jwt');
+          localStorage.removeItem('user');
           router.push('/'); // 刪除成功後回到首頁
         })
         .catch((error) => {
@@ -165,8 +167,8 @@ onMounted(() => {
                         <div class="inputText">性別</div>
                         <select v-model="memberData.gender" class="inputContent">
                             <option value=""></option>
-                            <option value="man">男</option>
-                            <option value="woman">女</option>
+                            <option value="male">男</option>
+                            <option value="female">女</option>
                         </select>
                         <div class="inputText">生日</div>
                         <input type="date" class="inputContent" v-model="memberData.birthday">

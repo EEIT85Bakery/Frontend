@@ -1,9 +1,13 @@
 <script setup>
 import { ref } from 'vue';
 import axios from 'axios';
-import router from "@/router/index.js";
-import Swal from 'sweetalert2'; // 直接導入 SweetAlert2
 
+import Swal from 'sweetalert2';
+import {signInWithPopup} from "firebase/auth";
+import {auth, provider} from "@/firebase.js";
+import {useRouter} from "vue-router"; // 直接導入 SweetAlert2
+
+const router = useRouter();
 const phone = ref('');
 const email = ref('');
 const verifyingToken = ref('');
@@ -88,6 +92,69 @@ const verifyCode = async () => {
     });
   }
 };
+
+const loginWithGoogle = async () => {
+  try {
+    const result = await signInWithPopup(auth, provider);
+    const user = result.user;
+    console.log('User Info:', user);
+
+    // 拿到 Firebase ID Token
+    const token = await user.getIdToken();
+    console.log('Firebase ID Token:', token);
+
+    // 發送 ID Token 到後端進行驗證
+    const response = await axios.post('http://localhost:8080/user/googleLogin', {
+      googleToken: token
+    });
+
+    // 後端驗證成功後的回應
+    console.log('後端驗證成功:', response.data);
+
+    // 根據後端回傳的結果，處理前端邏輯
+    if (response.data.status === 'success') { // 檢查狀態是否成功
+      const jwt = response.data.token; // 確保從後端獲取 JWT
+      const role = response.data.user;
+      localStorage.setItem('jwt', jwt); // 儲存 JWT 到 localStorage
+      localStorage.setItem('user', role);
+
+      console.log('用戶登入成功，跳轉到首頁');
+
+      // 顯示 SweetAlert，持續 2 秒
+      await Swal.fire({
+        title: '成功!',
+        text: '登入成功！',
+        icon: 'success',
+        confirmButtonText: '確認',
+        customClass: { confirmButton: 'myConfirmBtn' },
+        timer: 2000, // 2 秒後自動關閉
+        timerProgressBar: true // 顯示進度條
+      });
+
+      router.push({ name: '首頁' });
+
+    } else {
+      console.error('後端驗證失敗:', response.data.message);
+      Swal.fire({
+        title: '登入失敗',
+        text: response.data.message,
+        icon: 'error',
+        confirmButtonText: '重新嘗試',
+        customClass: { confirmButton: 'myConfirmBtn' }
+      });
+    }
+  } catch (error) {
+    console.error('Error during login:', error.response ? error.response.data : error.message);
+    // 處理登入失敗的情況
+    Swal.fire({
+      title: '登入失敗',
+      text: '請檢查您的 Google 登入，或重試。',
+      icon: 'error',
+      confirmButtonText: '重新嘗試',
+      customClass: { confirmButton: 'myConfirmBtn' }
+    });
+  }
+};
 </script>
 
 <template>
@@ -129,8 +196,8 @@ const verifyCode = async () => {
       <div class="thirdregister">
         <span class="thirdregisterText">或使用社群帳號註冊</span>
         <div class="thridregisterIcon">
-          <img class="registerImg" src="../../public/imgZip/Icon/FB.png" alt=".">
-          <img class="registerImg" src="../../public/imgZip/Icon/GOOGLE.png" alt=".">
+<!--          <img class="registerImg" src="../../public/imgZip/Icon/FB.png" alt=".">-->
+          <img class="registerImg" src="../../public/imgZip/Icon/GOOGLE.png" alt="Google" @click="loginWithGoogle">
         </div>
       </div>
 
