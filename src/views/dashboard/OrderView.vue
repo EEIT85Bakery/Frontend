@@ -1,10 +1,11 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import PaginationComponent from '@/components/PaginationComponent.vue';
 import OrderModal from '@/components/OrderModal.vue';
 import DashBoardNavBarOrder from '@/components/DashBoardNavBarOrder.vue';
 import { SwalHandle } from '@/stores/sweetAlertStore';
 import axiosInstanceForInsertHeader from '@/axios/axiosInstanceForInsertHeader';
+import { useRoute, useRouter } from 'vue-router';
 
 const orderModalRef = ref(null);
 const currentItem = ref(null); 
@@ -13,6 +14,8 @@ const totalElements = ref(0);
 const totalPages = ref(0);
 const size = ref(10); // 每頁顯示10
 const currentPage = ref(1);  // 當前頁碼
+const route = useRoute();
+const router = useRouter();
 
 // 打開新增 modal
 const openOrderModal = () => {
@@ -43,22 +46,40 @@ const deleteItem = (order) => {
   );
 };
 
-// 從後端取得訂單資料
+// 從後端取得訂單資料，根據電話號碼和訂單編號來查詢
 const fetchOrders = () => {
-  axiosInstanceForInsertHeader.get('/admin/orders', {
-    page: currentPage.value - 1 ,
+  const params = {
+    page: currentPage.value,
     size: size.value,
-  })
-  .then((response) => {
-    const { content, totalElements: total, totalPages: pages } = response.data;
-    orders.value = content; // 設定訂單資料
-    totalElements.value = total; // 總資料數
-    totalPages.value = pages; // 總頁數
-  })
-  .catch((error) => {
-    SwalHandle.showErrorMsg('無法取得訂單資料', error.response?.data?.message || error.message);
-  });
+  };
+  // 如果有輸入電話號碼，則將其加入查詢參數
+  if (route.query.search) {
+    params.search = route.query.search;
+  }
+  axiosInstanceForInsertHeader
+    .get('/admin/orders', { params })
+    .then((response) => {
+      const { content, totalElements: total, totalPages: pages } = response.data;
+      orders.value = content; // 設定訂單資料
+      totalElements.value = total; // 總資料數
+      totalPages.value = pages; // 總頁數
+      console.log('route.query:', route.query);
+      console.log('params:', params);
+    })
+    .catch((error) => {
+      SwalHandle.showErrorMsg('無法取得訂單資料', error.response?.data?.message || error.message);
+    });
 };
+
+watch(() => route.query, (newQuery) => {
+  currentPage.value = 1; // 重置頁碼
+  // 檢查是否有 search 參數
+  if (newQuery.search) {
+    fetchOrders({ search: newQuery.search });
+  } else {
+    fetchOrders();
+  }
+}, { deep: true });
 
 // 頁數變更時觸發
 const handlePageChange = (newPage) => {

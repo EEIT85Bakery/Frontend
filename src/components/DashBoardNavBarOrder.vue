@@ -1,4 +1,21 @@
 <script setup>
+import { ref } from 'vue';  // 從 vue 中導入 ref
+import { useRouter } from 'vue-router';
+
+const searchInput = ref('');
+const router = useRouter();
+
+const searchOrder = () => {
+  if (searchInput.value) {
+    router.push({ 
+      name: '訂單頁面', 
+      query: { search: searchInput.value } 
+    });
+  } else {
+    router.push({ name: '訂單頁面' });
+  }
+};
+
 
 </script>
 
@@ -47,9 +64,8 @@
 
                 <div class="navbarIconContainer d-flex ms-auto">
                     <div class="nabarSearchContainer">
-                        <form class="d-flex" role="search">
-                            <input class="navbarSearchInput" type="search" placeholder="搜尋訂單">
-                            <button class="btn" type="submit">
+                        <form class="d-flex" role="search" @submit.prevent="searchOrder">
+                            <input v-model="searchInput" class="navbarSearchInput" type="search" placeholder="搜尋訂單">                            <button class="btn" type="submit">
                                 <i class="navbarIcon navbarSearchIcon bi bi-search"></i>
                             </button>
                         </form>
