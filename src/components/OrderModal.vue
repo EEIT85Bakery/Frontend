@@ -1,11 +1,8 @@
 <script setup>
-import { ref, watch, defineProps } from 'vue';
+import { ref, watch, defineProps, defineEmits } from 'vue';
 import useModal from '@/hooks/useModal';
 import { SwalHandle } from '@/stores/sweetAlertStore';
-
-const showSuccess = () => {
-  SwalHandle.showSuccessMsg('變更成功！');
-};
+import axiosInstanceForInsertHeader from '@/axios/axiosInstanceForInsertHeader';
 
 const { openModal, hideModal, modalRef } = useModal()
 
@@ -15,110 +12,74 @@ defineExpose({
 });
 
 const props = defineProps({
-  product: {
-    type: Object,
+  orderNumber: {
+    type: String,
     default: null
   }
 })
 
-const isModalOpen = ref(false);
+const emit = defineEmits(['orderUpdated']);
+
+const orderDetail = ref(null);
+const isLoading = ref(false);
 
 const formData = ref({
-    isPaid:'',
-    orderStatus: ''
+  paymentStatus: '',
+  pickupStatus: '',
 });
 
-watch(
-  () => props.product,
-  (newProduct) => {
-    if (newProduct) {
-      // 如果是編輯模式，將 product 的數據填入表單
-      formData.value = { ...newProduct };
-    } else {
-      // 如果是新增模式，清空表單
-      formData.value = {
-        isPaid:'',
-        orderStatus: ''
-      };
-    }
-  },
-  { immediate: true }
-);
+const fetchOrderDetail = async () => {
+  if (!props.orderNumber) return;
+  
+  isLoading.value = true;
+  console.log(`Fetching details for order number: ${props.orderNumber}`); // 顯示訂單號碼
 
-// 表單提交
-const submitForm = () => {
-  if (props.product) {
-    console.log('編輯商品', formData.value);
-  } else {
-    console.log('新增商品', formData.value);
+  try {
+    const response = await axiosInstanceForInsertHeader.get(`/admin/orders/details/${props.orderNumber}`);
+    console.log('Order details fetched:', response.data); // 確認返回的資料
+    orderDetail.value = response.data;
+    console.log('Order products details:', orderDetail.value.orderDetails);
+    formData.value.paymentStatus = orderDetail.value.paymentStatus || 'unPaid';
+    formData.value.pickupStatus = orderDetail.value.pickupStatus;
+  } catch (error) {
+    console.error('Error fetching order details:', error);
+    SwalHandle.showErrorMsg('無法獲取訂單詳細資訊', error.response?.data?.message || error.message);
+  } finally {
+    isLoading.value = false;
   }
-  // 這裡可以觸發保存或新增的操作
-  showSuccess();
-  hideModal();
-  isModalOpen.value = false;
+}
+
+watch(() => props.orderNumber, fetchOrderDetail, { immediate: true });
+
+const submitForm = async () => {
+  try {
+    await axiosInstanceForInsertHeader.put(`/admin/orders/${props.orderNumber}/updateStatus`, {
+      paymentStatus: formData.value.paymentStatus,
+      pickupStatus: formData.value.pickupStatus
+    });
+    emit('orderUpdated', { ...orderDetail.value, ...formData.value });
+    SwalHandle.showSuccessMsg('訂單狀態更新成功');
+    hideModal();
+  } catch (error) {
+    SwalHandle.showErrorMsg('更新失敗', error.response?.data?.message || error.message);
+  }
 };
 
+// 格式化日期函數
+const formatDate = (dateArray) => {
+  if (!Array.isArray(dateArray) || dateArray.length < 5) {
+    return null; // 如果日期為空或格式不正確，返回提示
+  }
 
+  // 提取時間並檢查是否有秒
+  const [year, month, day, hour, minute, second = '00'] = dateArray; // 如果沒有秒，默認為 '00'
 
-const userInfo = ref([
-    {
-        userName: "吉伊卡哇",
-        tel: "0912-345-678",
-        email: "BunnySugar@service.com"
-    }
-]);
+  // 格式化為 YYYY-MM-DD HH:mm:ss
+  const formattedDate = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')} ` +
+                        `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}:${String(second).padStart(2, '0')}`;
 
-const orderInfo = ref([
-    {
-        num: "2024010101",
-        date: "2024-01-01",
-        payWay: "信用卡",
-        unPaid: "未付款",
-        paid: "已付款",
-        confirm: "已確認",
-        finish:"已完成",
-        payTime: "2024-01-02",
-        price: 3600,
-        discountCode: "HappyHalloween",
-        discount: 150,
-        BunnyCoin: 15
-    }
-]);
-
-const products = ref([
-    {
-        id: "1",
-        productName: "經典紐約起司蛋糕",
-        quantity: "1 顆",
-        total: "360 元"
-    },
-    {
-        id: "2",
-        productName: "經典紐約起司蛋糕",
-        quantity: "1 顆",
-        total: "360 元"
-    },
-    {
-        id: "3",
-        productName: "經典紐約起司蛋糕",
-        quantity: "1 顆",
-        total: "360 元"
-    },
-    {
-        id: "4",
-        productName: "經典紐約起司蛋糕",
-        quantity: "1 顆",
-        total: "360 元"
-    },
-    {
-        id: "5",
-        productName: "經典紐約起司蛋糕",
-        quantity: "1 顆",
-        total: "360 元"
-    }
-]);
-
-
+  return formattedDate;
+};
 </script>
 
 <template>
@@ -131,65 +92,66 @@ const products = ref([
                     </button>
                 </div>
                 <div class="modal-body modalBody">
+                    <div v-if="isLoading">加載中...</div>
+                    <div v-else-if="orderDetail">
+                        <div class="Container1">
 
-                    <div class="Container1">
+                            <div class="inputText">訂購人資料</div>
 
-                        <div class="inputText">訂購人資料</div>
-
-                        <div class="Container2" v-for="(info, index) in userInfo" :key=index>
-                            <div class="text"><span class="textName">姓名:</span><span>{{ info.userName }}</span></div>
-                            <div class="text"><span class="textName">電話號碼:</span><span>{{ info.tel }}</span></div>
-                            <div class="text"><span class="textName">電子信箱:</span><span>{{ info.email }}</span></div>
-                            <hr />
-                        </div>
-
-
-
-                        <div class="inputText">訂單資訊</div>
-
-                        <div class="Container2" v-for="(detail, index) in orderInfo" :key=index>
-                            <div class="text"><span class="textName">訂單編號:</span><span>{{ detail.num }}</span></div>
-                            <div class="text"><span class="textName">下單日期:</span><span>{{ detail.date }}</span></div>
-                            <div class="text"><span class="textName">付款方式:</span><span>{{ detail.payWay }}</span></div>
-                            <div class="text content textName">付款狀態:
-                                <select name="pay" class="payment" v-model="formData.isPaid">
-                                    <option value="unPaid">{{ detail.unPaid }}</option>
-                                    <option value="paid">{{ detail.paid }}</option>
-                                </select>
-                            </div>
-                            <div class="text content textName">訂單狀態:
-                                <select name="pay" class="payment" v-model="formData.orderStatus">
-                                    <option value="unPaid">{{ detail.confirm }}</option>
-                                    <option value="paid">{{ detail.finish }}</option>
-                                </select>
-                            </div>
-                            <div class="text"><span class="textName">付款時間:</span><span>{{ detail.payTime }}</span></div>
-                            <div class="text"><span class="textName">總金額:</span><span>{{ detail.price }} 元</span></div>
-                            <div class="text"><span class="textName">使用折扣碼:</span><span>{{ detail.discountCode }}</span></div>
-                            <div class="text"><span class="textName">折扣金額:</span><span>{{ detail.discount }} 元</span></div>
-                            <div class="text"><span class="textName">使用BunnyCoin:</span><span>{{ detail.BunnyCoin }} 枚</span></div>
-                            <hr />
-                        </div>
-
-                    </div>
-                    <div class="textContainer">
-                        <div class="productTitle">
-                            <div class="inputText">選購商品</div>
-
-                            <div class="Container2" v-for="(item, index) in products" :key=index>
-                                <div class="textName text textNum"><i class="bi bi-check2-circle"> 品項{{ item.id }}</i>
-                                </div>
-                                <div class="text"><span class="textName">商品名稱:</span><span>{{ item.productName }}</span>
-                                </div>
-                                <div class="text"><span class="textName">數量:</span><span>{{ item.quantity }}</span>
-                                </div>
-                                <div class="text"><span class="textName">小計:</span><span>{{ item.total }}</span></div>
+                            <div class="Container2" >
+                                <div class="text"><span class="textName">姓名:</span><span>{{ orderDetail.userName }}</span></div>
+                                <div class="text"><span class="textName">電話號碼:</span><span>{{ orderDetail.userPhone }}</span></div>
+                                <div class="text"><span class="textName">電子信箱:</span><span>{{ orderDetail.userEmail }}</span></div>
                                 <hr />
                             </div>
+
+
+
+                            <div class="inputText">訂單資訊</div>
+                            
+                            <div class="Container2">
+                                <div class="text"><span class="textName">訂單編號:</span><span>{{ orderDetail.orderNumber }}</span></div>
+                                <div class="text"><span class="textName">下單日期:</span><span>{{ formatDate(orderDetail.createTime) }}</span></div>
+                                <div class="text"><span class="textName">付款方式:</span><span>{{ orderDetail.paymentMethod }}</span></div>
+                                <div class="text content textName">付款狀態:
+                                    <select name="pay" class="payment" v-model="formData.paymentStatus">
+                                        <option value="unPaid">未付款</option>
+                                        <option value="paid">已付款</option>
+                                    </select>
+                                </div>
+                                <div class="text content textName">訂單狀態:
+                                    <select name="pay" class="payment" v-model="formData.pickupStatus">
+                                        <option value="unPaid">已確認</option>
+                                        <option value="paid">已取貨</option>
+                                    </select>
+                                </div>
+                                <div class="text"><span class="textName">付款時間:</span><span>{{ formatDate(orderDetail.paymentDate) }}</span></div>
+                                <div class="text"><span class="textName">總金額:</span><span>{{ orderDetail.paidPrice }} 元</span></div>
+                                <div class="text"><span class="textName">使用折扣碼:</span><span>{{ orderDetail.couponName }}</span></div>
+                                <div class="text"><span class="textName">折扣金額:</span><span>{{ orderDetail.total - orderDetail.paidPrice }} 元</span></div>
+                                <div class="text"><span class="textName">使用BunnyCoin:</span><span>{{ orderDetail.usedBunnyCoins }} 枚</span></div>
+                                <hr />
+                            </div>
+
                         </div>
+                        <div class="textContainer">
+                            <div class="productTitle">
+                                <div class="inputText">選購商品</div>
 
+                                <div class="Container2" v-for="(product, index) in orderDetail.orderDetails" :key=index>
+                                    <div class="textName text textNum"><i class="bi bi-check2-circle"> 品項 </i>
+                                    </div>
+                                    <div class="text"><span class="textName">商品名稱:</span><span>{{ product.productName }}</span>
+                                    </div>
+                                    <div class="text"><span class="textName">數量:</span><span>{{ product.quantity }}</span>
+                                    </div>
+                                    <div class="text"><span class="textName">小計:</span><span>{{ product.price * product.quantity }}</span></div>
+                                    <hr />
+                                </div>
+                            </div>
+
+                        </div>
                     </div>
-
                 </div>
                 <div class="modal-footer modalFooter">
                     <button type="button" class="btn1" @click="hideModal">取消</button>

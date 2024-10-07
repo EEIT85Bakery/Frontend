@@ -82,7 +82,7 @@ const fetchProducts = () => {
   } else if (keyword.value) {
     url = `/api/products/search`;
     params.keyword = keyword.value;
-  }
+  } 
 
   console.log('Fetching products with URL:', url, 'and params:', params);
 

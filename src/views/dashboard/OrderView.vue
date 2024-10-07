@@ -8,7 +8,7 @@ import axiosInstanceForInsertHeader from '@/axios/axiosInstanceForInsertHeader';
 import { useRoute, useRouter } from 'vue-router';
 
 const orderModalRef = ref(null);
-const currentItem = ref(null); 
+const currentOrderNumber = ref(null);
 const orders = ref([]);
 const totalElements = ref(0);
 const totalPages = ref(0);
@@ -17,13 +17,6 @@ const currentPage = ref(1);  // 當前頁碼
 const route = useRoute();
 const router = useRouter();
 
-// 打開新增 modal
-const openOrderModal = () => {
-  currentItem.value = null; // 清空當前選中的商品，表示新增
-  if (orderModalRef.value) {
-    orderModalRef.value.openModal();
-  }
-};
 
 // 打開編輯 modal
 // const openEditCouponModal = (item) => {
@@ -81,6 +74,23 @@ watch(() => route.query, (newQuery) => {
   }
 }, { deep: true });
 
+// 打開編輯訂單狀態modal
+const openOrderModal = (order) => {
+  currentOrderNumber.value = order.orderNumber;
+  console.log('Opening modal for editing order:', order.orderNumber);
+  if (orderModalRef.value) {
+    orderModalRef.value.openModal();
+  }
+};
+
+// 用於接收更新後的會定訂單資料
+const handleOrderUpdated = (updatedOrder) => {
+  const index = orders.value.findIndex(order => order.id === updatedOrder.orderNumber);
+  if (index !== -1) {
+    orders.value[index] = updatedOrder;
+  }
+};
+
 // 頁數變更時觸發
 const handlePageChange = (newPage) => {
     currentPage.value = newPage; // 更新頁碼
@@ -131,7 +141,7 @@ onMounted(() => {
                         <td>{{ order.paidPrice }}</td>
                         <td>{{ order.paymentStatus }}</td>
                         <td>{{ order.pickupStatus }}</td>
-                        <td><i class="bi bi-pencil-square" style="color: darkgrey;" @click="openOrderModal(item)"></i></td>
+                        <td><i class="bi bi-pencil-square" style="color: darkgrey;" @click="openOrderModal(order)"></i></td>
                         <td><i class="bi bi-trash3" style="color: darkred;" @click="deleteItem(item)"></i></td>
                     </tr>
                 </tbody>
@@ -141,7 +151,7 @@ onMounted(() => {
 
         </div>
 
-        <OrderModal ref="orderModalRef" :product="currentItem" />
+        <OrderModal ref="orderModalRef" :orderNumber="currentOrderNumber" @orderUpdated="handleOrderUpdated" />
 
 
     </div>

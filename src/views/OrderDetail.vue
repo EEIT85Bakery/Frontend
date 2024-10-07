@@ -22,7 +22,6 @@ const route = useRoute(); // 獲取當前路由
 const orderDetail = ref(null); // 用來存儲訂單詳細資料
 const isLoading = ref(false); // 加載狀態
 const orderNumber = ref(route.query.orderNumber); // 從路由參數中獲取訂單號碼
-const orderDetails = computed(() => orderDetail.value?.orderDetails || []);
 
 
 // 用來觸發 modal 的打開方法
