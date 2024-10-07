@@ -11,8 +11,7 @@ import { ref, onMounted, onBeforeUnmount } from 'vue';
 
 // 定義數據
 const images = [
-  '/imgZip/loading/bunnyLoading1.png',
-  '/imgZip/loading/bunnyLoading2.png',
+  // '/imgZip/loading/bunnyLoading2.png',
   '/imgZip/loading/bunnyLoading3.png',
   '/imgZip/loading/bunnyLoading4.png',
   '/imgZip/loading/bunnyLoading5.png',
@@ -33,7 +32,7 @@ const showNextImage = () => {
   interval = setTimeout(() => {
     currentImage.value = (currentImage.value + 1) % images.length;
     showNextImage();
-  }, 50);
+  }, 200);
 };
 
 // 停止輪播圖片
