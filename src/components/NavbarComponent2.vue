@@ -5,6 +5,8 @@ import { useRouter } from 'vue-router';
 const isMenuOpen = ref(false); // 用來控制菜單的狀態
 const router = useRouter();
 const keyword = ref('');
+const isAdmin = ref(localStorage.getItem('user') === 'ADMIN');
+
 
 
 onMounted(() => {
@@ -52,13 +54,13 @@ const toggleMenu = () => {
 const handleSearch = () => {
     if (keyword.value) {
         console.log(`Navigating to products with keyword: ${keyword.value}`);
-        router.push({ 
-            path: '/products', 
-            query: { keyword: keyword.value, t: Date.now() } 
+        router.push({
+            path: '/products',
+            query: { keyword: keyword.value, t: Date.now() }
         });
     } else {
         console.log('Navigating to products without keyword');
-        router.push({ 
+        router.push({
             path: '/products',
             query: { t: Date.now() }
         });
@@ -69,7 +71,7 @@ const handleSearch = () => {
 
 // 回到全商品頁面並清空篩選條件
 const goToProducts = () => {
-    keyword.value = ''; 
+    keyword.value = '';
     router.push({
         path: '/products',
         query: { t: Date.now() }
@@ -193,7 +195,7 @@ const goToProducts = () => {
         </div>
     </div>
 
-    <RouterLink to="backProducts">
+    <RouterLink v-if="isAdmin" to="backProducts">
         <div class="mangerContainer">
             <i class="bi bi-gear-fill fixIcon"></i>
         </div>
