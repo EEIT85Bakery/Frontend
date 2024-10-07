@@ -64,13 +64,9 @@ const handleSearch = () => {
         router.push({
             path: '/products',
             query: { keyword: keyword.value, t: Date.now() }
-        router.push({
-            path: '/products',
-            query: { keyword: keyword.value, t: Date.now() }
         });
     } else {
         console.log('Navigating to products without keyword');
-        router.push({
         router.push({
             path: '/products',
             query: { t: Date.now() }
