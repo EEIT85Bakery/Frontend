@@ -42,7 +42,7 @@ const handleMemberClick = () => {
 
   if (userRole === 'ADMIN') {
     // 如果是 ADMIN，跳轉到後台首頁
-    router.push({ path: '/backProducts' });
+    router.push({ path: '/customerInformation' });
   } else if (userRole === 'USER') {
     // 如果是 USER，跳轉到會員資訊頁面
     router.push({ path: '/customerInformation' });
