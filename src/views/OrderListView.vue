@@ -1,6 +1,6 @@
 <script setup>
-import { ref, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
+import { ref, onMounted, watch } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import axiosInstanceForInsertHeader from '@/axios/axiosInstanceForInsertHeader.js';
 import PaginationComponent from '@/components/PaginationComponent.vue';
 import Loading from '@/components/Loading.vue';
@@ -10,34 +10,36 @@ const isLoading = ref(false);
 const orders = ref([]);
 const currentPage = ref(1);
 const totalPages = ref(0);
-const pageSize = ref(20); // 每頁顯示10筆資料
+const pageSize = ref(10); // 每頁顯示10筆資料
 const router = useRouter();
+const route = useRoute();
 
 // 當頁面被掛載時，自動請求資料
 onMounted(() => {
   fetchOrders();
 });
 
-// 獲取訂單列表
+// 監聽路由變化以重新獲取資料
+watch(() => route.query.page, (newPage) => {
+  currentPage.value = parseInt(newPage) || 1;  // 確保新的頁碼被正確解析並加載
+  fetchOrders();  // 加載新頁碼的數據
+});
+
 const fetchOrders = () => {
   isLoading.value = true;
-  let url = '/orders';
-  let params = { page: currentPage.value - 1, size: pageSize.value };
+  const params = { page: currentPage.value, size: pageSize.value };
 
-  console.log('發送請求，參數:', params);
+  console.log('發送請求，參數:', params); // 確認這裡的頁碼與頁數是否正確
 
-  axiosInstanceForInsertHeader.get(url, { params })
+  axiosInstanceForInsertHeader
+    .get('/orders', { params })
     .then(response => {
-      console.log('API 響應:', response.data);
-      console.log('獲取到的訂單資料:', response.data.content);
-      console.log('總頁數:', response.data.totalPages);
+      const { content, totalPages: total, number } = response.data;
       console.log('當前頁碼:', response.data.number + 1);
-      console.log('每頁大小:', response.data.size);
-      console.log('總元素數:', response.data.totalElements);
-
-      orders.value = response.data.content;
-      totalPages.value = response.data.totalPages;
-      currentPage.value = response.data.number + 1; // 確保當前頁碼與後端一致
+      console.log('總頁數:', response.data.totalPages);
+      orders.value = content;
+      totalPages.value = total;
+      currentPage.value = number + 1; // 確保頁碼與後端一致
 
       isLoading.value = false;
     })
@@ -53,10 +55,8 @@ const formatDate = (dateArray) => {
   if (!Array.isArray(dateArray) || dateArray.length < 6) {
     return '日期不可用'; // 如果日期為空或格式不正確，返回提示
   }
-
   // 提取年、月、日、時、分、秒
   const [year, month, day, hour, minute, second] = dateArray;
-
   // 格式化為 YYYY-MM-DD HH:mm:ss
   const formattedDate = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')} ` +
                         `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}:${String(second).padStart(2, '0')}`;
@@ -80,9 +80,9 @@ const startProcess = (orderNumber) => {
 // 處理頁碼
 const handlePageChange = (newPage) => {
   if (newPage >= 1 && newPage <= totalPages.value && newPage !== currentPage.value) {
-    currentPage.value = newPage;
-    console.log('頁碼已更新，準備獲取新數據');
-    fetchOrders();
+    router.push({
+      query: { ...route.query, page: newPage }
+    });
   } else {
     console.log('新頁碼無效或與當前頁碼相同，不執行操作');
   }
@@ -152,7 +152,7 @@ const handlePageChange = (newPage) => {
           </table>
         </div>
         <!-- 分頁元件，當頁數改變時觸發 changePage 函數 -->
-        <PaginationComponent :currentPage="currentPage" :totalPages="totalPages" @changePage="handlePageChange" />
+        <PaginationComponent :currentPage="currentPage" :totalPages="totalPages" @pageChange="handlePageChange" />
         <Loading v-if="isLoading" />
       </div>
     </div>
