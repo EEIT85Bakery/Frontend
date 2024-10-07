@@ -3,7 +3,7 @@ import { onMounted, onUnmounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import GameTest from './GameTest.vue';
 
-const gameTestRef = ref(null); 
+const gameTestRef = ref(null);
 
 const isMenuOpen = ref(false); // 用來控制菜單的狀態
 const router = useRouter();
@@ -38,18 +38,18 @@ function scrollToTop() {
 }
 
 const handleMemberClick = () => {
-  const userRole = localStorage.getItem('user');
+    const userRole = localStorage.getItem('user');
 
-  if (userRole === 'ADMIN') {
-    // 如果是 ADMIN，跳轉到後台首頁
-    router.push({ path: '/customerInformation' });
-  } else if (userRole === 'USER') {
-    // 如果是 USER，跳轉到會員資訊頁面
-    router.push({ path: '/customerInformation' });
-  } else {
-    // 如果沒有這個欄位，則跳轉回登入頁面
-    router.push({ path: '/login' });
-  }
+    if (userRole === 'ADMIN') {
+        // 如果是 ADMIN，跳轉到後台首頁
+        router.push({ path: '/admin' });
+    } else if (userRole === 'USER') {
+        // 如果是 USER，跳轉到會員資訊頁面
+        router.push({ path: '/customerInformation' });
+    } else {
+        // 如果沒有這個欄位，則跳轉回登入頁面
+        router.push({ path: '/login' });
+    }
 };
 
 // 切換菜單狀態
@@ -64,9 +64,13 @@ const handleSearch = () => {
         router.push({
             path: '/products',
             query: { keyword: keyword.value, t: Date.now() }
+        router.push({
+            path: '/products',
+            query: { keyword: keyword.value, t: Date.now() }
         });
     } else {
         console.log('Navigating to products without keyword');
+        router.push({
         router.push({
             path: '/products',
             query: { t: Date.now() }
@@ -78,6 +82,7 @@ const handleSearch = () => {
 
 // 回到全商品頁面並清空篩選條件
 const goToProducts = () => {
+    keyword.value = '';
     keyword.value = '';
     router.push({
         path: '/products',
@@ -208,11 +213,13 @@ const goToProducts = () => {
         </div>
     </RouterLink>
 
-    <!-- <RouterLink to="gameTest"> -->
-        <div class="gameContainer" @click="openGameTestModal">
-            <i class="bi bi-controller fixIcon"></i>
-        </div>
-    <!-- </RouterLink> -->
+    <div class="talkContainer">
+        <i class="bi bi-chat-left-dots fixIcon"></i>
+    </div>
+
+    <div class="gameContainer" @click="openGameTestModal">
+        <i class="bi bi-controller fixIcon"></i>
+    </div>
 
     <div>
         <div class="goTopContainer" @click="scrollToTop">
@@ -444,6 +451,21 @@ const goToProducts = () => {
     opacity: 0.7;
 }
 
+.talkContainer {
+    cursor: pointer;
+    position: fixed;
+    bottom: 17%;
+    right: 2%;
+    color: rgba(255, 255, 255, 1);
+    /* color: rgba(166, 127, 120, 1); */
+    z-index: 2000;
+    font-size: 3vw;
+    text-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+    /* background-color: rgba(255, 255, 255, 0.8); */
+    border-radius: 50px;
+    /* padding: 0 0.8%; */
+}
+
 .gameContainer {
     cursor: pointer;
     position: fixed;
@@ -461,7 +483,7 @@ const goToProducts = () => {
 
 .mangerContainer {
     position: fixed;
-    bottom: 18%;
+    bottom: 26%;
     right: 2%;
     color: rgba(255, 255, 255, 1);
     /* color: rgba(166, 127, 120, 1); */
