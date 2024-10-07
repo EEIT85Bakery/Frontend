@@ -85,7 +85,7 @@ const openOrderModal = (order) => {
 
 // 用於接收更新後的會定訂單資料
 const handleOrderUpdated = (updatedOrder) => {
-  const index = orders.value.findIndex(order => order.id === updatedOrder.orderNumber);
+  const index = orders.value.findIndex(order => order.orderNumber === updatedOrder.orderNumber);
   if (index !== -1) {
     orders.value[index] = updatedOrder;
   }

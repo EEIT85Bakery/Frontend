@@ -28,6 +28,7 @@ const formData = ref({
   pickupStatus: '',
 });
 
+
 const fetchOrderDetail = async () => {
   if (!props.orderNumber) return;
   
@@ -38,22 +39,24 @@ const fetchOrderDetail = async () => {
     const response = await axiosInstanceForInsertHeader.get(`/admin/orders/details/${props.orderNumber}`);
     console.log('Order details fetched:', response.data); // 確認返回的資料
     orderDetail.value = response.data;
-    console.log('Order products details:', orderDetail.value.orderDetails);
-    formData.value.paymentStatus = orderDetail.value.paymentStatus || 'unPaid';
-    formData.value.pickupStatus = orderDetail.value.pickupStatus;
+    console.log('Order product details:', orderDetail.value.orderDetails);
+    console.log('Order ID:', orderDetail.value.orderId); // 顯示orderId
+
+    formData.value.paymentStatus = orderDetail.value.paymentStatus || '';
+    formData.value.pickupStatus = orderDetail.value.pickupStatus || '';
   } catch (error) {
     console.error('Error fetching order details:', error);
     SwalHandle.showErrorMsg('無法獲取訂單詳細資訊', error.response?.data?.message || error.message);
   } finally {
     isLoading.value = false;
-  }
-}
+  };
+};
 
 watch(() => props.orderNumber, fetchOrderDetail, { immediate: true });
 
 const submitForm = async () => {
   try {
-    await axiosInstanceForInsertHeader.put(`/admin/orders/${props.orderNumber}/updateStatus`, {
+    await axiosInstanceForInsertHeader.put(`/admin/orders/${orderDetail.value.orderId}/updateStatus`, {
       paymentStatus: formData.value.paymentStatus,
       pickupStatus: formData.value.pickupStatus
     });
@@ -115,14 +118,14 @@ const formatDate = (dateArray) => {
                                 <div class="text"><span class="textName">付款方式:</span><span>{{ orderDetail.paymentMethod }}</span></div>
                                 <div class="text content textName">付款狀態:
                                     <select name="pay" class="payment" v-model="formData.paymentStatus">
-                                        <option value="unPaid">未付款</option>
-                                        <option value="paid">已付款</option>
+                                        <option value="未付款">未付款</option>
+                                        <option value="已付款">已付款</option>
                                     </select>
                                 </div>
                                 <div class="text content textName">訂單狀態:
                                     <select name="pay" class="payment" v-model="formData.pickupStatus">
-                                        <option value="unPaid">已確認</option>
-                                        <option value="paid">已取貨</option>
+                                        <option value="已確認">已確認</option>
+                                        <option value="已取貨">已取貨</option>
                                     </select>
                                 </div>
                                 <div class="text"><span class="textName">付款時間:</span><span>{{ formatDate(orderDetail.paymentDate) }}</span></div>
