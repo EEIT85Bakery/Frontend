@@ -1,12 +1,19 @@
 <script setup>
 import { onMounted, onUnmounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
+import GameTest from './GameTest.vue';
+
+const gameTestRef = ref(null); 
 
 const isMenuOpen = ref(false); // 用來控制菜單的狀態
 const router = useRouter();
 const keyword = ref('');
 const isAdmin = ref(localStorage.getItem('user') === 'ADMIN');
 
+
+const openGameTestModal = () => {
+    gameTestRef.value.openModal();
+}
 
 
 onMounted(() => {
@@ -201,17 +208,19 @@ const goToProducts = () => {
         </div>
     </RouterLink>
 
-    <RouterLink to="gameTest">
-        <div class="gameContainer">
+    <!-- <RouterLink to="gameTest"> -->
+        <div class="gameContainer" @click="openGameTestModal">
             <i class="bi bi-controller fixIcon"></i>
         </div>
-    </RouterLink>
+    <!-- </RouterLink> -->
 
     <div>
         <div class="goTopContainer" @click="scrollToTop">
             <i class="bi bi-arrow-up-circle-fill goTopIcon fixIcon"></i>
         </div>
     </div>
+
+    <GameTest ref="gameTestRef" />
 
 </template>
 
@@ -436,6 +445,7 @@ const goToProducts = () => {
 }
 
 .gameContainer {
+    cursor: pointer;
     position: fixed;
     bottom: 10%;
     right: 2%;
