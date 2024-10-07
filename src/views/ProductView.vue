@@ -7,9 +7,9 @@ import Swiper from '@/components/Swiper.vue';
 import MemberLevelModal from '@/components/MemberLevelModal.vue';
 
 import { SwalHandle } from '@/stores/sweetAlertStore';
-import axiosInstanceForInsertHeader from '@/axios/axiosInstanceForInsertHeader';
 import router from '@/router';
 import { useCartStore } from '@/stores/cartStore';
+import axios from 'axios';
 
 const route = useRoute();
 const product = ref({})
@@ -27,7 +27,7 @@ const clearInput = () => {
 const getProduct = async () => {
     try {
         // 使用 await 獲取產品資料
-        const res = await axiosInstanceForInsertHeader.get(`/products/${cartStore.productId}`);
+        const res = await axios.get(`/api/products/${cartStore.productId}`);
         
         // 設置 product 為響應數據
         product.value = res.data;
@@ -58,7 +58,7 @@ const addToCart = (buy) => {
   return
 }
     if(productAmount.value <= product.value.stocks) {
-    axiosInstanceForInsertHeader.post('/cart', {
+    axios.post('api/cart', {
         productId: product.value.id,
         quantity: productAmount.value,
         price: product.value.price
