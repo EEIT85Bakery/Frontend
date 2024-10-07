@@ -14,26 +14,34 @@ const verifyingToken = ref('');
 const verificationSent = ref(false);
 
 const sendVerificationCode = async () => {
+  Swal.fire({
+    title: '成功!',
+    text: "成功發送驗證信",
+    icon: 'success',
+    confirmButtonText: '確認',
+    customClass: { confirmButton: 'myConfirmBtn' },
+    timer: 5000, // 5秒後自動關閉提示框
+  });
   try {
     const response = await axios.post('http://localhost:8080/user/registerVerify', {
       email: email.value,
       phone: phone.value,
     });
-
     if (response.status === 200) {
       // 提取狀態和消息
       const { status, message } = response.data;
 
       if (status === "success") {
-        Swal.fire({
-          title: '成功!',
-          text: message, // 使用從後端返回的消息
-          icon: 'success',
-          confirmButtonText: '確認',
-          customClass: { confirmButton: 'myConfirmBtn' },
-          timer: 5000, // 5秒後自動關閉提示框
-        });
-        verificationSent.value = true;
+        // Swal.fire({
+        //   title: '成功!',
+        //   text: message, // 使用從後端返回的消息
+        //   icon: 'success',
+        //   confirmButtonText: '確認',
+        //   customClass: { confirmButton: 'myConfirmBtn' },
+        //   timer: 5000, // 5秒後自動關閉提示框
+        // });
+        // verificationSent.value = true;
+        console.log("寄送成功")
       } else {
         // 處理錯誤狀態
         Swal.fire({

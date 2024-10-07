@@ -5,10 +5,6 @@ import router from "@/router/index.js";
 import axios from 'axios';
 import Swal from 'sweetalert2'; // 直接導入 SweetAlert2
 
-// import VueDatePicker from '@vuepic/vue-datepicker';
-// import '@vuepic/vue-datepicker/dist/main.css';
-// const date = ref(null);
-
 const route = useRoute();
 const email = ref(route.query.email || '');
 const name = ref('');
@@ -19,12 +15,45 @@ const password = ref('');
 const confirmPassword = ref('');
 const passwordMismatch = ref(false);
 
+// 表單提交函數
 const submitForm = async () => {
-  if (password.value !== confirmPassword.value) {
+  // 清除錯誤消息
+  let isValid = true; // 追蹤表單是否有效
+
+  // 驗證每個字段是否填寫
+  if (!name.value) {
+    isValid = false;
+    Swal.fire('錯誤!', '姓名為必填欄位', 'error');
+  }
+  if (!gender.value) {
+    isValid = false;
+    Swal.fire('錯誤!', '性別為必填欄位', 'error');
+  }
+  if (!birthday.value) {
+    isValid = false;
+    Swal.fire('錯誤!', '生日為必填欄位', 'error');
+  }
+  if (!account.value) {
+    isValid = false;
+    Swal.fire('錯誤!', '帳號為必填欄位', 'error');
+  }
+  if (!password.value) {
+    isValid = false;
+    Swal.fire('錯誤!', '密碼為必填欄位', 'error');
+  }
+  if (!confirmPassword.value) {
+    isValid = false;
+    Swal.fire('錯誤!', '請再次輸入密碼', 'error');
+  } else if (password.value !== confirmPassword.value) {
     passwordMismatch.value = true;
-    return;
+    isValid = false;
+    Swal.fire('錯誤!', '密碼不相同，請重新輸入', 'error');
   } else {
     passwordMismatch.value = false;
+  }
+
+  if (!isValid) {
+    return; // 如果無效，停止提交
   }
 
   try {
@@ -37,20 +66,18 @@ const submitForm = async () => {
       birthday: birthday.value,
     });
     if (response.status === 200) {
-      Swal.fire({ // 直接使用 Swal
+      Swal.fire({
         title: '成功!',
         text: '會員資料完善成功！登入後開始購物吧！',
         icon: 'success',
         confirmButtonText: '確認',
         timer: 2000,
       });
-      router.push({
-        name: '登入頁面',
-      });
+      router.push({ name: '登入頁面' });
     }
   } catch (error) {
     console.error('註冊失敗', error);
-    Swal.fire({ // 直接使用 Swal
+    Swal.fire({
       title: '錯誤!',
       text: '會員資料完善失敗，請重新輸入或洽詢客服',
       icon: 'error',
@@ -62,9 +89,6 @@ const submitForm = async () => {
 </script>
 
 <template>
-
-  <!-- <VueDatePicker v-model="date" /> -->
-
   <div class="registerformPage">
     <div class="registerformContainer">
       <div class="registerformLogo">
@@ -80,30 +104,37 @@ const submitForm = async () => {
       <div class="registerformInputContainer">
         <form @submit.prevent="submitForm">
           <div class="registerformText">姓名</div>
-          <input v-model="name" type="text" placeholder="請輸入您的姓名" class="registerformInput"/>
-          <br/><br>
+          <input v-model="name" type="text" placeholder="請輸入您的姓名（必填）" class="registerformInput"/>
+          <br/><br/>
+          
           <div class="registerformText">性別</div>
           <select v-model="gender" class="registerformInput registerformSelect">
-            <option value="" disabled selected>請選擇您的性別</option>
+            <option value="" disabled selected>請選擇您的性別（必填）</option>
             <option value="male">男</option>
             <option value="female">女</option>
           </select>
           <br/><br/>
+          
           <div class="registerformText">生日</div>
-          <input v-model="birthday" type="date" class="registerformInput"/>
+          <input v-model="birthday" type="date" class="registerformInput" placeholder="請輸入您的生日（必填）"/>
           <br/><br/>
+          
           <div class="registerformText">電子信箱</div>
           <input v-model="email" :placeholder="email" class="registerformInput registerformInputFixed" disabled/>
           <br/><br/>
+          
           <div class="registerformText">帳號</div>
-          <input v-model="account" type="text" placeholder="請輸入您的帳號" class="registerformInput"/>
+          <input v-model="account" type="text" placeholder="請輸入您的帳號（必填）" class="registerformInput"/>
           <br/><br/>
+          
           <div class="registerformText">密碼</div>
-          <input v-model="password" type="password" placeholder="請輸入您的密碼" class="registerformInput"/>
+          <input v-model="password" type="password" placeholder="請輸入您的密碼（必填）" class="registerformInput"/>
           <br/><br/>
+          
           <div class="registerformText">再次輸入密碼</div>
-          <input v-model="confirmPassword" type="password" placeholder="請再次輸入您的密碼" class="registerformInput"/>
+          <input v-model="confirmPassword" type="password" placeholder="請再次輸入您的密碼（必填）" class="registerformInput"/>
           <br/><br/>
+          
           <div v-if="passwordMismatch" class="error-message">密碼不相同，請重新輸入。</div>
           <button class="registerformNextPageButton" type="submit">完成註冊</button>
         </form>
@@ -114,10 +145,10 @@ const submitForm = async () => {
       </div>
     </div>
   </div>
-
 </template>
 
 <style>
+/* 保持原有的 CSS 代碼 */
 .registerformPage {
   display: flex;
   justify-content: center;
@@ -145,15 +176,15 @@ const submitForm = async () => {
 }
 
 .registerformBunny {
-    width: 15%;
-    height: 15%;
-    object-fit: contain;
-    border: #8f8681 solid 2px;
-    border-radius: 50%;
-    margin-left: 250px;
-    margin-right: 250px;
-    margin-top: 20px;
-    margin-bottom: 10px;
+  width: 15%;
+  height: 15%;
+  object-fit: contain;
+  border: #8f8681 solid 2px;
+  border-radius: 50%;
+  margin-left: 250px;
+  margin-right: 250px;
+  margin-top: 20px;
+  margin-bottom: 10px;
 }
 
 .lineContainer {
@@ -224,6 +255,10 @@ const submitForm = async () => {
   box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
 }
 
+.error-message {
+  color: red;
+}
+
 @media (max-width: 768px) {
   .registerformContainer {
     width: 60%;
@@ -248,17 +283,9 @@ const submitForm = async () => {
 
 @media (max-width: 576px) {
   .registerformContainer {
-    width: 70%;
-    margin-top: 4%;
-    margin-bottom: 4%;
-  }
-
-  .registerformInputContainer {
-    margin-bottom: 10px;
-  }
-
-  .thirdregisterformIcon {
-    height: 20%;
+    width: 80%;
+    margin-top: 5%;
+    margin-bottom: 5%;
   }
 }
 </style>
