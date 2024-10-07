@@ -16,7 +16,6 @@ const currentPage = ref(1);
     const totalPages = ref(1);
     const itemsPerPage = ref(10);
     const totalItems = ref(0)
-// const cartStore = useCartStore()
 
 const handlePageChange = (page) => {
     currentPage.value = page
@@ -83,69 +82,9 @@ const deleteItem = (item) => {
     getProducts(currentPage.value)
   }).catch((err) => {
     console.log(err);
-    
   })
 })
 };
-
-    
-// const items = ref([
-//     {
-//         category: '蛋糕',
-//         name: '紐約起司蛋糕',
-//         price: 160,
-//         isEnable: '是',
-//         unit: '顆',
-//         description: '訂購天數需要3~7個工作天（不含訂購當天）為保持風味最佳，請於隔日內享用完畢',
-//         ingredient: '| 新鮮草莓 | 動物性鮮奶油 | 奶油乳酪 | 海綿蛋糕 |'
-//     },
-//     {
-//         category: '蛋糕',
-//         name: '紐約起司蛋糕',
-//         price: 160,
-//         isEnable: '是',
-//         unit: '顆',
-//         description: '訂購天數需要3~7個工作天（不含訂購當天）為保持風味最佳，請於隔日內享用完畢',
-//         ingredient: '| 新鮮草莓 | 動物性鮮奶油 | 奶油乳酪 | 海綿蛋糕 |'
-//     },
-//     {
-//         category: '蛋糕',
-//         name: '紐約起司蛋糕',
-//         price: 160,
-//         isEnable: '是',
-//         unit: '顆',
-//         description: '訂購天數需要3~7個工作天（不含訂購當天）為保持風味最佳，請於隔日內享用完畢',
-//         ingredient: '| 新鮮草莓 | 動物性鮮奶油 | 奶油乳酪 | 海綿蛋糕 |'
-//     },
-//     {
-//         category: '蛋糕',
-//         name: '紐約起司蛋糕',
-//         price: 160,
-//         isEnable: '是',
-//         unit: '顆',
-//         description: '訂購天數需要3~7個工作天（不含訂購當天）為保持風味最佳，請於隔日內享用完畢',
-//         ingredient: '| 新鮮草莓 | 動物性鮮奶油 | 奶油乳酪 | 海綿蛋糕 |'
-//     },
-//     {
-//         category: '蛋糕',
-//         name: '紐約起司蛋糕',
-//         price: 160,
-//         isEnable: '是',
-//         unit: '顆',
-//         description: '訂購天數需要3~7個工作天（不含訂購當天）為保持風味最佳，請於隔日內享用完畢',
-//         ingredient: '| 新鮮草莓 | 動物性鮮奶油 | 奶油乳酪 | 海綿蛋糕 |'
-//     },
-//     {
-//         category: '蛋糕',
-//         name: '紐約起司蛋糕',
-//         price: 160,
-//         isEnable: '是',
-//         unit: '顆',
-//         description: '訂購天數需要3~7個工作天（不含訂購當天）為保持風味最佳，請於隔日內享用完畢',
-//         ingredient: '| 新鮮草莓 | 動物性鮮奶油 | 奶油乳酪 | 海綿蛋糕 |'
-//     }
-    
-// ]);
 
 onMounted(() => {
     getProducts(currentPage.value)
@@ -189,7 +128,8 @@ onMounted(() => {
                 </tbody>
             </table>
 
-            <PaginationComponent :totalPages="totalPages" :currentPage="currentPage" @pageChange="handlePageChange">
+            <PaginationComponent :totalPages="totalPages" 
+            :currentPage="currentPage" @pageChange="handlePageChange">
             </PaginationComponent>
         </div>
         

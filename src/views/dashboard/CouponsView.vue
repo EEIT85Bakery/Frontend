@@ -1,13 +1,65 @@
 <script setup>
-import { ref } from 'vue';
+import { onMounted, ref, reactive } from 'vue';
 import PaginationComponent from '@/components/PaginationComponent.vue';
 import CouponModal from '@/components/CouponModal.vue';
 import DashBoardNavBarCoupon from '@/components/DashBoardNavBarCoupon.vue';
 
 import { SwalHandle } from '@/stores/sweetAlertStore';
+import axiosInstanceForInsertHeader from '@/axios/axiosInstanceForInsertHeader';
 
 const couponModalRef = ref(null);
 const currentItem = ref(null); 
+const coupons = ref([]);
+    const currentPage = ref(1);
+    const totalPages = ref(1);
+    const itemsPerPage = ref(5);
+    const totalItems = ref(0)
+    //還未使用到
+    const today = new Date().toISOString().split('T')[0];
+    const minDate = ref(today);
+    // const isModalOpen = ref(false);
+    const formData = reactive({
+      name: '',
+      price: '',
+      discount: '',
+      date: '',
+      isEnable: false
+    });
+    const editingCoupon = ref(null);
+    //轉換日期格式用
+    const convertToDate = (arr) => {
+  let date = new Date(arr[0], arr[1] - 1, arr[2]); // JavaScript中的月份是從0開始的
+  return date.toISOString().split('T')[0];
+}
+
+    const handlePageChange = (page) => {
+      currentPage.value = page;
+      getCoupons(page);
+    };
+    
+
+    const getCoupons = (page) => {
+
+        axiosInstanceForInsertHeader.get('/admin/coupon/page', {
+          params: {
+            page: page - 1,  
+            size: itemsPerPage.value
+          }
+        }).then((res) => {
+          const { content, totalElements, totalPages: backendTotalPages, size, number } = res.data;
+        totalItems.value = totalElements;
+        totalPages.value = backendTotalPages;
+        currentPage.value = number + 1;  // 後端頁碼從0開始，所以加1
+        itemsPerPage.value = size;
+
+        coupons.value = content;
+        console.log(coupons.value);
+
+        }).catch(err => console.log(err)
+        )
+        
+    };
+  
 
 // 打開新增 modal
 const openCouponModal = () => {
@@ -18,97 +70,28 @@ const openCouponModal = () => {
 };
 
 // 打開編輯 modal
-const openEditCouponModal = (item) => {
-  currentItem.value = item; // 設置選中的商品
-  if (couponModalRef.value) {
-    couponModalRef.value.openModal();
-  }
-};
-
-// 調用子组件的 openModal 方法
-// const openCouponModal = () => {
-//   if (couponModalRef.value) {
-//     couponModalRef.value.openModal();
-//   } else {
-//     console.error('CouponModal component is not correctly referenced.');
-//   }
-// };
-
-
-
-
-// const showError = () => {
-//   SwalHandle.showErrorMsg('這是一條錯誤消息！');
-// };
-
-// const showSuccess = () => {
-//   SwalHandle.showSuccessMsg('操作成功！');
-// };
-
-// const confirmAction = () => {
-//   SwalHandle.confirm('確認操作', '您確定要執行此操作嗎？', () => {
-//     // 確認後執行的操作
-//     console.log('操作已確認！');
-//   });
-// };
-
-const deleteItem = (item) => {
-  SwalHandle.confirm(
-    '確認刪除',
-    `您確定要刪除 ${item.name} 嗎？`,
-    '刪除成功！', 
-    () => {
-      // 執行刪除操作，例如：
-      items.value = items.value.filter(i => i !== item);
-      SwalHandle.showSuccessMsg(`成功刪除 ${item.name}`);
+    const openEditCouponModal = (item) => {
+     currentItem.value = item; // 設置選中的折扣碼
+    if (couponModalRef.value) {
+      couponModalRef.value.openModal();
     }
-  );
+  };
+  
+  const deleteItem = (item) => {
+   SwalHandle.confirm('刪除商品',`確認要刪除${item.couponName}這個產品?`,'',
+    () =>  {
+  axiosInstanceForInsertHeader.delete(`/admin/coupon/${item.id}`).then(() => {
+    SwalHandle.showSuccessMsg(`已刪除${item.couponName}`)
+    getCoupons(currentPage.value)
+  }).catch((err) => {
+    console.log(err);
+  })
+})
 };
 
-const items = ref([
-  {
-    name: 'HappyHalloween',
-    price: 1000 ,
-    discount: 50 ,
-    date: '2024-11-30',
-    isEnable: '是',
-  },
-  {
-    name: 'HappyMomDay',
-    price: 1000,
-    discount: 50 ,
-    date: '2024-11-30',
-    isEnable: '是',
-  },
-  {
-    name: 'HappyDadDay',
-    price: 1000 ,
-    discount: 50 ,
-    date: '2024-11-30',
-    isEnable: '是',
-  },
-  {
-    name: 'MerryChristmas',
-    price: 1000 ,
-    discount: 50 ,
-    date: '2024-11-30',
-    isEnable: '是',
-  },
-  {
-    name: 'HappyNewYear',
-    price: 1000 ,
-    discount: 50,
-    date: '2024-11-30',
-    isEnable: '是',
-  },
-  {
-    name: 'HappyNewEve',
-    price: 1000,
-    discount: 50,
-    date: '2024-11-30',
-    isEnable: '是',
-  },
-]);
+
+onMounted(() => {getCoupons(currentPage.value)
+});
 
 
 </script>
@@ -139,25 +122,30 @@ const items = ref([
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="(item, index) in items" :key="index">
-                        <td>{{ item.name }}</td>
-                        <td>{{ item.price }} 元</td>
-                        <td>{{ item.discount }} 元</td>
-                        <td>{{ item.date }}</td>
-                        <td>{{ item.isEnable }}</td>
+                    <tr v-for="(item, index) in coupons" :key="index">
+                        <td>{{ item.couponName }}</td>
+                        <td>{{ 1000 }} 元</td>
+                        <td>{{ item.discountNumber }} 元</td>
+                        <td>{{ convertToDate(item.endDate) }}</td>
+                        <td>{{ item.enable ? "已啟用" : "未啟用" }}</td>
                         <td><i class="bi bi-pencil-square" style="color: darkgrey;" @click="openEditCouponModal(item)"></i></td>
                         <td><i class="bi bi-trash3" style="color: darkred;" @click="deleteItem(item)"></i></td>
                     </tr>
                 </tbody>
             </table>
 
-            <PaginationComponent />
+            <PaginationComponent 
+      :totalPages="totalPages" 
+      :currentPage="currentPage" 
+      @pageChange="handlePageChange"
+      @getCoupons="getCoupons(currentPage)"
+    />
 
         </div>
 
        <!-- <CouponModal ref="couponModalRef" /> -->
-       <CouponModal ref="couponModalRef" :product="currentItem" />
 
+       <CouponModal ref="couponModalRef" :coupon="currentItem" @getCoupons="getCoupons(currentPage)" :currentPage="currentPage" />
     </div>
 
 </template>

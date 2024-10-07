@@ -1,10 +1,9 @@
 <script setup>
-import { ref, watch, defineProps } from 'vue';
+import { ref, watch, defineProps, onMounted } from 'vue';
 import useModal from '@/hooks/useModal';
 import { SwalHandle } from '@/stores/sweetAlertStore';
 
 import { useCartStore } from '@/stores/cartStore';
-import { onMounted } from 'vue';
 import axiosInstanceForInsertHeader from '@/axios/axiosInstanceForInsertHeader';
 
 const cartStore = useCartStore()
@@ -19,6 +18,7 @@ const props = defineProps({
         default: 1
     }
 })
+
 
 
 const editProduct = () => {
@@ -63,10 +63,6 @@ const emit = defineEmits(['getProducts'])
 const getProducts = () => {
   emit('getProducts')
 }
-
-onMounted(() => {
-       
-})
 
 const addPrdocut = () => {
     formData.value.img1 = cartStore.img1
@@ -319,9 +315,6 @@ const submitForm = () => {
     isModalOpen.value = false;
 };
 
-// defineExpose({
-//     selectedFile
-// })
 
 </script>
 
