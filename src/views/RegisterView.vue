@@ -19,7 +19,7 @@ const sendVerificationCode = async () => {
 
   // 禁用按鈕並設置計時器
   isButtonDisabled.value = true;
-  countdown.value = 300; // 設置倒數時間為 30 秒
+  countdown.value = 300;
 
   const interval = setInterval(() => {
     if (countdown.value > 0) {
@@ -76,8 +76,10 @@ const verifyCode = async () => {
       email: email.value,
       verifyingToken: verifyingToken.value,
     });
-    if (response.status === 200) {
-      Swal.fire({ // 直接使用 Swal
+
+    // 驗證是否成功
+    if (response.data.status === 'success') {
+      Swal.fire({
         title: '成功!',
         text: '驗證成功',
         icon: 'success',
@@ -85,6 +87,7 @@ const verifyCode = async () => {
         customClass: { confirmButton: 'myConfirmBtn' },
         timer: 2000
       });
+
       console.log("跳轉到註冊表單頁面");
       router.push({
         name: '註冊表單頁面',
@@ -92,12 +95,24 @@ const verifyCode = async () => {
           email: email.value,
         },
       });
+    } else {
+      // 若 response.status 為 200，但回應內容中 status 為 error
+      Swal.fire({
+        title: '失敗!',
+        text: response.data.message || '驗證失敗',
+        icon: 'error',
+        confirmButtonText: '確認',
+        customClass: { confirmButton: 'myConfirmBtn' },
+        timer: 2000,
+      });
     }
   } catch (error) {
     console.error('驗證碼驗證失敗', error);
+
+    // 針對後端返回的非 200 狀態進行錯誤處理
     Swal.fire({
       title: '失敗!',
-      text: '驗證碼驗證失敗',
+      text: error.response?.data?.message || '驗證碼驗證失敗',
       icon: 'error',
       confirmButtonText: '確認',
       customClass: { confirmButton: 'myConfirmBtn' },
