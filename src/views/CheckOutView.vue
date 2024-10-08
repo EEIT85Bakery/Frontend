@@ -50,6 +50,8 @@ const combinedDateTime = computed(() => {
     });
 
 const submitOrders = () => {
+    console.log(123);
+    
     const randomOrderId = () => {
   return Math.random().toString(36).substring(2, 10).toUpperCase();
 };
@@ -67,9 +69,9 @@ const submitOrders = () => {
     }).then(() => { 
         if (paymentMethod.value == "門市付款") {
             SwalHandle.showSuccessMsg("訂單已成立")
-            axiosInstanceForInsertHeader.delete('/cart').then(() => console.log("清空購物車成功")
-            ).catch(err => console.log(err)
-            )
+            // axiosInstanceForInsertHeader.delete('/cart').then(() => console.log("清空購物車成功")
+            // ).catch(err => console.log(err)
+            // )
             router.push({
                 path: '/orderDetail',
                 query: { orderNumber: cartStore.merchantNo } // 訂單號作為 query 參數傳遞
@@ -160,6 +162,12 @@ const topStyle = computed(() => ({
 }));
 
 onMounted(() => {
+    console.log("checkout 1");
+    console.log(cartStore.paymentPrice);
+    
+    console.log("checkout2");
+    
+    
     getMemberInfo()
     const today = new Date();
   pickupDate.value = today.toISOString().split('T')[0];

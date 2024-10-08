@@ -4,7 +4,7 @@ export const useCartStore = defineStore('cart', {
   state: () => ({
     // 初始化 state
     carts: [],  // 假設你有購物車的商品列表
-    total: 0,   // 初始化 total 為數字
+    total: 0,   // 初始化 total 
     paymentPrice: 0,
     couponName: "",
     usedBunnyCoins: 0,

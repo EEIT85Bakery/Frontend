@@ -129,7 +129,7 @@ const totalPrice = computed(() => {
 });
 
 const calculateDiscount = () => {
-    const price = totalPrice;
+    const price = totalPrice.value;
     if (validDiscountCode.value && price >= 1000
         && memberlevel.value == "白兔") {
         let discount = Math.floor(price / 1000) * 50;
@@ -141,6 +141,7 @@ const calculateDiscount = () => {
 };
 
 const calculateMemberDiscount = () => {
+    
     memberdiscount.value = Math.floor(totalPrice.value / 1000) * 50
     if (memberlevel.value == "金兔") {
         memberdiscount.value *= 1.2
@@ -275,7 +276,14 @@ watch(
         } else {
             newTotal = totalPrice.value - Generaldiscount.value - appliedBunnyQuantity.value;
         }
+        console.log("pay1");
+        console.log(cartStore.paymentPrice);
+        
         cartStore.updatePaymentPrice(newTotal)
+        
+        console.log("pay2");
+        console.log(cartStore.paymentPrice);
+        
     }
 );
 
@@ -421,6 +429,7 @@ onMounted(() => {
                             <p class="nextLevel" style="text-align: end; font-style: italic;">(依折價後金額計算)</p>
                         </template>
                         <div class="finalPrice">合計:
+                            <!-- 合計金額異常  -->
                             <span class="finaltotalPrice">{{ cartStore.paymentPrice }}</span> 元
                         </div>
                     </div>
