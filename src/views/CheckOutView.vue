@@ -67,6 +67,9 @@ const submitOrders = () => {
     }).then(() => { 
         if (paymentMethod.value == "門市付款") {
             SwalHandle.showSuccessMsg("訂單已成立")
+            axiosInstanceForInsertHeader.delete('/cart').then(() => console.log("清空購物車成功")
+            ).catch(err => console.log(err)
+            )
             router.push({
                 path: '/orderDetail',
                 query: { orderNumber: cartStore.merchantNo } // 訂單號作為 query 參數傳遞

@@ -10,6 +10,7 @@ import { SwalHandle } from '@/stores/sweetAlertStore';
 import router from '@/router';
 import { useCartStore } from '@/stores/cartStore';
 import axios from 'axios';
+import axiosInstanceForInsertHeader from '@/axios/axiosInstanceForInsertHeader';
 
 const route = useRoute();
 const product = ref({})
@@ -58,7 +59,7 @@ const addToCart = (buy) => {
   return
 }
     if(productAmount.value <= product.value.stocks) {
-    axios.post('api/cart', {
+    axiosInstanceForInsertHeader.post('/cart', {
         productId: product.value.id,
         quantity: productAmount.value,
         price: product.value.price
@@ -223,7 +224,7 @@ onMounted(() => {
             <div class="CutLine"></div>
             <div style="display: flex;">
             <div class="productPrice" style="display: flex;justify-content: start;">
-                <div>商品庫存: <span class="">{{ product.stocks }}</span> 份</div>
+                <div>商品庫存: <span class="">{{ product.stocks >= 0 ? product.stocks : 0 }}</span> 份</div>
             </div>
 
             <div class="productPrice">
