@@ -48,28 +48,24 @@ const initializeData = () => {
 };
 
 // 獲取所有產品分類名稱
-const fetchCategories = () => {
-  return axios.get('/api/products/categories')
-    .then(response => {
-      categories.value = response.data;
-    });
+const fetchCategories = async () => {
+  const response = await axios.get('/api/products/categories');
+categories.value = response.data;
 };
 
 // 獲取所有風味名稱
-const fetchAllFlavors = () => {
+const fetchAllFlavors = async () => {
   const flavorPromises = categories.value.map(category =>
     axios.get('/api/products/categories/flavors', { params: { categoryName: category } })
   );
-  return Promise.all(flavorPromises)
-    .then(responses => {
-      responses.forEach((res, index) => {
-        categoryFlavors.value[categories.value[index]] = res.data;
-      });
-    });
+  const responses = await Promise.all(flavorPromises);
+responses.forEach((res, index) => {
+categoryFlavors.value[categories.value[index]] = res.data;
+});
 };
 
 // 獲取產品列表
-const fetchProducts = () => {
+const fetchProducts = async () => {
   isLoading.value = true;
   let url = '/api/products'
   let params = { 
@@ -90,17 +86,22 @@ const fetchProducts = () => {
 
   console.log('Fetching products with URL:', url, 'and params:', params);
 
-  return axios.get(url, { params })
-    .then(response => {
-      products.value = response.data.content;
-      totalPages.value = response.data.totalPages;
-      updateFieldValue();
-      isLoading.value = false;
-    })
-    .catch(err => {
-      console.error('Error fetching products:', err);
-      isLoading.value = false;
-    });
+  try {
+const response = await axios.get(url, { params });
+if (response.data.content && response.data.content.length === 0) {
+console.log('No products found');
+field.value = `搜尋結果: ${keyword.value}，查無商品`;
+products.value = [];
+} else {
+products.value = response.data.content;
+totalPages.value = response.data.totalPages;
+updateFieldValue();
+}
+isLoading.value = false;
+} catch (err) {
+console.error('Error fetching products:', err);
+isLoading.value = false;
+}
 };
 
 // 更新顯示的分類/風味字段
