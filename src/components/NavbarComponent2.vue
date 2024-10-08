@@ -65,13 +65,13 @@ const toggleMenu = () => {
 // 根據關鍵字進行商品查詢並跳轉到商品頁面
 const handleSearch = () => {
     if (keyword.value) {
-        console.log(`Navigating to products with keyword: ${keyword.value}`);
+        console.log(`沒有找到 ${keyword.value} 相關產品`);
         router.push({
             path: '/products',
             query: { keyword: keyword.value, t: Date.now() }
         });
     } else {
-        console.log('Navigating to products without keyword');
+        console.log('關鍵字沒有找到相關產品');
         router.push({
             path: '/products',
             query: { t: Date.now() }

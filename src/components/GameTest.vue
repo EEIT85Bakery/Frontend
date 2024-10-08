@@ -1,6 +1,6 @@
 
 <template>
-  <div ref="modalRef" class="modal fade" tabindex="-1" aria-labelledby="memberModalLabel" :aria-hidden="!isModalVisible">
+  <div ref="modalRef" class="modal fade" tabindex="-1" aria-labelledby="memberModalLabel" aria-hidden="true">
     <div class="modal-dialog modalContainer modal-md">
       <div class="modal-content">
         <div class="modal-header modalHeader">
@@ -76,7 +76,7 @@ const { openModal, hideModal, modalRef } = useModal();
 
 defineExpose({
   openModal: () => {
-    startGameAndFetchTimes();  // 打開模態時調用此函數以獲取遊戲次數
+    FetchGameTimes();  // 打開模態時調用此函數以獲取遊戲次數
     openModal();
   },
   hideModal
@@ -213,10 +213,10 @@ const endGame = () => {
 };
 
 // 調用開始遊戲的 API 來獲取遊戲次數
-const startGameAndFetchTimes = async () => {
+const FetchGameTimes = async () => {
   try {
-    const response = await axiosInstanceForInsertHeader.post('/game/play'); // 調用開始遊戲的API
-    gameTimes.value = response.data.gameTimes; // 假設後端返回的gameTimes在這裡
+    const response = await axiosInstanceForInsertHeader.get('/game/times'); 
+    gameTimes.value = response.data.gameTimes;
   } catch (error) {
     console.error('Error fetching game times:', error);
   }
