@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted, watch } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import Loading from '@/components/Loading.vue';
 
 const isLoading = ref(true);
@@ -19,15 +19,21 @@ watch(route, () => {
 });
 
 const imgArray = ref([
-  { imageUrl: '../../public/imgZip/HomePageImg/Img1.png' },
-  { imageUrl: '../../public/imgZip/HomePageImg/Img2.png' },
-  { imageUrl: '../../public/imgZip/HomePageImg/Img3.png' },
-  { imageUrl: '../../public/imgZip/HomePageImg/Img4.png' },
-  { imageUrl: '../../public/imgZip/HomePageImg/Img5.png' },
-  { imageUrl: '../../public/imgZip/HomePageImg/Img6.png' },
-  { imageUrl: '../../public/imgZip/HomePageImg/Img7.png' },
-  { imageUrl: '../../public/imgZip/HomePageImg/Img8.png' }
+  { imageUrl: '../../public/imgZip/HomePageImg/Img1.png', keyword: '餅乾'},
+  { imageUrl: '../../public/imgZip/HomePageImg/Img2.png', keyword: '餅乾' },
+  { imageUrl: '../../public/imgZip/HomePageImg/Img3.png', keyword: '蛋糕' },
+  { imageUrl: '../../public/imgZip/HomePageImg/Img4.png', keyword: '蛋糕' },
+  { imageUrl: '../../public/imgZip/HomePageImg/Img5.png', keyword: '禮盒' },
+  { imageUrl: '../../public/imgZip/HomePageImg/Img6.png', keyword: '禮盒' },
+  { imageUrl: '../../public/imgZip/HomePageImg/Img7.png', keyword: '' },
+  { imageUrl: '../../public/imgZip/HomePageImg/Img8.png', keyword: '' }
 ]);
+
+// 多樣化照片集跳轉的關鍵字
+const router = useRouter()
+const navigateToProduct = (keyword) => {
+  router.push({ path: '/products', query: { keyword } });
+};
 
 const images = ref([]); // 用來儲存所有圖片 DOM
 
@@ -103,13 +109,13 @@ onMounted(() => {
   </div>
 
   <div class="rankListImg">
-    <RouterLink to="products" class="rankListItem">
+    <RouterLink :to="{ path: '/products', query: { keyword: '戚風蛋糕' } }" class="rankListItem">
       <img src="../../public/imgZip/HomePageImg/HomePageImgP1.png" class="ListImg" alt="HomePageImgP1" ref="images">
     </RouterLink>
-    <RouterLink to="products" class="rankListItem">
+    <RouterLink :to="{ path: '/products', query: { keyword: '蜜糖千層' } }" class="rankListItem">
       <img src="../../public/imgZip/HomePageImg/HomePageImgP2.png" class="ListImg" alt="HomePageImgP2">
     </RouterLink>
-    <RouterLink to="products" class="rankListItem">
+    <RouterLink :to="{ path: '/products', query: { keyword: '餅乾禮盒' } }" class="rankListItem">
       <img src="../../public/imgZip/HomePageImg/HomePageImgP3.png" class="ListImg" alt="HomePageImg3">
     </RouterLink>
   </div>
@@ -128,11 +134,11 @@ onMounted(() => {
   </div>
 
   <!-- 選擇多樣化 -->
-  <RouterLink class="imgGallery" to="products">
-    <div v-for="(item, index) in imgArray" :key="index" class="imgItem">
+  <div class="imgGallery" >
+    <div v-for="(item, index) in imgArray" :key="index" class="imgItem" @click="navigateToProduct(item.keyword)">
       <img :src="item.imageUrl" alt="Image" class="ImgGalleryItems" ref="images" />
     </div>
-  </RouterLink>
+  </div>
 
   <!-- 甜點師的話 -->
   <RouterLink class="sayingContainer">
@@ -171,6 +177,7 @@ onMounted(() => {
   /* 初始位置稍微向下移動 */
   transition: opacity 1s ease, transform 1s ease;
   /* 過渡效果 */
+  cursor: pointer;
 }
 
 .fadeIn {
