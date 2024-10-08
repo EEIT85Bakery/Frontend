@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, onUnmounted, ref } from 'vue';
+import { onMounted, onUnmounted, ref, watchEffect } from 'vue';
 import { useRouter } from 'vue-router';
 import GameTest from './GameTest.vue';
 
@@ -8,8 +8,8 @@ const gameTestRef = ref(null);
 const isMenuOpen = ref(false); // 用來控制菜單的狀態
 const router = useRouter();
 const keyword = ref('');
-const isAdmin = ref(localStorage.getItem('user') === 'ADMIN');
-
+const isAdmin = ref(false);
+const refreshTrigger = ref(false);
 
 const openGameTestModal = () => {
     gameTestRef.value.openModal();
@@ -32,10 +32,15 @@ onMounted(() => {
         offcanvasElement.removeEventListener('hidden.bs.offcanvas', removeBackdrop);
     });
 });
-
 function scrollToTop() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
+
+watchEffect(() => {
+    refreshTrigger.value = false; // 重設觸發器
+    isAdmin.value = localStorage.getItem('user') === 'ADMIN';
+    refreshTrigger.value = true;  // 重新觸發渲染
+});
 
 const handleMemberClick = () => {
     const userRole = localStorage.getItem('user');
@@ -208,6 +213,7 @@ const goToProducts = () => {
             <i class="bi bi-gear-fill fixIcon"></i>
         </div>
     </RouterLink>
+
 
     <div class="talkContainer">
         <i class="bi bi-chat-left-dots fixIcon"></i>
