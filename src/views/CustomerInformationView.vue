@@ -10,6 +10,13 @@ const modalRef = ref(null);
 const isLoading = ref(false);
 const router = useRouter();
 
+// 用來觸發 modal 的打開方法
+function handleOpenModal() {
+  if (modalRef.value) {
+    modalRef.value.openModal(); // 調用 modal 的 openModal 方法
+  }
+}
+
 // 會員資料
 const memberData = ref({
   id: null, // 確保會員 ID 被初始化

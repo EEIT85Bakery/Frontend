@@ -22,31 +22,6 @@
 
   const router = useRouter();
 
-  const settingFinished = async () => {
-    if (newPassword.value == confirmPassword.value) {
-      // 顯示 SweetAlert，持續 2 秒
-      await Swal.fire({
-        title: "密碼修改成功",
-        text: "請重新登入！",
-        icon: "success",
-        confirmButtonText: "確認",
-        customClass: { confirmButton: "myConfirmBtn" },
-        timer: 2000, // 2 秒後自動關閉
-        timerProgressBar: true, // 顯示進度條
-      });
-      router.push({ name: "登入頁面" });
-      hideModal();
-    } else {
-      Swal.fire({
-        title: "密碼不一致",
-        text: "請重新輸入",
-        icon: "error",
-        confirmButtonText: "重新嘗試",
-        customClass: { confirmButton: "myConfirmBtn" },
-      });
-    }
-  };
-
   const showError = () => {
     SwalHandle.showErrorMsg("驗證碼發送失敗");
   };
@@ -125,27 +100,54 @@
   };
 
   const resetPassword = async () => {
+    if (newPassword.value !== confirmPassword.value) {
+      Swal.fire({
+        title: "密碼不一致",
+        text: "請重新輸入相同的密碼",
+        icon: "error",
+        confirmButtonText: "重新嘗試",
+        customClass: { confirmButton: "myConfirmBtn" },
+      });
+      return;
+    }
+
     try {
-      const responce = await axios.post(
+      const response = await axios.post(
         "http://localhost:8080/user/resetPassword",
         {
           email: inputMail.value,
           password: newPassword.value,
         }
       );
-      Swal.fire({
-        // 直接使用 Swal
-        title: "成功!",
-        text: "密碼更改成功！",
-        icon: "success",
-        confirmButtonText: "確認",
-        customClass: { confirmButton: "myConfirmBtn" },
-        timer: 2000,
-      });
+
+      if (response.data.status === "success") {
+        Swal.fire({
+          title: "成功!",
+          text: response.data.message || "密碼更改成功！",
+          icon: "success",
+          confirmButtonText: "確認",
+          customClass: { confirmButton: "myConfirmBtn" },
+          timer: 2000,
+        });
+
+        hideModal();
+        localStorage.removeItem("jwt");
+        localStorage.removeItem("user");
+        router.push({ name: "登入頁面" });
+      } else {
+        Swal.fire({
+          title: "失敗!",
+          text: response.data.message || "密碼更改失敗！",
+          icon: "error",
+          confirmButtonText: "確認",
+          customClass: { confirmButton: "myConfirmBtn" },
+          timer: 2000,
+        });
+      }
     } catch (error) {
       Swal.fire({
         title: "失敗!",
-        text: "密碼更改失敗！",
+        text: error.response?.data?.message || "密碼更改失敗！",
         icon: "error",
         confirmButtonText: "確認",
         customClass: { confirmButton: "myConfirmBtn" },
@@ -248,11 +250,10 @@
           <button
             class="validButton d-flex"
             type="submit"
-            @click="settingFinished"
+            @click="resetPassword"
             v-else-if="isVerificationComplete"
           >
-            <!-- 保留這行 -->
-            <div class="validSendText" @click="resetPassword">完成設定</div>
+            <div class="validSendText">完成設定</div>
           </button>
         </div>
       </div>
