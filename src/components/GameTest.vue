@@ -1,6 +1,6 @@
 
 <template>
-  <div ref="modalRef" class="modal fade" tabindex="-1" aria-labelledby="memberModalLabel" aria-hidden="true">
+  <div ref="modalRef" class="modal fade" tabindex="-1" aria-labelledby="memberModalLabel" :aria-hidden="!isModalVisible">
     <div class="modal-dialog modalContainer modal-md">
       <div class="modal-content">
         <div class="modal-header modalHeader">
@@ -75,7 +75,10 @@ import Swal from 'sweetalert2';
 const { openModal, hideModal, modalRef } = useModal();
 
 defineExpose({
-  openModal,
+  openModal: () => {
+    startGameAndFetchTimes();  // 打開模態時調用此函數以獲取遊戲次數
+    openModal();
+  },
   hideModal
 });
 
@@ -93,16 +96,6 @@ const toast = reactive({
   message: '',
   type: 'info'
 });
-
-// 跳出toast
-const showToast = (message, type = 'info') => {
-  toast.show = true;
-  toast.message = message;
-  toast.type = type;
-  setTimeout(() => {
-    toast.show = false;
-  }, 3000);
-};
 
 // 獲取隨機符號
 const getRandomSymbol = () => {
@@ -199,13 +192,14 @@ const endGame = () => {
     .then(response => {
       const data = response.data;
       gameTimes.value = data.gameTimes;
-
+      console.log(`恭喜獲得 ${data.earnedCoins} 元購物金！剩餘遊戲次數：${data.gameTimes}`);
       Swal.fire({
         title: '遊戲結束!',
         text: `恭喜獲得 ${data.earnedCoins} 元購物金！剩餘遊戲次數：${data.gameTimes}`,
         icon: 'success',
         confirmButtonText: '確認',
       });
+      
     })
     .catch(error => {
       console.error('Error ending game:', error);
@@ -230,7 +224,6 @@ const startGameAndFetchTimes = async () => {
 
 // 組件加載後調用該函數來初始化遊戲
 onMounted(() => {
-  startGameAndFetchTimes();
 });
 </script>
 
