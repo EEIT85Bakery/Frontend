@@ -10,7 +10,7 @@ const searchProduct = () => {
 
   if (searchInput.value) {
     router.push({
-      name: '產品管理頁面', // 请确保这是正确的路由名称
+      name: '產品管理頁面',
       query: { search: searchInput.value }
     });
   } else {

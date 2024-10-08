@@ -1,5 +1,20 @@
 <script setup>
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 
+const router = useRouter();
+const searchInput = ref('');
+
+const searchCoupon = () => {
+  if (searchInput.value) {
+    router.push({
+      name: '優惠券管理頁面',
+      query: { search: searchInput.value }
+    });
+  } else {
+    router.push({ name: '優惠券管理頁面' });
+  }
+};
 </script>
 
 <template>
@@ -47,12 +62,17 @@
 
                 <div class="navbarIconContainer d-flex ms-auto">
                     <div class="nabarSearchContainer">
-                        <form class="d-flex" role="search">
-                            <input class="navbarSearchInput" type="search" placeholder="搜尋折扣碼">
-                            <button class="btn" type="submit">
-                                <i class="navbarIcon navbarSearchIcon bi bi-search"></i>
-                            </button>
-                        </form>
+                        <form class="d-flex" role="search" @submit.prevent="searchCoupon">
+            <input 
+              v-model="searchInput"
+              class="navbarSearchInput" 
+              type="search" 
+              placeholder="搜尋折扣碼"
+            >
+            <button class="btn" type="submit">
+              <i class="navbarIcon navbarSearchIcon bi bi-search"></i>
+            </button>
+          </form>
                     </div>
                     <RouterLink to="/">
                         <i class="navbarIcon bi bi-box-arrow-right"></i>
