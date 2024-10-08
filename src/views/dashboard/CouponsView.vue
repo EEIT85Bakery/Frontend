@@ -63,6 +63,8 @@ const coupons = ref([]);
       currentPage.value = number + 1;
       itemsPerPage.value = size;
       coupons.value = content;
+      console.log(coupons.value);
+      
     })
     .catch(err => console.log(err));
 };
@@ -103,7 +105,7 @@ const openCouponModal = () => {
 };
 
 
-onMounted(() => {getCoupons(currentPage.value)
+onMounted(() => {
 });
 
 
@@ -137,7 +139,7 @@ onMounted(() => {getCoupons(currentPage.value)
                 <tbody>
                     <tr v-for="(item, index) in coupons" :key="index">
                         <td>{{ item.couponName }}</td>
-                        <td>{{ 1000 }} 元</td>
+                        <td>{{ item.leastPriceForDiscount }} 元</td>
                         <td>{{ item.discountNumber }} 元</td>
                         <td>{{ convertToDate(item.endDate) }}</td>
                         <td>{{ item.enable ? "已啟用" : "未啟用" }}</td>

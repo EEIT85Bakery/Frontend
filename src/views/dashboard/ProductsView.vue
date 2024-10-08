@@ -5,8 +5,6 @@ import ProductModal from '@/components/ProductModal.vue';
 import DashBoardNavBarProduct from '@/components/DashBoardNavBarProduct.vue';
 
 import { SwalHandle } from '@/stores/sweetAlertStore';
-import { onMounted } from 'vue';
-import { useCartStore } from '@/stores/cartStore';
 import axiosInstanceForInsertHeader from '@/axios/axiosInstanceForInsertHeader';
 import { useRoute, useRouter } from 'vue-router';
 

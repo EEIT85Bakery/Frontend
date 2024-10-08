@@ -45,7 +45,7 @@ const addCoupon = () => {
   
   axiosInstanceForInsertHeader.post('/admin/coupon', {
     couponName: formData.value.name,
-      price: formData.value.price,
+    leastPriceForDiscount: formData.value.leastPriceForDiscount,
       discountNumber: formData.value.discountNumber,
       endDate: formData.value.endDate,
       enable: formData.value.isEnable
@@ -61,7 +61,7 @@ const editCoupon = () => {
   axiosInstanceForInsertHeader.put(`/admin/coupon/${formData.value.id}`,
     {
       couponName: formData.value.name,
-      price: formData.value.price,
+      leastPriceForDiscount: formData.value.leastPriceForDiscount,
       discountNumber: formData.value.discountNumber,
       endDate: formData.value.endDate,
       enable: formData.value.isEnable
@@ -74,7 +74,7 @@ const editCoupon = () => {
 
 const formData = ref({
   name: '',
-  price: '',
+  leastPriceForDiscount: '',
   discountNumber: '',
   endDate: '',
   isEnable: true
@@ -88,7 +88,7 @@ watch(
       formData.value = {
         id: newCoupon.id,
         name: newCoupon.couponName,
-        price: newCoupon.price || 1000, // Assuming 1000 is the default value
+        leastPriceForDiscount: newCoupon.leastPriceForDiscount,
         discountNumber: newCoupon.discountNumber,
         endDate: Array.isArray(newCoupon.endDate) ? convertToDate(newCoupon.endDate) : newCoupon.endDate,
         isEnable: newCoupon.enable
@@ -97,7 +97,7 @@ watch(
       // 如果是新增模式，清空表單
       formData.value = {
         name: '',
-        price: '',
+        leastPriceForDiscount: '',
         discountNumber: '',
         endDate: '',
         isEnable: true
@@ -144,7 +144,7 @@ onMounted(() => {
                             <input type="text"  v-model="formData.name" name="couponName" class="inputContent" placeholder="請輸入優惠名稱" />
                            
                                 <div class="inputText">折扣滿額</div>
-                                <input type="number" min="0" v-model="formData.price" name="category" class="inputContent" placeholder="請輸入折扣滿額"/>
+                                <input type="number" min="500" v-model="formData.leastPriceForDiscount" name="category" class="inputContent" placeholder="請輸入折扣滿額"/>
                                 <div class="inputText">折扣金額</div>
                                 <input type="number" min="0" v-model="formData.discountNumber" name="unit" class="inputContent" placeholder="請輸入折扣金額"/>
                             
