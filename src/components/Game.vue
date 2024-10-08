@@ -1,26 +1,7 @@
-<template>
-  <div class="slot-machine">
-    <h2>Slot Machine Game</h2>
-    <div class="reels">
-      <div v-for="(reel, index) in reels" :key="index" class="reel">
-        {{ reel }}
-      </div>
-    </div>
-    <p v-if="result" class="result">{{ result }}</p>
-    <button @click="startGame()" :disabled="isSpinning">
-      {{ isSpinning ? 'Spinning...' : 'Spin' }}
-    </button>
-
-    <!-- Toast component -->
-    <div v-if="toast.show" class="toast" :class="toast.type">
-    {{ toast.message }}
-    </div>
-  </div>
-</template>
-
 <script setup>
 import { ref, reactive, onMounted } from 'vue';
 import axiosInstanceForInsertHeader from '@/axios/axiosInstanceForInsertHeader';
+import Swal from 'sweetalert2';
 
 const reels = ref(['🐰', '🐰', '🐰']);
 const isSpinning = ref(false);
@@ -28,22 +9,6 @@ const result = ref('');
 const earnedCoins = ref(0);
 const gameTimes = ref(0);
 
-// Toast狀態
-const toast = reactive({
-  show: false,
-  message: '',
-  type: 'info'
-});
-
-// 跳出toast
-const showToast = (message, type = 'info') => {
-  toast.show = true;
-  toast.message = message;
-  toast.type = type;
-  setTimeout(() => {
-    toast.show = false;
-  }, 3000);
-};
 
 // 獲取隨機符號
 const getRandomSymbol = () => {
@@ -78,12 +43,26 @@ const endGame = () => {
   axiosInstanceForInsertHeader
     .put('/game/end', { earnedCoins: earnedCoins.value })  // 傳送 earnedCoins 的值
     .then((response) => {
-      showToast(`恭喜獲得 ${earnedCoins.value} 元購物金!`, 'success');  // 顯示購物金數值
+      Swal.fire({
+        title: '遊戲結束!',
+        text: `恭喜獲得 ${earnedCoins.value} 元購物金!`,  // 使用反引號 (``) 來進行字符串插值
+        icon: 'success',
+        confirmButtonText: '確認',
+        customClass: { confirmButton: 'myConfirmBtn' },
+        timer: 2000, // 2 秒後自動關閉
+        timerProgressBar: true // 顯示進度條
+      });
       console.log("恭喜獲得" + earnedCoins.value + "元");
     })
     .catch((error) => {
       console.error('Error ending game:', error);
-      showToast('Error ending the game. Please try again.', 'error');  // 顯示錯誤消息
+      Swal.fire({
+        title: '錯誤!',
+        text: 'Error ending the game. Please try again.',
+        icon: 'error',
+        confirmButtonText: '確認',
+        customClass: { confirmButton: 'myConfirmBtn' }
+      });
     });
 
   isSpinning.value = false;
@@ -108,13 +87,25 @@ const startGame = () => {
           endGame();  // 轉盤結束後發送結果
         }, 2000);
       } else {
-        showToast("抽獎券不足，滿千就有一次抽獎機會唷!", 'error');
+        Swal.fire({
+          title: '抽獎券不足',
+          text: '滿千就有一次抽獎機會唷!',
+          icon: 'error',
+          confirmButtonText: '購物去吧!',
+          customClass: { confirmButton: 'myConfirmBtn' }
+        });
         isSpinning.value = false;
       }
     })
     .catch(error => {
       console.error('Error starting game:', error);
-      showToast("Error starting game. Please try again.", 'error');
+      Swal.fire({
+        title: '錯誤!',
+        text: 'Error starting game. Please try again.',
+        icon: 'error',
+        confirmButtonText: '確認',
+        customClass: { confirmButton: 'myConfirmBtn' }
+      });
       isSpinning.value = false;
     });
 };
@@ -126,6 +117,20 @@ onMounted(() => {
 });
 </script>
 
+<template>
+  <div class="slot-machine">
+    <h2>Slot Machine Game</h2>
+    <div class="reels">
+      <div v-for="(reel, index) in reels" :key="index" class="reel">
+        {{ reel }}
+      </div>
+    </div>
+    <p v-if="result" class="result">{{ result }}</p>
+    <button @click="startGame()" :disabled="isSpinning">
+      {{ isSpinning ? 'Spinning...' : 'Spin' }}
+    </button>
+  </div>
+</template>
 
 
 <style scoped>
