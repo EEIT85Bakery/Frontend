@@ -158,7 +158,7 @@ const formatDate = (dateArray) => {
                     </div>
                     <div class="bunnyCoinDiscount">
                         <span class="leftText">Bunny Coin折扣:</span>
-                        <span>{{ appliedBunnyQuantity }} 元</span>
+                        <span>{{ orderDetail.usedBunnyCoins }} 元</span>
                     </div>
                     <div class="cartLine"></div>
                     <div class="finalPrice">合計:
