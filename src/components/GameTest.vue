@@ -1,3 +1,4 @@
+
 <template>
   <div ref="modalRef" class="modal fade" tabindex="-1" aria-labelledby="memberModalLabel" aria-hidden="true">
     <div class="modal-dialog modalContainer modal-md">
@@ -13,7 +14,6 @@
             <div class="introduction">
               <i class="bi bi-hand-index me-2"></i>
               <span>按下「START」來獲取Bunny Coin吧！</span>
-              <span>剩餘遊戲次數:{{  }}</span>
             </div>
             <div class="reels">
               <!-- <div v-for="(reel, index) in reels" :key="index" class="reel">
@@ -26,6 +26,7 @@
             <button class="startBtn" @click="startGame()" :disabled="isSpinning">
               {{ isSpinning ? 'Spinning...' : 'START' }}
             </button>
+            <span>剩餘遊戲次數: {{ gameTimes }} 次</span>
 
             <hr /> 
 
@@ -84,7 +85,7 @@ const reels = ref(['../../public/imgZip/Logo/bunny.png', '../../public/imgZip/Lo
 const isSpinning = ref(false);
 const result = ref('');
 const earnedCoins = ref(0);
-const gameTimes = ref(0);
+const gameTimes = ref();
 
 // Toast狀態
 const toast = reactive({
@@ -149,88 +150,89 @@ const determineResult = () => {
   } else {
     setReelsAndResult('../../public/imgZip/gameIcon/tie_bunny.png', 10);
   }
-
-
-};
-
-const endGame = () => {
-  axiosInstanceForInsertHeader
-    .put('/game/end', { earnedCoins: earnedCoins.value })
-    .then(() => {
-      Swal.fire({
-        title: '成功!',
-        text: `恭喜獲得 ${earnedCoins.value} 元購物金!`,
-        icon: 'success',
-        confirmButtonText: '確認',
-        customClass: {confirmButton: 'myConfirmBtn'},
-        timer: 2000,
-        timerProgressBar: true
-      });
-      console.log("恭喜獲得" + earnedCoins.value + "元");
-    })
-    .catch((error) => {
-      console.error('Error ending game:', error);
-      Swal.fire({
-        title: '錯誤',
-        text: '遊戲異常，請聯繫管理員。',
-        icon: 'error',
-        confirmButtonText: '確認',
-        customClass: {confirmButton: 'myConfirmBtn'}
-      });
-    });
-
-  isSpinning.value = false;
 };
 
 const startGame = () => {
   isSpinning.value = true;
   result.value = '';
 
+  // 發送開始遊戲請求 (result 為 null)
   axiosInstanceForInsertHeader
-    .get('/game/start')
+    .post('/game/play')
     .then(response => {
-      if (response.data === "User has enough game times!") {
-        const spinInterval = setInterval(() => {
-          reels.value = reels.value.map(() => getRandomSymbol());
-        }, 100);
+      const data = response.data;
+      gameTimes.value = data.gameTimes;
+      
 
+      if (gameTimes.value > 0) {
+        const spinInterval = setInterval(() => {
+          reels.value = reels.value.map(() => getRandomSymbol())
+        }, 100);
         setTimeout(() => {
           clearInterval(spinInterval);
           determineResult();
           isSpinning.value = false;
           endGame();
         }, 2000);
-      } else { // 開始遊戲異常
-        Swal.fire({
-          title: '錯誤',
-          text: '遊戲異常，請聯繫管理員。',
-          icon: 'error',
-          confirmButtonText: '確認',
-          customClass: {confirmButton: 'myConfirmBtn'}
-        });
-        isSpinning.value = false;
       }
     })
     .catch(error => {
       console.error('Error starting game:', error);
-      Swal.fire({
-          title: '抽獎券不足',
-          text: '滿千就有一次抽獎機會唷!',
-          icon: 'warning',
+      if (error.response && error.response.status === 400) {
+        Swal.fire({
+          title: '遊戲次數不足',
+          text: '您沒有足夠的遊戲次數。',
+          icon: 'error',
           confirmButtonText: '確認',
-          customClass: {confirmButton: 'myConfirmBtn'}
-      });
+        });
+      }
+    })
+    .finally(() => {
       isSpinning.value = false;
     });
 };
 
-// 組件初始化後執行
-onMounted(() => {
+const endGame = () => {
+  // 結束遊戲請求，發送 result 包含獲得的金幣
+  axiosInstanceForInsertHeader
+    .post('/game/play', { earnedCoins: earnedCoins.value })
+    .then(response => {
+      const data = response.data;
+      gameTimes.value = data.gameTimes;
 
+      Swal.fire({
+        title: '遊戲結束!',
+        text: `恭喜獲得 ${data.earnedCoins} 元購物金！剩餘遊戲次數：${data.gameTimes}`,
+        icon: 'success',
+        confirmButtonText: '確認',
+      });
+    })
+    .catch(error => {
+      console.error('Error ending game:', error);
+      Swal.fire({
+        title: '錯誤',
+        text: '結束遊戲時發生錯誤，請重試。',
+        icon: 'error',
+        confirmButtonText: '確認',
+      });
+    });
+};
+
+// 調用開始遊戲的 API 來獲取遊戲次數
+const startGameAndFetchTimes = async () => {
+  try {
+    const response = await axiosInstanceForInsertHeader.post('/game/play'); // 調用開始遊戲的API
+    gameTimes.value = response.data.gameTimes; // 假設後端返回的gameTimes在這裡
+  } catch (error) {
+    console.error('Error fetching game times:', error);
+  }
+};
+
+// 組件加載後調用該函數來初始化遊戲
+onMounted(() => {
+  startGameAndFetchTimes();
 });
 </script>
-
-
 
 <style scoped>
 .startBtn {
