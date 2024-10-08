@@ -117,7 +117,7 @@ onMounted(() => {
 
 
   <!-- 標語大圖 -->
-  <RouterLink to="products">
+  <RouterLink to="products" >
     <div class="pic">
       <img class="HomePagePic" src="../../public/imgZip/HomePageImg/HomePageImgBig.png" alt="" ref="images">
     </div>
