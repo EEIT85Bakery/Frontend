@@ -26,18 +26,27 @@ const router = useRouter();
 //   }
 // };
 
-const deleteItem = (order) => {
+// 刪除訂單
+const deleteOrder = (order) => {
   SwalHandle.confirm(
     '確認刪除',
     `您確定要刪除訂單 ${order.orderNumber} 嗎？`,
     '刪除成功！', 
     () => {
-      // 執行刪除操作，例如：
-      orders.value = orders.value.filter(i => i !== order);
-      SwalHandle.showSuccessMsg(`成功刪除 ${orders.orderNumber}`);
+      axiosInstanceForInsertHeader
+      .delete(`/admin/orders/${order.orderId}`)
+      .then(() => {
+        SwalHandle.showSuccessMsg(`成功刪除 ${order.orderNumber}`);
+        orders.value = orders.value.filter(i => i.orderId !== order.orderId);  // 確保正確刪除
+        fetchOrders(currentPage.value, size.value); // 刪除成功後重新抓取資料
+      })
+      .catch((error) => {
+        console.error(`Error deleting order ${order.orderId}:`, error); 
+      });
     }
   );
 };
+
 
 // 從後端取得訂單資料，根據電話號碼和訂單編號來查詢
 const fetchOrders = () => {
@@ -142,7 +151,7 @@ onMounted(() => {
                         <td>{{ order.paymentStatus }}</td>
                         <td>{{ order.pickupStatus }}</td>
                         <td><i class="bi bi-pencil-square" style="color: darkgrey;" @click="openOrderModal(order)"></i></td>
-                        <td><i class="bi bi-trash3" style="color: darkred;" @click="deleteItem(item)"></i></td>
+                        <td><i class="bi bi-trash3" style="color: darkred;" @click="deleteOrder(order)"></i></td>
                     </tr>
                 </tbody>
             </table>

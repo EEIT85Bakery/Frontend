@@ -13,6 +13,7 @@
             <div class="introduction">
               <i class="bi bi-hand-index me-2"></i>
               <span>按下「START」來獲取Bunny Coin吧！</span>
+              <span>剩餘遊戲次數:{{  }}</span>
             </div>
             <div class="reels">
               <!-- <div v-for="(reel, index) in reels" :key="index" class="reel">
@@ -68,6 +69,7 @@
 import { ref, reactive, onMounted } from 'vue';
 import axiosInstanceForInsertHeader from '@/axios/axiosInstanceForInsertHeader';
 import useModal from '@/hooks/useModal';
+import Swal from 'sweetalert2';
 
 const { openModal, hideModal, modalRef } = useModal();
 
@@ -123,9 +125,9 @@ const setReelsAndResult = (symbol, coins) => {
 
 // 根據隨機機率決定獲得獎勵
 const determineResult = () => {
-  const bigWin = Math.random() < 0.03;
-  const mediumWin = Math.random() < 0.10;
-  const smallWin = Math.random() < 0.15;
+  const bigWin = Math.random() < 0.5;
+  const mediumWin = Math.random() < 0.15;
+  const smallWin = Math.random() < 0.25;
 
   // if (bigWin) {
   //   setReelsAndResult('🐰', 100);
@@ -153,14 +155,28 @@ const determineResult = () => {
 
 const endGame = () => {
   axiosInstanceForInsertHeader
-    .put('/game/end', { earnedCoins: earnedCoins.value })  // 傳送 earnedCoins 的值
-    .then((response) => {
-      showToast(`恭喜獲得 ${earnedCoins.value} 元購物金!`, 'success');  // 顯示購物金數值
+    .put('/game/end', { earnedCoins: earnedCoins.value })
+    .then(() => {
+      Swal.fire({
+        title: '成功!',
+        text: `恭喜獲得 ${earnedCoins.value} 元購物金!`,
+        icon: 'success',
+        confirmButtonText: '確認',
+        customClass: {confirmButton: 'myConfirmBtn'},
+        timer: 2000,
+        timerProgressBar: true
+      });
       console.log("恭喜獲得" + earnedCoins.value + "元");
     })
     .catch((error) => {
       console.error('Error ending game:', error);
-      showToast('Error ending the game. Please try again.', 'error');  // 顯示錯誤消息
+      Swal.fire({
+        title: '錯誤',
+        text: '遊戲異常，請聯繫管理員。',
+        icon: 'error',
+        confirmButtonText: '確認',
+        customClass: {confirmButton: 'myConfirmBtn'}
+      });
     });
 
   isSpinning.value = false;
@@ -182,29 +198,36 @@ const startGame = () => {
           clearInterval(spinInterval);
           determineResult();
           isSpinning.value = false;
-          endGame();  // 轉盤結束後發送結果
+          endGame();
         }, 2000);
-      } else {
-        showToast("抽獎券不足，滿千就有一次抽獎機會唷!", 'error');
+      } else { // 開始遊戲異常
+        Swal.fire({
+          title: '錯誤',
+          text: '遊戲異常，請聯繫管理員。',
+          icon: 'error',
+          confirmButtonText: '確認',
+          customClass: {confirmButton: 'myConfirmBtn'}
+        });
         isSpinning.value = false;
       }
     })
     .catch(error => {
       console.error('Error starting game:', error);
-      showToast("Error starting game. Please try again.", 'error');
+      Swal.fire({
+          title: '抽獎券不足',
+          text: '滿千就有一次抽獎機會唷!',
+          icon: 'warning',
+          confirmButtonText: '確認',
+          customClass: {confirmButton: 'myConfirmBtn'}
+      });
       isSpinning.value = false;
     });
 };
-
 
 // 組件初始化後執行
 onMounted(() => {
 
 });
-
-
-
-
 </script>
 
 

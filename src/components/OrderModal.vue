@@ -95,9 +95,9 @@ const formatDate = (dateArray) => {
                     </button>
                 </div>
                 <div class="modal-body modalBody">
-                    <div v-if="isLoading">加載中...</div>
-                    <div v-else-if="orderDetail">
-                        <div class="Container1">
+                    
+                    <div v-if="orderDetail" style="display: flex;">
+                        <div class="Container1"  >
 
                             <div class="inputText">訂購人資料</div>
 
@@ -209,7 +209,7 @@ const formatDate = (dateArray) => {
 
 .modalBody {
     padding: 2%;
-    display: flex;
+    /* display: flex; */
 }
 
 .Container1 {

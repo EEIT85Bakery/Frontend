@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import PaginationComponent from '@/components/PaginationComponent.vue';
 import ProductModal from '@/components/ProductModal.vue';
 import DashBoardNavBarProduct from '@/components/DashBoardNavBarProduct.vue';
@@ -8,90 +8,95 @@ import { SwalHandle } from '@/stores/sweetAlertStore';
 import { onMounted } from 'vue';
 import { useCartStore } from '@/stores/cartStore';
 import axiosInstanceForInsertHeader from '@/axios/axiosInstanceForInsertHeader';
+import { useRoute, useRouter } from 'vue-router';
 
-const productModalRef = ref(null);
-const currentItem = ref(null); 
-const items = ref({})
+
+const route = useRoute();
+const router = useRouter();
 const currentPage = ref(1);
-    const totalPages = ref(1);
-    const itemsPerPage = ref(10);
-    const totalItems = ref(0)
+const itemsPerPage = ref(10);
+const totalItems = ref(0);
+const totalPages = ref(0);
+const items = ref([]);
+const currentItem = ref(null);
+const productModalRef = ref(null);
+const searchInput = ref('');
+const url = ref('/admin/products/search')
 
 const handlePageChange = (page) => {
-    currentPage.value = page
-      getProducts(page);
-    };
+  currentPage.value = page;
+  getProducts(page);
+};
 
 const getProducts = (page) => {
-    
-    axiosInstanceForInsertHeader.get('/admin/products/page', {
-        params: {page: page - 1, size: itemsPerPage.value}
-    }).then((res) => {
-        const { content, totalElements, totalPages: backendTotalPages, size, number } = res.data;
-        totalItems.value = totalElements;
-        totalPages.value = backendTotalPages;
-        currentPage.value = number + 1;  // 後端頁碼從0開始，所以加1
-        itemsPerPage.value = size;
-        
-        items.value = content      
-        console.log(items.value);
-        
-        items.value.forEach(item => {
-        // 使用一個輔助函數來處理圖片轉換
-        item.img1 = convertToDataURL(item.img1)
-        item.img2 = convertToDataURL(item.img2)
-        item.img3 = convertToDataURL(item.img3)
-        item.img4 = convertToDataURL(item.img4)
-      })
-    })
-}
+  const params = {
+    page: page - 1,
+    size: itemsPerPage.value
+  };
+
+  if (route.query.search) {
+    params.search = route.query.search;
+  }else if(route.query.search == undefined) {
+    params.search = ''
+  }
+  axiosInstanceForInsertHeader.get(`${url.value}`, {params})
+    .then((res) => {
+      const { content, totalElements, totalPages: backendTotalPages, size, number } = res.data;
+      totalItems.value = totalElements;
+      totalPages.value = backendTotalPages;
+      currentPage.value = number + 1;
+      itemsPerPage.value = size;
+      items.value = content.map(item => ({
+        ...item,
+        img1: convertToDataURL(item.img1),
+        img2: convertToDataURL(item.img2),
+        img3: convertToDataURL(item.img3),
+        img4: convertToDataURL(item.img4)
+      }));
+    });
+};
 
 const convertToDataURL = (base64String) => {
-  if (!base64String) return null // 如果沒有圖片數據，返回 null
+  if (!base64String) return null;
+  const isPNG = base64String.charAt(0) === 'i';
+  const mimeType = isPNG ? 'image/png' : 'image/jpeg';
+  return `data:${mimeType};base64,${base64String}`;
+};
 
-  // 檢測圖片類型（這裡僅檢測了 JPEG 和 PNG，你可以根據需要擴展）
-  const isPNG = base64String.charAt(0) === 'i' // iVBORw0KGgo... (PNG 的特徵)
-  const mimeType = isPNG ? 'image/png' : 'image/jpeg'
-
-  return `data:${mimeType};base64,${base64String}`
-}
-
-// 打開新增 modal
 const openproductModal = () => {
-  currentItem.value = null; // 清空當前選中的商品，表示新增
+  currentItem.value = null;
   if (productModalRef.value) {
     productModalRef.value.openModal();
   }
 };
 
-// 打開編輯 modal
 const openEditproductModal = (item) => {
-    
-    
-  currentItem.value = item; // 設置選中的商品
+  currentItem.value = item;
   if (productModalRef.value) {
     productModalRef.value.openModal();
   }
 };
 
 const deleteItem = (item) => {
-   SwalHandle.confirm('刪除商品',`確認要刪除${item.productName}這個產品?`,'',
-    () =>  {
-  axiosInstanceForInsertHeader.delete(`/admin/products/${item.id}`).then(() => {
-    SwalHandle.showSuccessMsg(`已刪除${item.productName}`)
-    getProducts(currentPage.value)
-  }).catch((err) => {
-    console.log(err);
-  })
-})
+  SwalHandle.confirm('刪除商品', `確認要刪除${item.productName}這個產品?`, '',
+    () => {
+      axiosInstanceForInsertHeader.delete(`/admin/products/${item.id}`).then(() => {
+        SwalHandle.showSuccessMsg(`已刪除${item.productName}`);
+        getProducts(currentPage.value);
+      }).catch((err) => {
+        console.log(err);
+      });
+    });
 };
 
-onMounted(() => {
-    getProducts(currentPage.value)
-})
 
-
+watch(() => route.query.search, () => {
+  currentPage.value = 1;
+  getProducts(1);
+}, { immediate: true });
 </script>
+
+
 
 <template>
 

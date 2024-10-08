@@ -1,12 +1,16 @@
 <script setup>
-import { onMounted, ref, reactive } from 'vue';
+import { onMounted, ref, reactive, watch } from 'vue';
 import PaginationComponent from '@/components/PaginationComponent.vue';
 import CouponModal from '@/components/CouponModal.vue';
 import DashBoardNavBarCoupon from '@/components/DashBoardNavBarCoupon.vue';
 
 import { SwalHandle } from '@/stores/sweetAlertStore';
 import axiosInstanceForInsertHeader from '@/axios/axiosInstanceForInsertHeader';
+import router from '@/router';
+import { useRoute } from 'vue-router';
 
+
+const route = useRoute();
 const couponModalRef = ref(null);
 const currentItem = ref(null); 
 const coupons = ref([]);
@@ -39,26 +43,35 @@ const coupons = ref([]);
     
 
     const getCoupons = (page) => {
+  const params = {
+    page: page - 1,
+    size: itemsPerPage.value
+  };
+  
+  // Add search parameter if it exists in route query
+  if (route.query.search) {
+    params.search = route.query.search;
+  } else if (route.query.search === undefined) {
+    params.search = '';
+  }
 
-        axiosInstanceForInsertHeader.get('/admin/coupon/page', {
-          params: {
-            page: page - 1,  
-            size: itemsPerPage.value
-          }
-        }).then((res) => {
-          const { content, totalElements, totalPages: backendTotalPages, size, number } = res.data;
-        totalItems.value = totalElements;
-        totalPages.value = backendTotalPages;
-        currentPage.value = number + 1;  // 後端頁碼從0開始，所以加1
-        itemsPerPage.value = size;
+  axiosInstanceForInsertHeader.get('/admin/coupon/search', { params })
+    .then((res) => {
+      const { content, totalElements, totalPages: backendTotalPages, size, number } = res.data;
+      totalItems.value = totalElements;
+      totalPages.value = backendTotalPages;
+      currentPage.value = number + 1;
+      itemsPerPage.value = size;
+      coupons.value = content;
+    })
+    .catch(err => console.log(err));
+};
+ 
+watch(() => route.query.search, () => {
+  currentPage.value = 1;
+  getCoupons(1);
+}, { immediate: true });
 
-        coupons.value = content;
-        console.log(coupons.value);
-
-        }).catch(err => console.log(err)
-        )
-        
-    };
   
 
 // 打開新增 modal

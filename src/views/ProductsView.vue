@@ -71,8 +71,12 @@ const fetchAllFlavors = () => {
 // 獲取產品列表
 const fetchProducts = () => {
   isLoading.value = true;
-  let url = '/api/products';
-  let params = { page: currentPage.value - 1, size: pageSize.value };
+  let url = '/api/products'
+  let params = { 
+    page: currentPage.value - 1, 
+    size: pageSize.value,
+    // sort: rank.value === "由新到舊" ? "createdTime,desc" : "createdTime,asc" // 商品新舊排序
+  };
 
   // 如果 flavor、category 和 keyword 都為空，顯示全部商品
   if (selectedFlavor.value) {
@@ -140,6 +144,12 @@ const fetchProductsByFlavor = (flavor) => {
   fetchProducts();
 };
 
+const toggleRank = () => {
+  rank.value = rank.value === "由新到舊" ? "由舊到新" : "由新到舊";
+  fetchProducts(); // 排序方式改變後重新加載產品
+};
+
+
 // 處理頁碼
 const handlePageChange = (newPage) => {
   currentPage.value = newPage;
@@ -151,7 +161,7 @@ const handlePageChange = (newPage) => {
 
 <template>
   <div class="PContainer">
-    <div class="categoryText1" @click="fetchProducts">商品列表 >> {{ field }}</div>
+    <div class="categoryText1" @click="fetchProducts">商品列表 >> {{ field }} </div>
     <Loading v-if="isLoading" />
     <div v-else class="d-flex">
       <!-- 側邊分類欄 -->
@@ -175,7 +185,7 @@ const handlePageChange = (newPage) => {
       <!-- 商品列表 -->
       <div class="productsList d-flexbox w-100">
         <div class="productsPageTop"></div>
-        <div class="categoryText2">商品排序 >> {{ rank }}</div>
+        <div class="categoryText2" @click="toggleRank">商品排序 >> {{ rank }}</div>
         <div class="ProductsContainer">
          
           <div v-for="product in products" :key="product.id" class="products-item"> 
@@ -225,6 +235,7 @@ const handlePageChange = (newPage) => {
     margin-top: 20px;
     margin-right: 25px;
     text-align: end;
+    cursor: pointer;
 }
 
 .categoryItem {
