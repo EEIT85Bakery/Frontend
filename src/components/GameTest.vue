@@ -28,7 +28,7 @@
             </button>
             <span class="gameTimes">
               剩餘遊戲次數:
-              <span class="gameTimesNum"> 12 {{ gameTimes }} </span>
+              <span class="gameTimesNum"> {{ gameTimes }} </span>
               次
             </span>
 
@@ -93,6 +93,7 @@ const isSpinning = ref(false);
 const result = ref('');
 const earnedCoins = ref(0);
 const gameTimes = ref();
+const bunnyCoins = ref();
 
 // Toast狀態
 const toast = reactive({
@@ -196,10 +197,11 @@ const endGame = () => {
     .then(response => {
       const data = response.data;
       gameTimes.value = data.gameTimes;
-      console.log(`恭喜獲得 ${data.earnedCoins} 元購物金！剩餘遊戲次數：${data.gameTimes}`);
+      bunnyCoins.value = data.bunnyCoins;
+      console.log(`恭喜獲得 ${data.earnedCoins} 元購物金！共擁有的 BunnyCoin ${data.bunnyCoins}`);
       Swal.fire({
         title: '遊戲結束!',
-        text: `恭喜獲得 ${data.earnedCoins} 元購物金！剩餘遊戲次數：${data.gameTimes}`,
+        text: `恭喜獲得 ${data.earnedCoins} 元購物金！共擁有的 BunnyCoin ${data.bunnyCoins} 元`,
         icon: 'success',
         confirmButtonText: '確認',
       });

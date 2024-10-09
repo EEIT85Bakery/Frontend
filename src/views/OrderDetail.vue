@@ -148,13 +148,13 @@ const formatDate = (dateArray) => {
                     </div>
                     <div class="allDiscount" :style="discountStyle">
                         <span class="leftText">折扣:<span style="font-size: small;"> (已使用折扣碼 {{ orderDetail.couponName }} )</span></span>
-                        <span>{{ discount }} 元</span>
+                        <span>{{ orderDetail.total - orderDetail.paidPrice  - orderDetail.usedBunnyCoins }} 元</span>
                     </div>
                     <div class="ownDiscount" v-if="memberlevel != '白兔'">
-                        <span class="leftText">{{ memberlevel }}會員專屬折扣:
+                        <!-- <span class="leftText">{{ memberlevel }}會員專屬折扣:
                             <span>(會員折扣詳見<span @click="handleOpenModal" class="memberLevel">會員分級</span>)</span>
                         </span>
-                        <span>{{ memberdiscount }} 元</span>
+                        <span>{{ memberdiscount }} 元</span> -->
                     </div>
                     <div class="bunnyCoinDiscount">
                         <span class="leftText">Bunny Coin折扣:</span>
