@@ -182,6 +182,9 @@ const startGame = () => {
           text: '您沒有足夠的遊戲次數。',
           icon: 'error',
           confirmButtonText: '確認',
+          customClass: {
+          confirmButton: 'myConfirmBtn'
+        }
         });
       }
     })
@@ -204,6 +207,9 @@ const endGame = () => {
         text: `恭喜獲得 ${data.earnedCoins} 元購物金！共擁有的 BunnyCoin ${data.bunnyCoins} 元`,
         icon: 'success',
         confirmButtonText: '確認',
+        customClass: {
+        confirmButton: 'myConfirmBtn'
+      }
       });
       
     })
@@ -214,6 +220,9 @@ const endGame = () => {
         text: '結束遊戲時發生錯誤，請重試。',
         icon: 'error',
         confirmButtonText: '確認',
+        customClass: {
+        confirmButton: 'myConfirmBtn'
+      }
       });
     });
 };
