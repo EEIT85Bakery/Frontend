@@ -64,25 +64,20 @@ const finaltotal = computed(() => {
     }
 })
 
-// 當頁面掛載時請求訂單詳細資料
-onMounted(() => {
-  fetchOrderDetail(); // 頁面加載時調用
-});
-
 const fetchOrderDetail = () => {
-  isLoading.value = true; // 設置加載狀態為 true
+  isLoading.value = true; 
   
   axiosInstanceForInsertHeader.get('/orders/byOrderNumber', {
-    params: { orderNumber: orderNumber.value } // 傳遞訂單號碼作為查詢參數
+    params: { orderNumber: orderNumber.value }
   })
   .then((response) => {
-    orderDetail.value = response.data; // 獲取訂單詳細資料
+    orderDetail.value = response.data; // 取得訂單詳細資料
     console.log('訂單詳細資料:', orderDetail.value);
     console.log('訂單詳細資料中的商品:', orderDetail.value.orderDetails);
 
   })
   .catch((error) => {
-    console.error('Error fetching order details:', error); // 捕捉錯誤並輸出
+    console.error('Error fetching order details:', error);
   })
   .finally(() => {
     isLoading.value = false; // 不論成功或失敗都停止加載
@@ -94,18 +89,18 @@ const formatDate = (dateArray) => {
   if (!Array.isArray(dateArray) || dateArray.length < 5) {
     return null; // 如果日期為空或格式不正確，返回提示
   }
-
-  // 提取時間並檢查是否有秒
-  const [year, month, day, hour, minute, second = '00'] = dateArray; // 如果沒有秒，默認為 '00'
-
+  // 檢查時間是否有秒，沒有補00
+  const [year, month, day, hour, minute, second = '00'] = dateArray;
   // 格式化為 YYYY-MM-DD HH:mm:ss
   const formattedDate = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')} ` +
                         `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}:${String(second).padStart(2, '0')}`;
-
   return formattedDate;
 };
 
-
+// 當頁面掛載時請求訂單詳細資料
+onMounted(() => {
+  fetchOrderDetail(); // 頁面加載時調用
+});
 
 </script>
 
@@ -146,15 +141,9 @@ const formatDate = (dateArray) => {
                         <span class="leftText">總計:</span>
                         <span>{{ orderDetail.total }} 元</span>
                     </div>
-                    <div class="allDiscount" :style="discountStyle">
+                    <div class="allDiscount" v-if="orderDetail.couponName">
                         <span class="leftText">折扣:<span style="font-size: small;"> (已使用折扣碼 {{ orderDetail.couponName }} )</span></span>
                         <span>{{ orderDetail.total - orderDetail.paidPrice  - orderDetail.usedBunnyCoins }} 元</span>
-                    </div>
-                    <div class="ownDiscount" v-if="memberlevel != '白兔'">
-                        <!-- <span class="leftText">{{ memberlevel }}會員專屬折扣:
-                            <span>(會員折扣詳見<span @click="handleOpenModal" class="memberLevel">會員分級</span>)</span>
-                        </span>
-                        <span>{{ memberdiscount }} 元</span> -->
                     </div>
                     <div class="bunnyCoinDiscount">
                         <span class="leftText">Bunny Coin折扣:</span>
@@ -170,7 +159,7 @@ const formatDate = (dateArray) => {
                             <div class="mb-1">
                                 <i class="bi bi-caret-right-fill"></i>
                                 單筆訂單滿500可以獲得1次遊戲機會，
-                                此筆訂單可獲得<b style="color: rgba(166, 127, 120, 1); font-style: italic;"> 2 </b>次遊戲機會，已匯入您的遊玩次數中，
+                                此筆訂單可獲得 <b style="color: rgba(166, 127, 120, 1); font-style: italic;"> {{ Math.floor(orderDetail.paidPrice / 500) }} </b> 次遊戲機會，已匯入您的遊玩次數中，
                                 記得前往賺取Bunny Coin呦~
                             </div>
                             <div>
@@ -224,7 +213,6 @@ const formatDate = (dateArray) => {
                         <span v-else>未取貨</span>
                     </div>
 
-
                 </div>
             </div>
 
@@ -233,8 +221,8 @@ const formatDate = (dateArray) => {
     </div>
 
     <div class="btns">
-        <RouterLink to="/" class="goToBuyBtn">
-            <button class="btn2">返回首頁</button>
+        <RouterLink to="/orderList" class="goToBuyBtn">
+            <button class="btn2" @click="backToList">返回訂單清單</button>
         </RouterLink>
     </div>
 
