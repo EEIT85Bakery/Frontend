@@ -21,6 +21,10 @@ const productModalRef = ref(null);
 const searchInput = ref('');
 const url = ref('/admin/products/search')
 
+const clearCurrentItem = () => {
+  currentItem.value = null
+}
+
 const handlePageChange = (page) => {
   currentPage.value = page;
   getProducts(page);
@@ -136,7 +140,7 @@ watch(() => route.query.search, () => {
             </PaginationComponent>
         </div>
         
-        <ProductModal ref="productModalRef" :product="currentItem" @getProducts="getProducts(currentPage)" :currentPage="currentPage"/>
+        <ProductModal ref="productModalRef" :product="currentItem" @getProducts="getProducts(currentPage)" :currentPage="currentPage" :clearCurrentItem="clearCurrentItem"/>
 
 
     </div>

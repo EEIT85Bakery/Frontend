@@ -8,6 +8,13 @@ import axiosInstanceForInsertHeader from '@/axios/axiosInstanceForInsertHeader';
 
 const cartStore = useCartStore()
 
+const resetImg = () => {
+    cartStore.img1 = '',
+            cartStore.img2 = '',
+            cartStore.img3 = '',
+            cartStore.img4 = ''
+}
+
 const props = defineProps({
     product: {
         type: Object,
@@ -38,7 +45,7 @@ const editProduct = () => {
   enable: formData.value.enable,
   categoryName: formData.value.categoryName,
   flavor: formData.value.flavor,
-  img1: formData.value.img1,
+  img1: cartStore.img1,
   img2: cartStore.img2,
   img3: cartStore.img3,
   img4: cartStore.img4
@@ -46,6 +53,7 @@ const editProduct = () => {
         console.log(res);
             SwalHandle.showSuccessMsg("編輯產品成功")
             getProducts(props.currentPage)
+            resetImg()
     }).catch(() => {
         SwalHandle.showErrorMsg("編輯產品失敗 請檢查必填參數")
     })
@@ -64,7 +72,7 @@ const getProducts = () => {
   emit('getProducts')
 }
 
-const addPrdocut = () => {
+const addProduct = () => {
     formData.value.img1 = cartStore.img1
     formData.value.img2 = cartStore.img2
     formData.value.img3 = cartStore.img3
@@ -80,7 +88,7 @@ const addPrdocut = () => {
   enable: formData.value.enable,
   categoryName: formData.value.categoryName,
   flavor: formData.value.flavor,
-  img1: formData.value.img1,
+  img1: cartStore.img1,
   img2: cartStore.img2,
   img3: cartStore.img3,
   img4: cartStore.img4
@@ -88,6 +96,7 @@ const addPrdocut = () => {
         console.log(res);
             SwalHandle.showSuccessMsg("新增產品成功")
             getProducts(props.currentPage)
+            resetImg()
     }).catch(() => {
         SwalHandle.showErrorMsg("新增產品失敗 請檢查必填參數")
     })
@@ -192,7 +201,7 @@ const handleFileChange = (event) => {
           reader.readAsDataURL(selectedFile.value);
           
           //測試傳送圖片
-
+          SwalHandle.showSuccessMsg('圖片一上傳成功')
           
         } else {
           alert("Please select an image.");
@@ -212,6 +221,7 @@ const handleFileChange = (event) => {
           };
           reader.readAsDataURL(selectedFile2.value);
           
+          SwalHandle.showSuccessMsg('圖片二上傳成功')
           //測試傳送圖片
         //   cartStore.img2 = selectedFile2.value
           
@@ -234,6 +244,7 @@ const handleFileChange = (event) => {
           };
           reader.readAsDataURL(selectedFile3.value);
           
+          SwalHandle.showSuccessMsg('圖片三上傳成功')
           //測試傳送圖片
         //   cartStore.img2 = selectedFile2.value
           
@@ -259,6 +270,7 @@ const handleFileChange = (event) => {
           //測試傳送圖片
         //   cartStore.img4 = selectedFile4.value
           
+        SwalHandle.showSuccessMsg('圖片四上傳成功')
         } else {
           alert("Please select an image.");
         }
@@ -296,10 +308,10 @@ watch(
 
 // 表單提交
 const submitForm = () => {
-    if (!formData.value.description) {
-        SwalHandle.showErrorMsg("請填寫商品描述")
-        return;
-    }
+    // if (!formData.value.description) {
+    //     SwalHandle.showErrorMsg("請填寫商品描述")
+    //     return;
+    // }
    
 
     
@@ -307,7 +319,7 @@ const submitForm = () => {
         editProduct();
         console.log('編輯商品', formData.value);
     } else {
-        addPrdocut()
+        addProduct()
         console.log('新增商品', formData.value);
     }
     // 這裡可以觸發保存或新增的操作

@@ -429,7 +429,6 @@ onMounted(() => {
                             <p class="nextLevel" style="text-align: end; font-style: italic;">(依折價後金額計算)</p>
                         </template>
                         <div class="finalPrice">合計:
-                            <!-- 合計金額異常  -->
                             <span class="finaltotalPrice">{{ cartStore.paymentPrice }}</span> 元
                         </div>
                     </div>
