@@ -26,7 +26,11 @@
             <button class="startBtn" @click="startGame()" :disabled="isSpinning">
               {{ isSpinning ? 'Spinning...' : 'START' }}
             </button>
-            <span>剩餘遊戲次數: {{ gameTimes }} 次</span>
+            <span class="gameTimes">
+              剩餘遊戲次數:
+              <span class="gameTimesNum"> 12 {{ gameTimes }} </span>
+              次
+            </span>
 
             <hr /> 
 
@@ -231,13 +235,25 @@ onMounted(() => {
 .startBtn {
   width: 100%;
   padding: 3%;
-  margin-bottom: 5%;
+  margin-bottom: 3%;
   border: 0;
   border-radius: 10px;
   background-color: rgba(166, 127, 120, 1);
   font-weight: bold;
   color: white;
   box-shadow: 0 4px 4px rgba(0, 0, 0, 0.1);
+}
+
+.gameTimes {
+  color: rgba(143, 134, 129, 0.8);
+  font-weight: bold;
+  font-size: small;
+}
+
+.gameTimesNum {
+  font-size: large;
+  font-style: italic;
+  color: rgba(166, 127, 120, 1);
 }
 
 
@@ -338,7 +354,7 @@ onMounted(() => {
 }
 
 .btn1 {
-  padding: 1% 2%;
+  padding: 1% 3%;
   color: rgba(166, 127, 120, 1);
   border: rgba(166, 127, 120, 0.3) solid 1px;
   border-radius: 5px;
