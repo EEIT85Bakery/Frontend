@@ -1,10 +1,47 @@
 <script setup>
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import { SwalHandle } from '@/stores/sweetAlertStore';
+import axiosInstanceForInsertHeader from '@/axios/axiosInstanceForInsertHeader';
+import PaginationComponent from '@/components/PaginationComponent.vue';
+
+const anniversaries = ref({})
+const currentPage = ref(1);
+    const totalPages = ref(1);
+    const itemsPerPage = ref(3);
+    const totalItems = ref(0)
+
+    const handlePageChange = (page) => {
+      currentPage.value = page;
+      getAnniversaries(page);
+    };
+
+    const convertToDate = (arr) => {
+  let date = new Date(arr[0], arr[1] - 1, arr[2]); // JavaScript中的月份是從0開始的
+  return date.toISOString().split('T')[0];
+}
+
 
 const showSuccess = () => {
   SwalHandle.showSuccessMsg('新增成功！');
 };
+
+const getAnniversaries = (page) => {
+    const params = {
+    page: page - 1,
+    size: itemsPerPage.value
+  };
+    axiosInstanceForInsertHeader.get('/anniversaries', {params}).then(res => {
+        anniversaries.value = res.data.content
+        console.log(anniversaries.value);
+           
+        const { content, totalElements, totalPages: backendTotalPages, size, number } = res.data;
+        totalItems.value = totalElements;
+      totalPages.value = backendTotalPages;
+      currentPage.value = number + 1;
+      itemsPerPage.value = size;
+      anniversaries.value = content;
+    }).catch(err => console.log(err))
+}
 
 const deleteItem = (item) => {
   SwalHandle.confirm(
@@ -33,6 +70,10 @@ const items = ref([
         date: '01 / 01'
     }
 ])
+
+onMounted(() => {
+    getAnniversaries(currentPage.value)
+})
 
 </script>
 
@@ -106,16 +147,16 @@ const items = ref([
                                         <th>日期</th>
                                         <th>刪除</th>
                                     </tr>
-                                    <tr v-for="(item, index) in items" :key="index">
-                                        <td>{{ item.thing }}</td>
-                                        <td>{{ item.date }}</td>
+                                    <tr v-for="(item, index) in anniversaries" :key="index">
+                                        <td>{{ item.anniversaryName }}</td>
+                                        <td>{{ convertToDate(item.anniversaryDate) }}</td>
                                         <td @click="deleteItem(item)"><i class="bi bi-x-circle delBtn"></i></td>
                                     </tr>
                                 </table>
 
 
 
-
+                                
                             </div>
 
 
@@ -160,8 +201,16 @@ const items = ref([
 
 
                 </div>
+                <PaginationComponent 
+      :totalPages="totalPages" 
+      :currentPage="currentPage" 
+      @pageChange="handlePageChange"
+      @getCoupons="getAnniversaries(currentPage)"
+    />
             </div>
+            
         </div>
+        
     </div>
 
 </template>

@@ -102,7 +102,7 @@ onMounted(() => {
 
                             <hr />
 
-                            <div class="text">
+                            <div class="text" v-if="membershipInfo.memberLevel != '鑽石兔會員'">
                                 <i class="bi bi-caret-right-fill me-2"></i>
                                 <span>全館再消費<span><b> {{ membershipInfo.gap }} 元</b></span>，即可升級成為<span><b>{{ membershipInfo.nextLevel }}</b></span></span>
                             </div>
