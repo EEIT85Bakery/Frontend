@@ -1,7 +1,21 @@
 <script setup>
-import { ref, computed } from 'vue';
+import axiosInstanceForInsertHeader from '@/axios/axiosInstanceForInsertHeader';
+import { ref, computed, onMounted } from 'vue';
 
-const totalSpent = ref(3000);
+const totalSpent = ref(123);
+
+const data = ref({})
+const gameTimes = ref(123);
+const coinQuantity = ref(123);
+
+const getCart = () => {
+    axiosInstanceForInsertHeader.get('/memberPage/info').then(res => {
+        data.value = res.data
+        totalSpent.value = data.value.accumulateSpent
+        coinQuantity.value = data.value.bunnyCoin
+        gameTimes.value = data.value.gameTimes
+    }).catch(err => console.log(err))
+}
 
 const membershipInfo = computed (() => {
 
@@ -19,7 +33,7 @@ const membershipInfo = computed (() => {
         nextLevel = '白金兔會員'
     } else if (totalSpent.value >= 6000 && totalSpent.value <= 8999) {
         memberLevel = '白金兔會員'
-        gap = 6000 - totalSpent.value
+        gap = 9000 - totalSpent.value
         nextLevel = '鑽石兔會員'
     } else {
         memberLevel = '鑽石兔會員'
@@ -30,9 +44,10 @@ const membershipInfo = computed (() => {
     return { memberLevel, gap, nextLevel }
 });
 
-const gameTimes = ref(3);
-const coinQuantity = ref(36);
 
+onMounted(() => {
+    getCart()
+})
 
 </script>
 
