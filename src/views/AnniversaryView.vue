@@ -31,9 +31,7 @@ const getAnniversaries = (page) => {
     size: itemsPerPage.value
   };
     axiosInstanceForInsertHeader.get('/anniversaries', {params}).then(res => {
-        anniversaries.value = res.data.content
-        console.log(anniversaries.value);
-           
+        anniversaries.value = res.data.content           
         const { content, totalElements, totalPages: backendTotalPages, size, number } = res.data;
         totalItems.value = totalElements;
       totalPages.value = backendTotalPages;
@@ -46,12 +44,17 @@ const getAnniversaries = (page) => {
 const deleteItem = (item) => {
   SwalHandle.confirm(
     '確認刪除',
-    `您確定要刪除 ${item.thing} 嗎？`,
+    `您確定要刪除 ${item.anniversaryName} 嗎？`,
     '刪除成功！', 
     () => {
       // 執行刪除操作，例如：
-      items.value = items.value.filter(i => i !== item);
-      SwalHandle.showSuccessMsg(`成功刪除 ${item.thing}`);
+        axiosInstanceForInsertHeader.delete(`anniversaries/${item.id}`)
+        .then(() => {
+            SwalHandle.showSuccessMsg(`成功刪除 ${item.anniversaryName}`)
+            getAnniversaries(currentPage.value)
+    })
+        .catch(err => console.log(err))
+      
     }
   );
 };
@@ -124,7 +127,7 @@ onMounted(() => {
                     <hr />
                     <div class="hintText">
                         <i class="bi bi-caret-down-fill"></i>
-                        以下輸入「重要事項」以及「日期」，我們會於紀念日到來的前*天寄提醒信件到您的電子信箱
+                        以下輸入「重要事項」以及「日期」，我們會於紀念日當天寄提醒信件到您的電子信箱
                     </div>
                     <div class="inputArea">
                         <div class="area1">
