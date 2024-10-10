@@ -2,11 +2,67 @@
 import { ref, onMounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import Loading from '@/components/Loading.vue';
+import axiosInstanceForInsertHeader from '@/axios/axiosInstanceForInsertHeader';
 
 const isLoading = ref(true);
 
 const route = useRoute();
+//anniversaries//
+const userEmail = ref("")
+const getMemberInfo = () => {
+  axiosInstanceForInsertHeader.get('/memberPage/info').then(res => {
+    userEmail.value = res.data.email;
+    getAllAnniversaries()
+  }).catch(err => console.log(err))
+}
 
+const convertToDate = (dateInput) => {
+  if (!dateInput) return '';
+
+  let date;
+  if (Array.isArray(dateInput)) {
+    // 如果是數組，假設格式為 [year, month, day]
+    date = new Date(Date.UTC(dateInput[0], dateInput[1] - 1, dateInput[2]));
+  } else if (typeof dateInput === 'string') {
+    // 如果是字符串，直接解析
+    const [year, month, day] = dateInput.split('-').map(Number);
+    date = new Date(Date.UTC(year, month - 1, day));
+  } else {
+    // 其他情況，假設是 Date 對象或時間戳
+    date = new Date(dateInput);
+  }
+
+  // 使用 toISOString() 並只取日期部分
+  return date.toISOString().split('T')[0];
+};
+
+const anniversaries = ref([])
+const getAllAnniversaries = () => {
+  
+  axiosInstanceForInsertHeader.get('/anniversaries/all').then(res => {
+    anniversaries.value = res.data
+    anniversaries.value.map(item => {
+      
+      if(item.mailSent == false) {
+
+      axiosInstanceForInsertHeader.post('/anniversaries/check', {
+id: item.id,
+anniversaryName: item.anniversaryName,
+anniversaryDate: item.anniversaryDate,
+userEmail: userEmail.value
+}).then(() => {
+  console.log();
+}).catch(err => console.log(err))
+      }
+      
+  })
+  
+    
+  }).catch(err => console.log(err))
+}
+
+
+//
 const startLoading = () => {
   setTimeout(() => {
     isLoading.value = false;
@@ -39,6 +95,8 @@ const images = ref([]); // 用來儲存所有圖片 DOM
 
 onMounted(() => {
 
+  getMemberInfo()
+
   isLoading.value = true;
   startLoading();
 
@@ -64,6 +122,7 @@ onMounted(() => {
     observer.observe(img); // 為每個圖片元素添加觀察者
   });
 });
+
 </script>
 
 <template>
@@ -141,7 +200,7 @@ onMounted(() => {
   </div>
 
   <!-- 甜點師的話 -->
-  <RouterLink class="sayingContainer">
+  <RouterLink class="sayingContainer" to="products">
     <div class="saying">
       <div class="sayingImgContainer">
         <img class="sayingImg" src="../../public/imgZip/HomePageImg/HomePageMadelein.png" alt="Madelein" />

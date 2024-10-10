@@ -51,7 +51,10 @@ const addAnniversaries = () => {
         importantDate.value = Date.now
         importantThing.value = ''
     })
-    .catch(err => console.log(err))
+    .catch(err => {
+        SwalHandle.showErrorMsg('請輸入紀念日名稱與日期')
+    console.log(err)
+})
 }
 
 
