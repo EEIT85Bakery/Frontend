@@ -10,14 +10,48 @@ const currentPage = ref(1);
     const itemsPerPage = ref(3);
     const totalItems = ref(0)
 
+    const importantThing = ref("")
+    const importantDate = ref(Date.now)
+
     const handlePageChange = (page) => {
       currentPage.value = page;
       getAnniversaries(page);
     };
 
-    const convertToDate = (arr) => {
-  let date = new Date(arr[0], arr[1] - 1, arr[2]); // JavaScript中的月份是從0開始的
+    const convertToDate = (dateInput) => {
+  if (!dateInput) return '';
+
+  let date;
+  if (Array.isArray(dateInput)) {
+    // 如果是數組，假設格式為 [year, month, day]
+    date = new Date(Date.UTC(dateInput[0], dateInput[1] - 1, dateInput[2]));
+  } else if (typeof dateInput === 'string') {
+    // 如果是字符串，直接解析
+    const [year, month, day] = dateInput.split('-').map(Number);
+    date = new Date(Date.UTC(year, month - 1, day));
+  } else {
+    // 其他情況，假設是 Date 對象或時間戳
+    date = new Date(dateInput);
+  }
+
+  // 使用 toISOString() 並只取日期部分
   return date.toISOString().split('T')[0];
+};
+
+
+const addAnniversaries = () => {
+    axiosInstanceForInsertHeader.post('/anniversaries', {
+        anniversaryName: importantThing.value,
+        anniversaryDate: importantDate.value,
+        mailsent: 0
+    }).then(() => 
+    {
+        SwalHandle.showSuccessMsg('新增紀念日成功')
+        getAnniversaries(currentPage.value)
+        importantDate.value = Date.now
+        importantThing.value = ''
+    })
+    .catch(err => console.log(err))
 }
 
 
@@ -132,11 +166,11 @@ onMounted(() => {
                     <div class="inputArea">
                         <div class="area1">
                             <div class="inputText">重要事項</div>
-                            <input type="text" class="inputContent" placeholder="請輸入重要事項" />
+                            <input type="text" class="inputContent" placeholder="請輸入重要事項" v-model="importantThing"/>
                             <div class="inputText">日期</div>
-                            <input type="date" class="inputContent" />
+                            <input type="date" class="inputContent" v-model="importantDate"/>
                             <div>
-                                <button type="submit" class="inputBtn" @click="showSuccess">新增</button>
+                                <button type="submit" class="inputBtn" @click="addAnniversaries">新增</button>
                             </div>
                         </div>
                         <div class="inputLine"></div>
@@ -145,16 +179,20 @@ onMounted(() => {
                             <div class="tableContainer">
 
                                 <table>
+                                    <thead>
                                     <tr>
                                         <th>重要事項</th>
                                         <th>日期</th>
                                         <th>刪除</th>
                                     </tr>
+                                </thead>
+                                <tbody>
                                     <tr v-for="(item, index) in anniversaries" :key="index">
                                         <td>{{ item.anniversaryName }}</td>
                                         <td>{{ convertToDate(item.anniversaryDate) }}</td>
                                         <td @click="deleteItem(item)"><i class="bi bi-x-circle delBtn"></i></td>
                                     </tr>
+                                </tbody>
                                 </table>
 
 

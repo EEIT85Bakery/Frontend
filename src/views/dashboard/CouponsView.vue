@@ -31,10 +31,25 @@ const coupons = ref([]);
     });
     const editingCoupon = ref(null);
     //轉換日期格式用
-    const convertToDate = (arr) => {
-  let date = new Date(arr[0], arr[1] - 1, arr[2]); // JavaScript中的月份是從0開始的
+    const convertToDate = (dateInput) => {
+  if (!dateInput) return '';
+
+  let date;
+  if (Array.isArray(dateInput)) {
+    // 如果是數組，假設格式為 [year, month, day]
+    date = new Date(Date.UTC(dateInput[0], dateInput[1] - 1, dateInput[2]));
+  } else if (typeof dateInput === 'string') {
+    // 如果是字符串，直接解析
+    const [year, month, day] = dateInput.split('-').map(Number);
+    date = new Date(Date.UTC(year, month - 1, day));
+  } else {
+    // 其他情況，假設是 Date 對象或時間戳
+    date = new Date(dateInput);
+  }
+
+  // 使用 toISOString() 並只取日期部分
   return date.toISOString().split('T')[0];
-}
+};
 
     const handlePageChange = (page) => {
       currentPage.value = page;
