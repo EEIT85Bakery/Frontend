@@ -59,8 +59,8 @@ const fetchAllFlavors = async () => {
     axios.get('/api/products/categories/flavors', { params: { categoryName: category } })
   );
   const responses = await Promise.all(flavorPromises);
-responses.forEach((res, index) => {
-categoryFlavors.value[categories.value[index]] = res.data;
+  responses.forEach((res, index) => {
+    categoryFlavors.value[categories.value[index]] = res.data;
 });
 };
 
@@ -87,31 +87,31 @@ const fetchProducts = async () => {
   console.log('Fetching products with URL:', url, 'and params:', params);
 
   try {
-const response = await axios.get(url, { params });
-if (response.data.content && response.data.content.length === 0) {
-console.log('No products found');
-field.value = `搜尋結果: ${keyword.value}，查無商品`;
-products.value = [];
-} else {
-products.value = response.data.content;
-totalPages.value = response.data.totalPages;
-updateFieldValue();
-}
-isLoading.value = false;
-} catch (err) {
-console.error('Error fetching products:', err);
-isLoading.value = false;
-}
+    const response = await axios.get(url, { params });
+  if (response.data.content && response.data.content.length === 0) {
+    console.log('No products found');
+    field.value = `查無 ${keyword.value}`;
+    products.value = [];
+  } else {
+    products.value = response.data.content;
+    totalPages.value = response.data.totalPages;
+    updateFieldValue();
+  }
+    isLoading.value = false;
+  } catch (err) {
+    console.error('Error fetching products:', err);
+    isLoading.value = false;
+  }
 };
 
 // 更新顯示的分類/風味字段
 const updateFieldValue = () => {
   if (selectedFlavor.value) {
-    field.value = `${selectedFlavor.value}風味`;
+    field.value = selectedFlavor.value;
   } else if (selectedCategory.value) {
     field.value = `${selectedCategory.value}專區`;
   } else if (keyword.value) {
-    field.value = `搜尋結果: ${keyword.value}`;
+    field.value = keyword.value;
   } else {
     field.value = "全部商品";
   }
