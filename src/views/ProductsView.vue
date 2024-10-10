@@ -90,7 +90,7 @@ const fetchProducts = async () => {
     const response = await axios.get(url, { params });
   if (response.data.content && response.data.content.length === 0) {
     console.log('No products found');
-    field.value = `查無 ${keyword.value}`;
+    field.value = keyword.value;
     products.value = [];
   } else {
     products.value = response.data.content;
@@ -104,7 +104,7 @@ const fetchProducts = async () => {
   }
 };
 
-// 更新顯示的分類/風味字段
+// 更新顯示的分類/風味
 const updateFieldValue = () => {
   if (selectedFlavor.value) {
     field.value = selectedFlavor.value;
