@@ -38,6 +38,8 @@ const convertToDate = (dateInput) => {
 
 const anniversaries = ref([])
 const getAllAnniversaries = () => {
+  console.log(123);
+  
   
   axiosInstanceForInsertHeader.get('/anniversaries/all').then(res => {
     anniversaries.value = res.data
@@ -50,8 +52,10 @@ id: item.id,
 anniversaryName: item.anniversaryName,
 anniversaryDate: item.anniversaryDate,
 userEmail: userEmail.value
-}).then(() => {
-  console.log();
+}).then((res) => {
+  // if(res.data == "信件已寄出") {
+  //   router.push('mail')
+  // }
 }).catch(err => console.log(err))
       }
       
@@ -61,8 +65,8 @@ userEmail: userEmail.value
   }).catch(err => console.log(err))
 }
 
-
 //
+
 const startLoading = () => {
   setTimeout(() => {
     isLoading.value = false;
@@ -125,7 +129,7 @@ onMounted(() => {
 
 </script>
 
-<template>
+<template id="">
 
   <Loading v-if="isLoading" />
 

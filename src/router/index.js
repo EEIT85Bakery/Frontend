@@ -162,7 +162,13 @@ const routes = [
   {
     path: '/:pathMatch(.*)*',
     component: () => import('../views/NotFound.vue')
-  }
+  },
+  
+      {
+        path: '/mail',
+        name: '郵件動畫頁面',
+        component: () => import('../views/Mail.vue')
+      }
 ]
 
 const router = createRouter({
