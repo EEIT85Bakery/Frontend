@@ -262,7 +262,7 @@ function applyBunnyCoin() {
 
     if (typeof (bunnyquantity.value) != 'number') {
         SwalHandle.showErrorMsg("請輸入數字");
-        if (bunnyquantity.value <= 1) {
+        if (bunnyquantity.value < 1) {
             bunnyquantity.value = 0
             appliedBunnyQuantity.value = 0
         }
@@ -271,7 +271,7 @@ function applyBunnyCoin() {
         if (bunnyquantity.value > maxBunnyQuantity.value) {
             bunnyquantity.value = maxBunnyQuantity.value
         }
-        if (bunnyquantity.value <= 1) {
+        if (bunnyquantity.value < 1) {
             bunnyquantity.value = 0
         }
         appliedBunnyQuantity.value = Math.min(bunnyquantity.value, maxBunnyQuantity.value);
