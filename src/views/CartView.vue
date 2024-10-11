@@ -90,7 +90,8 @@ const resetDiscount = () => {
 const getCart = () => {
     axiosInstanceForInsertHeader.get('/cart').then((res) => {
         isGetCart.value = true
-        items.value = res.data        
+        items.value = res.data
+             
         const data = res.data;
         if (items.value.length !== 0) {
 
@@ -409,7 +410,7 @@ onMounted(() => {
                     <div class="itemContainer" v-for="(item, index) in items" :key="index + 'CartItem'">
                         <div class="items">
                             <div class="productImg">
-                                <img :src="item.imageUrl" alt="" class="itemImg">
+                                <img :src="`data:;base64,${item.img1}`" alt="" class="itemImg">
                             </div>
                             <div class="productInfo">{{ item.productName }}</div>
                             <div class="priceInfo">{{ item.price }} 元</div>
