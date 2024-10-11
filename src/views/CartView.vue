@@ -265,12 +265,15 @@ function applyDiscountCode() {
 
 function applyBunnyCoin() {
 
-    if (typeof (bunnyquantity.value) != 'number') {
-        SwalHandle.showErrorMsg("請輸入數字");
-        if (bunnyquantity.value < 1) {
+    if (bunnyquantity.value < 1) {
+            SwalHandle.showErrorMsg('請輸入0以上的數字')
             bunnyquantity.value = 0
             appliedBunnyQuantity.value = 0
         }
+
+    if (typeof (bunnyquantity.value) != 'number') {
+        SwalHandle.showErrorMsg("請輸入數字");
+       
 
     } else {
         if (bunnyquantity.value > maxBunnyQuantity.value) {

@@ -38,9 +38,6 @@ const convertToDate = (dateInput) => {
 
 const anniversaries = ref([])
 const getAllAnniversaries = () => {
-  console.log(123);
-  
-  
   axiosInstanceForInsertHeader.get('/anniversaries/all').then(res => {
     anniversaries.value = res.data
     anniversaries.value.map(item => {
