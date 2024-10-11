@@ -117,17 +117,18 @@ const updateFieldValue = () => {
   }
 };
 
-// 監聽路由變化，重置篩選條件並重新加載產品
 watch(() => route.query, (newQuery) => {
   console.log('Route query changed:', newQuery);
-  keyword.value = newQuery.keyword || '';
-  selectedCategory.value = null;
-  selectedFlavor.value = null;
+  // 優先處理風味查詢
+  selectedFlavor.value = newQuery.flavor || null;
+  // 如果沒有風味，再檢查是否有關鍵字
+  keyword.value = selectedFlavor.value ? '' : newQuery.keyword || '';
+  selectedCategory.value = newQuery.category || null;
   currentPage.value = 1;
   fetchProducts();
 }, { immediate: true, deep: true });
 
-// 按分類獲取產品
+// 監聽路由變化，重置篩選條件並重新加載產品
 const fetchProductsByCategory = (category) => {
   selectedCategory.value = category;
   selectedFlavor.value = null;

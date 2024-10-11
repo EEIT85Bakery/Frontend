@@ -79,21 +79,25 @@ watch(route, () => {
 });
 
 const imgArray = ref([
-  { imageUrl: '../../public/imgZip/HomePageImg/Img1.png', keyword: '餅乾'},
-  { imageUrl: '../../public/imgZip/HomePageImg/Img2.png', keyword: '餅乾' },
-  { imageUrl: '../../public/imgZip/HomePageImg/Img3.png', keyword: '蛋糕' },
-  { imageUrl: '../../public/imgZip/HomePageImg/Img4.png', keyword: '蛋糕' },
-  { imageUrl: '../../public/imgZip/HomePageImg/Img5.png', keyword: '禮盒' },
-  { imageUrl: '../../public/imgZip/HomePageImg/Img6.png', keyword: '禮盒' },
+  { imageUrl: '../../public/imgZip/HomePageImg/Img1.png', categories: '餅乾'},
+  { imageUrl: '../../public/imgZip/HomePageImg/Img2.png', categories: '餅乾' },
+  { imageUrl: '../../public/imgZip/HomePageImg/Img3.png', categories: '蛋糕' },
+  { imageUrl: '../../public/imgZip/HomePageImg/Img4.png', categories: '蛋糕' },
+  { imageUrl: '../../public/imgZip/HomePageImg/Img5.png', flavor: '禮盒' },
+  { imageUrl: '../../public/imgZip/HomePageImg/Img6.png', flavor: '禮盒' },
   { imageUrl: '../../public/imgZip/HomePageImg/Img7.png', keyword: '' },
   { imageUrl: '../../public/imgZip/HomePageImg/Img8.png', keyword: '' }
 ]);
 
-// 多樣化照片集跳轉的關鍵字
+// 照片跳轉商品葉
 const router = useRouter()
-const navigateToProduct = (keyword) => {
-  router.push({ path: '/products', query: { keyword } });
+const navigateToProduct = (params) => {
+  router.push({
+    path: '/products',
+    query: params,
+  });
 };
+
 
 const images = ref([]); // 用來儲存所有圖片 DOM
 
@@ -172,13 +176,13 @@ onMounted(() => {
   </div>
 
   <div class="rankListImg">
-    <RouterLink :to="{ path: '/products', query: { keyword: '戚風蛋糕' } }" class="rankListItem">
+    <RouterLink :to="{ path: '/products', query: { flavor: '雲朵戚風蛋糕' } }" class="rankListItem">
       <img src="../../public/imgZip/HomePageImg/HomePageImgP1.png" class="ListImg" alt="HomePageImgP1" ref="images">
     </RouterLink>
-    <RouterLink :to="{ path: '/products', query: { keyword: '蜜糖千層' } }" class="rankListItem">
+    <RouterLink :to="{ path: '/products', query: { flavor: '蜜糖千層派' } }" class="rankListItem">
       <img src="../../public/imgZip/HomePageImg/HomePageImgP2.png" class="ListImg" alt="HomePageImgP2">
     </RouterLink>
-    <RouterLink :to="{ path: '/products', query: { keyword: '餅乾禮盒' } }" class="rankListItem">
+    <RouterLink :to="{ path: '/products', query: { flavor: '禮盒' } }" class="rankListItem">
       <img src="../../public/imgZip/HomePageImg/HomePageImgP3.png" class="ListImg" alt="HomePageImg3">
     </RouterLink>
   </div>
@@ -198,7 +202,11 @@ onMounted(() => {
 
   <!-- 選擇多樣化 -->
   <div class="imgGallery" >
-    <div v-for="(item, index) in imgArray" :key="index" class="imgItem" @click="navigateToProduct(item.keyword)">
+    <div v-for="(item, index) in imgArray" :key="index" class="imgItem" @click="navigateToProduct(({ 
+         keyword: item.keyword || '', 
+         flavor: item.flavor || '', 
+         category: item.categories || '' 
+     }))">
       <img :src="item.imageUrl" alt="Image" class="ImgGalleryItems" ref="images" />
     </div>
   </div>
