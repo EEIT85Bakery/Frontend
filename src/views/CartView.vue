@@ -412,7 +412,7 @@ onMounted(() => {
                             <div class="productImg">
                                 <img :src="`data:;base64,${item.img1}`" alt="" class="itemImg">
                             </div>
-                            <div class="productInfo">{{ item.productName }}</div>
+                            <div class="productInfo" style="padding-left: 65px;">{{ item.productName }}</div>
                             <div class="priceInfo">{{ item.price }} 元</div>
 
                             <div class="quantityInfo">
