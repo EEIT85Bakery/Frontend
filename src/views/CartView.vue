@@ -213,7 +213,21 @@ const discountStyle = computed(() => {
     return {};
 });
 
+const resetDiscountState = () => {
+    validDiscountCode.value = false;
+    isDiscountApplied.value = false;
+    isDiscountCodeVisible.value = false;
+    Generaldiscount.value = 0;
+    memberdiscount.value = 0;
+    discountNumber.value = 0;
+    costPerPrice.value = 0;
+    isCartStoreTotalBigger.value = false;
+    cartStore.updateCouponName("");
+}
+
 function applyDiscountCode() {
+
+    resetDiscountState();
         
         let isValid = false;
 
