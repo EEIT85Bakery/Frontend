@@ -43,15 +43,8 @@ const isCartStoreTotalBigger = ref(false)
 const getCoupon = () => {
     axiosInstanceForInsertHeader.get('/admin/coupon').then(res => {
         coupons.value = res.data
-        console.log(1);
-        
-        console.log(coupons.value)
-        console.log(2);
-        
-        
     }).catch(err => {
             console.log(err)
-            
         })
 }
 
@@ -232,8 +225,6 @@ function applyDiscountCode() {
         let isValid = false;
 
         for (let i = 0; i < coupons.value.length; i++) {
-            console.log('Input discount code:', inputDiscountCode.value);
-            console.log('Coupon being checked:', coupons.value[i].couponName);
 
             const normalizedInput = inputDiscountCode.value.toLowerCase().trim();
             const normalizedCoupon = coupons.value[i].couponName.toLowerCase().trim();
@@ -241,7 +232,6 @@ function applyDiscountCode() {
             if (normalizedInput === normalizedCoupon) {
                 isValid = true;
                 appliedCoupon.value = coupons.value[i];
-                console.log('Matched coupon:', appliedCoupon.value);
                 break; // 找到匹配的優惠券，立即退出循環
             }
         }
@@ -499,7 +489,7 @@ onMounted(() => {
                         </div>
                         <div class="useBunnyCoin">
                             <span class="leftText">使用Bunny Coin: </span>
-                            <span>(可使用之Bunny Coin {{ remainingBunnyQuantity }} 枚)</span>
+                            <span>(可使用Bunny Coin {{ remainingBunnyQuantity }} 枚)</span>
                         </div>
                         <div class="bunnycoinNum">
                             <input type="number" min="0" :max="maxBunnyQuantity" placeholder="請輸入欲使用的Bunny Coin數量"
