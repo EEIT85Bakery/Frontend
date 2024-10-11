@@ -9,6 +9,7 @@
                 <div class="modal-body modalBody">
                     <div class="tableContainer">
                         <table>
+                            <thead>
                             <tr>
                                 <th width="80"></th>
                                 <th>白兔會員</th>
@@ -16,6 +17,8 @@
                                 <th>白金兔會員</th>
                                 <th>鑽石兔會員</th>
                             </tr>
+                        </thead>
+                        <tbody>
                             <tr>
                                 <td><b>資格</b></td>
                                 <td>註冊會員即可成為白兔會員</td>
@@ -30,6 +33,7 @@
                                 <td>消費時可獲取全館折扣乘以 1.6 倍之專屬折扣</td>
                                 <td>消費時可獲取全館折扣乘以 2 倍之專屬折扣</td>
                             </tr>
+                        </tbody>
                         </table>
                     </div>
                 </div>
