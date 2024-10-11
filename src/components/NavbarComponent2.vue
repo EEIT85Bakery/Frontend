@@ -2,6 +2,7 @@
 import { onMounted, onUnmounted, ref, watchEffect } from 'vue';
 import { useRouter } from 'vue-router';
 import GameTest from './GameTest.vue';
+import ChatRoom from './ChatRoom.vue'; // 引入 ChatRoom
 
 const gameTestRef = ref(null);
 
@@ -10,11 +11,15 @@ const router = useRouter();
 const keyword = ref('');
 const isAdmin = ref(false);
 const refreshTrigger = ref(false);
+const isChatRoomVisible = ref(false); // 控制 ChatRoom 顯示/隱藏
 
 const openGameTestModal = () => {
     gameTestRef.value.openModal();
 }
 
+const toggleChatRoom = () => {
+  isChatRoomVisible.value = !isChatRoomVisible.value; // 切換 ChatRoom 狀態
+};
 
 onMounted(() => {
     const offcanvasElement = document.getElementById('offcanvasRight');
@@ -214,8 +219,10 @@ const goToProducts = () => {
         </div>
     </RouterLink>
 
-
-    <div class="talkContainer">
+    <transition name="fade">
+      <ChatRoom v-if="isChatRoomVisible" />
+    </transition>
+    <div class="talkContainer" @click="toggleChatRoom">
         <i class="bi bi-chat-left-dots fixIcon"></i>
     </div>
 
@@ -508,4 +515,12 @@ const goToProducts = () => {
     text-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
     cursor: pointer;
 }
+
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.5s ease;
+}
+.fade-enter-from, .fade-leave-to {
+  opacity: 0;
+}
+
 </style>
