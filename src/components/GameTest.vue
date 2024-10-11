@@ -28,7 +28,7 @@
             </button>
             <span class="gameTimes">
               剩餘遊戲次數:
-              <span class="gameTimesNum"> {{ gameTimes }} </span>
+              <span class="gameTimesNum">  {{ gameTimes }}  </span>
               次
             </span>
 
@@ -215,8 +215,8 @@ const endGame = () => {
       gameTimes.value = data.gameTimes;  
       bunnyCoins.value = data.bunnyCoins; 
       Swal.fire({
-        title: '遊戲結束!',
-        text: `恭喜獲得 ${data.earnedCoins} 元購物金！共擁有的 BunnyCoin ${data.bunnyCoins} 元`,
+        title: `恭喜獲得 ${data.earnedCoins} 枚Bunny Coin！`,
+        text: `目前擁有的 BunnyCoin： ${data.bunnyCoins} 枚`,
         icon: 'success',
         confirmButtonText: '確認',
         customClass: {
