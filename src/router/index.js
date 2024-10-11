@@ -156,6 +156,11 @@ const routes = [
           path: '/AdminMembers',
           name: '會員管理頁面',
           component: () => import('../views/dashboard/MemberView.vue')
+        },
+        {
+          path: '/SalesStatistics',
+          name: '銷售數據',
+          component: () => import('../views/dashboard/SalesStatistics.vue')
         }
     ]
   },

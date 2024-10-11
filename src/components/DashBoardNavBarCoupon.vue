@@ -55,6 +55,9 @@ const searchCoupon = () => {
                     <li class="navItem">
                         <RouterLink class="navLink" to="AdminMembers">會員管理</RouterLink>
                     </li>
+                    <li class="navItem">
+                        <RouterLink class="navLink" to="SalesStatistics">銷售數據</RouterLink>
+                    </li>
                 </ul>
                 <div class="lineContainer">
                     <div class="line"></div>
