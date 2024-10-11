@@ -1,5 +1,3 @@
-<!-- HomeView開啟 -->
-
 <!-- <template>
   <div>
    <div class="sendok" :style="{ opacity: sendokOpacity, letterSpacing: sendokLetterSpacing }">

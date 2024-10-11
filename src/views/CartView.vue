@@ -13,12 +13,12 @@ const levelUpPrice = ref(0)
 const items = ref([])
 const modalRef = ref(null);
 
-const discountExp = "2024/11/30";
+const discountExp = ref("2024,11/30")
 
 // 折扣相關變數
 const inputDiscountCode = ref(""); // 使用者輸入的折扣碼
 const validDiscountCode = ref(false); // 折扣碼是否有效
-const discountCode = "bunnySugar"; // 正確的折扣碼
+const discountCode = ref("bunnySugar") // 正確的折扣碼
 const isDiscountApplied = ref(false); // 用來控制是否應用樣式變化
 
 const isDiscountCodeVisible = ref(false);
@@ -34,6 +34,46 @@ const appliedBunnyQuantity = ref(0)
 const memberlevel = ref({})
 const accumulateSpent = ref(0)
 const isGetCart = ref(false)
+const coupons = ref([])
+const discountNumber = ref(50)
+const costPerPrice = ref(2000)
+const appliedCoupon = ref(null) 
+const isCartStoreTotalBigger = ref(false)
+
+const getCoupon = () => {
+    axiosInstanceForInsertHeader.get('/admin/coupon').then(res => {
+        coupons.value = res.data
+        console.log(1);
+        
+        console.log(coupons.value)
+        console.log(2);
+        
+        
+    }).catch(err => {
+            console.log(err)
+            
+        })
+}
+
+const convertToDate = (dateInput) => {
+  if (!dateInput) return '';
+
+  let date;
+  if (Array.isArray(dateInput)) {
+    // 如果是數組，假設格式為 [year, month, day]
+    date = new Date(Date.UTC(dateInput[0], dateInput[1] - 1, dateInput[2]));
+  } else if (typeof dateInput === 'string') {
+    // 如果是字符串，直接解析
+    const [year, month, day] = dateInput.split('-').map(Number);
+    date = new Date(Date.UTC(year, month - 1, day));
+  } else {
+    // 其他情況，假設是 Date 對象或時間戳
+    date = new Date(dateInput);
+  }
+
+  // 使用 toISOString() 並只取日期部分
+  return date.toISOString().split('T')[0];
+};
 
 //點擊清空欄位
 const clearInput = (e) => {
@@ -41,8 +81,6 @@ const clearInput = (e) => {
 }
 
 const countTotal = () => {
-    console.log(totalPrice.value);
-    
     cartStore.updateTotal(totalPrice)
 }
 
@@ -130,56 +168,95 @@ const totalPrice = computed(() => {
 
 const calculateDiscount = () => {
     const price = totalPrice.value;
-    if (validDiscountCode.value && price >= 1000
-        && memberlevel.value == "白兔") {
-        let discount = Math.floor(price / 1000) * 50;
-        Generaldiscount.value = discount;
-    } else if (validDiscountCode.value && price >= 1000) {
-        calculateMemberDiscount()
-        Generaldiscount.value = 0
+    if (validDiscountCode.value && price >= costPerPrice.value) {
+        if (memberlevel.value === "白兔") {
+            let discount = Math.floor(price / costPerPrice.value) * discountNumber.value;
+            Generaldiscount.value = discount;
+            memberdiscount.value = 0; // 確保會員折扣為0
+        } else {
+            calculateMemberDiscount();
+            Generaldiscount.value = 0; // 確保一般折扣為0
+        }
+    } else {
+        // 重置所有折扣
+        Generaldiscount.value = 0;
+        memberdiscount.value = 0;
     }
 };
 
 const calculateMemberDiscount = () => {
+    // 首先計算基礎折扣
+    let baseDiscount = Math.floor(totalPrice.value / 1000) * discountNumber.value;
     
-    memberdiscount.value = Math.floor(totalPrice.value / 1000) * 50
-    if (memberlevel.value == "金兔") {
-        memberdiscount.value *= 1.2
-    } else if (memberlevel.value == "白金兔") {
-        memberdiscount.value *= 1.6
-    } else if (memberlevel.value == "鑽石兔") {
-        memberdiscount.value *= 2
+    // 根據會員等級應用倍數，並確保結果為整數
+    let finalDiscount;
+    if (memberlevel.value === "金兔") {
+        finalDiscount = Math.floor(baseDiscount * 1.2);
+    } else if (memberlevel.value === "白金兔") {
+        finalDiscount = Math.floor(baseDiscount * 1.6);
+    } else if (memberlevel.value === "鑽石兔") {
+        finalDiscount = Math.floor(baseDiscount * 2);
+    } else {
+        finalDiscount = baseDiscount; // 對於白兔或其他等級
     }
-}
+    
+    memberdiscount.value = finalDiscount;
+};
+
 
 // 折扣樣式的計算屬性
 const discountStyle = computed(() => {
     // 只有當折扣碼有效且會員不是白兔時才應用劃線樣式
-    if (isDiscountApplied.value && memberlevel.value !== '白兔') {
+    if (isDiscountApplied.value && memberlevel.value !== '白兔' && isCartStoreTotalBigger.value == true) {
         return { textDecoration: 'line-through' };
     }
     return {};
 });
 
 function applyDiscountCode() {
-    if (cartStore.total >= 1000) {
+        
+        let isValid = false;
 
-        if (inputDiscountCode.value === discountCode) {
+        for (let i = 0; i < coupons.value.length; i++) {
+            console.log('Input discount code:', inputDiscountCode.value);
+            console.log('Coupon being checked:', coupons.value[i].couponName);
+
+            const normalizedInput = inputDiscountCode.value.toLowerCase().trim();
+            const normalizedCoupon = coupons.value[i].couponName.toLowerCase().trim();
+
+            if (normalizedInput === normalizedCoupon) {
+                isValid = true;
+                appliedCoupon.value = coupons.value[i];
+                console.log('Matched coupon:', appliedCoupon.value);
+                break; // 找到匹配的優惠券，立即退出循環
+            }
+        }
+
+        if (isValid && appliedCoupon.value) {
+
+
             validDiscountCode.value = true;
-            isDiscountApplied.value = true;  // 設置樣式應用為 true
+            isDiscountApplied.value = true;
             isDiscountCodeVisible.value = true;
-            calculateDiscount()
+            discountNumber.value = appliedCoupon.value.discountNumber; // 設置折扣數量
+            costPerPrice.value = appliedCoupon.value.leastPriceForDiscount
+
+    if (cartStore.total >= costPerPrice.value) {
+            calculateDiscount();
             SwalHandle.showSuccessMsg("套用折扣碼成功");
-            cartStore.updateCouponName(inputDiscountCode)
-        } else {
+            cartStore.updateCouponName(inputDiscountCode.value);
+            isCartStoreTotalBigger.value = true
+        }else {
+        SwalHandle.showErrorMsg(`購買總額至少${costPerPrice.value}才可以使用哦！`)
+    }  }
+        else {
             validDiscountCode.value = false;
             isDiscountApplied.value = false;
             SwalHandle.showErrorMsg("無效的折扣碼");
         }
-    } else {
-        SwalHandle.showErrorMsg("購買總額至少1000才可以使用哦！")
-    }
+   
 }
+
 
 function applyBunnyCoin() {
 
@@ -276,14 +353,7 @@ watch(
         } else {
             newTotal = totalPrice.value - Generaldiscount.value - appliedBunnyQuantity.value;
         }
-        console.log("pay1");
-        console.log(cartStore.paymentPrice);
-        
         cartStore.updatePaymentPrice(newTotal)
-        
-        console.log("pay2");
-        console.log(cartStore.paymentPrice);
-        
     }
 );
 
@@ -294,6 +364,7 @@ watch(totalPrice, (newTotal) => {
 
 onMounted(() => {
     getCart()
+    getCoupon()
 })
 
 </script>
@@ -368,10 +439,10 @@ onMounted(() => {
                     </div>
                     <div class="promotion">
                         <div class="productDiscount">
-                            <div class="mb-1">
+                            <div class="mb-1" v-for="(coupon, i) in coupons" :key="'coupon' + i">
                                 <i class="bi bi-caret-right-fill"></i>
-                                即日起至<b class="discountExp">{{ discountExp }}</b>
-                                ，結帳輸入折扣碼「<b class="discountCode">bunnySugar</b>」，即可享有全館商品滿1000折50之優惠 (滿2000折100，以此類推)
+                                即日起至<b class="discountExp">{{ convertToDate(coupon.endDate) }}</b>
+                                ，結帳輸入折扣碼「<b class="discountCode">{{ coupon.couponName }}</b>」，即可享有全館商品滿{{ coupon.leastPriceForDiscount }}折{{ coupon.discountNumber }}之優惠 (滿{{ coupon.leastPriceForDiscount * 2}}折{{ coupon.discountNumber * 2}}，以此類推)
                             </div>
                             <div>
                                 <i class="bi bi-caret-right-fill"></i>
@@ -392,11 +463,11 @@ onMounted(() => {
                             <span>{{ cartStore.total }} 元</span>
                         </div>
                         <div class="allDiscount" :style="discountStyle">
-                            <span class="leftText">折扣:<span style="font-size: small;" v-if="isDiscountCodeVisible">
+                            <span class="leftText">折扣:<span style="font-size: small;" v-if="isDiscountCodeVisible && isCartStoreTotalBigger">
                                     (已使用折扣碼 {{ discountCode }} )</span></span>
                             <span>{{ Generaldiscount }} 元</span>
                         </div>
-                        <div class="ownDiscount" v-if="memberlevel != '白兔' && validDiscountCode">
+                        <div class="ownDiscount" v-if="memberlevel != '白兔' && validDiscountCode && isCartStoreTotalBigger">
                             <span class="leftText">{{ memberlevel }}會員專屬折扣:</span>
                             <span>{{ memberdiscount }} 元</span>
                         </div>
