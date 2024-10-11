@@ -13,6 +13,7 @@ const searchMember = () => {
     // 如果搜尋框為空，則移除查詢參數
     router.push({ name: '會員管理頁面' });
   }
+  searchInput.value = '';
 };
 </script>
 
@@ -62,7 +63,7 @@ const searchMember = () => {
                 <div class="navbarIconContainer d-flex ms-auto">
                     <div class="nabarSearchContainer">
                         <form class="d-flex" role="search" @submit.prevent="searchMember">
-                        <input v-model="searchInput" class="navbarSearchInput" placeholder="搜尋會員">
+                        <input v-model="searchInput" class="navbarSearchInput" placeholder="搜尋會員(電話)">
                         <button class="btn" type="submit">
                             <i class="navbarIcon navbarSearchIcon bi bi-search"></i>
                         </button>

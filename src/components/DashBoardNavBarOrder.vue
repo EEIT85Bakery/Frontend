@@ -14,6 +14,7 @@ const searchOrder = () => {
   } else {
     router.push({ name: '訂單頁面' });
   }
+  searchInput.value = '';
 };
 
 
@@ -65,7 +66,7 @@ const searchOrder = () => {
                 <div class="navbarIconContainer d-flex ms-auto">
                     <div class="nabarSearchContainer">
                         <form class="d-flex" role="search" @submit.prevent="searchOrder">
-                            <input v-model="searchInput" class="navbarSearchInput" type="search" placeholder="搜尋訂單">                            <button class="btn" type="submit">
+                            <input v-model="searchInput" class="navbarSearchInput" type="search" placeholder="搜尋訂單(電話/訂單號)">                            <button class="btn" type="submit">
                                 <i class="navbarIcon navbarSearchIcon bi bi-search"></i>
                             </button>
                         </form>

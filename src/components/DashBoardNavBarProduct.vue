@@ -16,6 +16,7 @@ const searchProduct = () => {
   } else {
     router.push({ name: '產品管理頁面' });
   }
+  searchInput.value = '';
 };
 </script>
 

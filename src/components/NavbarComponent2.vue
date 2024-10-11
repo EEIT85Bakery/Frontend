@@ -89,7 +89,6 @@ const handleSearch = () => {
 // 回到全商品頁面並清空篩選條件
 const goToProducts = () => {
     keyword.value = '';
-    keyword.value = '';
     router.push({
         path: '/products',
         query: { t: Date.now() }
