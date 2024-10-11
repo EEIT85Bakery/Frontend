@@ -417,9 +417,9 @@ const submitForm = () => {
                             <div class="inputText">商品成分</div>
                             <textarea type="text" v-model="formData.materialDescription" name="composition1" class="inputContent"
                                 placeholder="請輸入商品成分"></textarea>
-                                <div class="inputText">商品成份描述</div>
+                                <!-- <div class="inputText">商品成份描述</div>
                             <textarea type="text" v-model="formData.categoryDescription" name="composition2" class="inputContent"
-                                placeholder="請輸入商品成分"></textarea>
+                                placeholder="請輸入商品成分"></textarea> -->
                                 <div class="inputText">商品口味</div>
                             <textarea type="text" v-model="formData.flavor" name="composition3" class="inputContent"
                                 placeholder="請輸入商品成分"></textarea>
