@@ -81,10 +81,10 @@ const openMemberModal = (member) => {
 };
 
 const levels = [
-  { value: 'level1', label: '白兔會員' },
-  { value: 'level2', label: '金兔會員' },
-  { value: 'level3', label: '白金兔會員' },
-  { value: 'level4', label: '鑽石兔會員' }
+  { value: 'level1', label: '白兔' },
+  { value: 'level2', label: '金兔' },
+  { value: 'level3', label: '白金兔' },
+  { value: 'level4', label: '鑽石兔' }
 ];
 
 const levelMap = levels.reduce((acc, level) => {

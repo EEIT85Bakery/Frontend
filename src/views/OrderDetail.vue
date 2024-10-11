@@ -221,8 +221,8 @@ onMounted(() => {
     </div>
 
     <div class="btns">
-        <RouterLink to="/orderList" class="goToBuyBtn">
-            <button class="btn2" @click="backToList">返回訂單清單</button>
+        <RouterLink to="/" class="goToBuyBtn">
+            <button class="btn2" @click="backToList">返回首頁</button>
         </RouterLink>
     </div>
 
