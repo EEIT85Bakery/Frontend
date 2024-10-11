@@ -71,7 +71,7 @@ const fetchProducts = async () => {
   let params = { 
     page: currentPage.value - 1, 
     size: pageSize.value,
-    // sort: rank.value === "由新到舊" ? "createdTime,desc" : "createdTime,asc" // 商品新舊排序
+    sort: rank.value === "由新到舊" ? "createTime,desc" : "createTime,asc" // 商品新舊排序
   };
 
   // 如果 flavor、category 和 keyword 都為空，顯示全部商品

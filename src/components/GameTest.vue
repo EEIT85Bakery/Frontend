@@ -151,24 +151,39 @@ const determineResult = () => {
 };
 
 const startGame = () => {
+  if (gameTimes.value <= 0) {
+    Swal.fire({
+      title: '遊戲次數不足',
+      text: '您沒有足夠的遊戲次數，趕快去消費獲得遊玩機會吧！',
+      icon: 'warning',
+      confirmButtonText: '確認',
+      customClass: {
+        confirmButton: 'myConfirmBtn'
+      }
+    });
+    return;
+  }
+
+  // 在前端先顯示次數減少 1
+  gameTimes.value -= 1;
+  
   isSpinning.value = true;
   result.value = '';
 
-  // 發送開始遊戲請求 (result 為 null)
   axiosInstanceForInsertHeader
     .post('/game/play')
     .then(response => {
       const data = response.data;
-      gameTimes.value = data.gameTimes;
-      
 
-      if (gameTimes.value > 0) {
+      // 確保遊戲正常進行
+      if (gameTimes.value >= 0) {
         const spinInterval = setInterval(() => {
-          reels.value = reels.value.map(() => getRandomSymbol())
+          reels.value = reels.value.map(() => getRandomSymbol());
         }, 100);
+
         setTimeout(() => {
           clearInterval(spinInterval);
-          determineResult();
+          determineResult();  
           isSpinning.value = false;
           endGame();
         }, 2000);
@@ -176,42 +191,38 @@ const startGame = () => {
     })
     .catch(error => {
       console.error('Error starting game:', error);
-      if (error.response && error.response.status === 400) {
-        Swal.fire({
-          title: '遊戲次數不足',
-          text: '您沒有足夠的遊戲次數。',
-          icon: 'error',
-          confirmButtonText: '確認',
-          customClass: {
+      Swal.fire({
+        title: '錯誤',
+        text: '開始遊戲時發生錯誤，請重試。',
+        icon: 'error',
+        confirmButtonText: '確認',
+        customClass: {
           confirmButton: 'myConfirmBtn'
         }
-        });
-      }
-    })
-    .finally(() => {
+      });
+
+      // 如果出現錯誤，恢復顯示的遊戲次數
+      gameTimes.value += 1;
       isSpinning.value = false;
     });
 };
 
 const endGame = () => {
-  // 結束遊戲請求，發送 result 包含獲得的金幣
   axiosInstanceForInsertHeader
     .post('/game/play', { earnedCoins: earnedCoins.value })
     .then(response => {
       const data = response.data;
-      gameTimes.value = data.gameTimes;
-      bunnyCoins.value = data.bunnyCoins;
-      console.log(`恭喜獲得 ${data.earnedCoins} 元購物金！共擁有的 BunnyCoin ${data.bunnyCoins}`);
+      gameTimes.value = data.gameTimes;  
+      bunnyCoins.value = data.bunnyCoins; 
       Swal.fire({
         title: '遊戲結束!',
         text: `恭喜獲得 ${data.earnedCoins} 元購物金！共擁有的 BunnyCoin ${data.bunnyCoins} 元`,
         icon: 'success',
         confirmButtonText: '確認',
         customClass: {
-        confirmButton: 'myConfirmBtn'
-      }
+          confirmButton: 'myConfirmBtn'
+        }
       });
-      
     })
     .catch(error => {
       console.error('Error ending game:', error);
@@ -221,11 +232,12 @@ const endGame = () => {
         icon: 'error',
         confirmButtonText: '確認',
         customClass: {
-        confirmButton: 'myConfirmBtn'
-      }
+          confirmButton: 'myConfirmBtn'
+        }
       });
     });
 };
+
 
 // 調用開始遊戲的 API 來獲取遊戲次數
 const FetchGameTimes = async () => {
@@ -237,7 +249,6 @@ const FetchGameTimes = async () => {
   }
 };
 
-// 組件加載後調用該函數來初始化遊戲
 onMounted(() => {
 });
 </script>

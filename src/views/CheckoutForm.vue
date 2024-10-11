@@ -1,5 +1,6 @@
 <script setup>
 import axiosInstanceForInsertHeader from '@/axios/axiosInstanceForInsertHeader';
+import Loading from '@/components/Loading.vue';
 import { useCartStore } from '@/stores/cartStore';
 import { onMounted } from 'vue';
 import { ref, watch } from 'vue'; 
@@ -67,7 +68,7 @@ onMounted(() => {
 </script>
 
 <template>
- <p>讀取結帳資料</p>
+    <Loading/>
     
   </template>
   

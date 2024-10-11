@@ -36,15 +36,15 @@ const formatDate = (dateArray) => {
 
 // 表單資料，包含會員等級
 const formData = ref({
-  level: ''
+  level: props.member ? props.member.userVip : ''
 });
 
 // 會員等級選項
 const levels = [
-  { value: 'level1', label: '白兔會員' },
-  { value: 'level2', label: '金兔會員' },
-  { value: 'level3', label: '白金兔會員' },
-  { value: 'level4', label: '鑽石兔會員' }
+  { value: 'level1', label: '白兔' },
+  { value: 'level2', label: '金兔' },
+  { value: 'level3', label: '白金兔' },
+  { value: 'level4', label: '鑽石兔' }
 ];
 
 
@@ -57,7 +57,7 @@ watch(
       openModal();
       formData.value.level = newMember.userVip;
     } else {
-      formData.value.level = '';
+      formData.value.level = formData.level;
     }
   },
   { immediate: true, deep: true }
@@ -84,9 +84,6 @@ const submitForm = async () => {
       SwalHandle.showSuccessMsg('會員等級變更成功');
       hideModal();
       emit('memberUpdated', { ...props.member, userVip: formData.value.level });
-
-      
-      
     } else {
       SwalHandle.showErrorMsg('更新失敗');
     }
