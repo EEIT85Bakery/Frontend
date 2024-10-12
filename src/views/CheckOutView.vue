@@ -17,6 +17,15 @@ const times = ref(0)
 
 const pickupDate = ref(Date.now);
 const pickupTime = ref('');
+const cartItems = ref([])
+
+const getCart = () => {
+    axiosInstanceForInsertHeader.get('/cart').then(res => {
+        cartItems.value = res.data
+        console.log(cartItems.value);
+        
+    }).catch(err => console.log(err))
+}
 
 const getTomorrowDate = () => {
   const tomorrow = new Date()
@@ -162,12 +171,7 @@ const topStyle = computed(() => ({
 }));
 
 onMounted(() => {
-    console.log("checkout 1");
-    console.log(cartStore.paymentPrice);
-    
-    console.log("checkout2");
-    
-    
+    getCart()
     getMemberInfo()
     const today = new Date();
   pickupDate.value = today.toISOString().split('T')[0];
@@ -177,6 +181,7 @@ onMounted(() => {
   const minutes = String(today.getMinutes()).padStart(2, '0');
   pickupTime.value = `${hours}:${minutes}`;
 })
+
 
 
 </script>
@@ -204,15 +209,15 @@ onMounted(() => {
                     <div class="delTitle"></div>
                 </div>
                 <div class="cartLine"></div>
-                <div class="itemContainer">
+                <div class="itemContainer" v-for="(item,i) in cartItems" :key="'cartItems' + i">
                     <div class="items">
                         <div class="productImg">
-                            <img :src="productimg.imageUrl" alt="" class="itemImg">
+                            <img :src="`data:;base64,${item.img1}`" alt="" class="itemImg">
                         </div>
-                        <div class="productInfo">{{ productname }}</div>
-                        <div class="priceInfo">{{ productprice }} 元</div>
-                        <div class="quantityInfo">1</div>
-                        <div class="totalInfo">{{ totalprice }} 元</div>
+                        <div class="productInfo">{{ item.productName }}</div>
+                        <div class="priceInfo">{{ item.price }} 元</div>
+                        <div class="quantityInfo">{{ item.quantity }}</div>
+                        <div class="totalInfo">{{ item.price * item.quantity }} 元</div>
                         <div class="delInfo"></div>
                     </div>
                     <div class="cartLine"></div>
@@ -220,26 +225,26 @@ onMounted(() => {
                 <div class="detailContainer">
                     <div class="total">
                         <span class="leftText">總計:</span>
-                        <span>{{ totalprice }} 元</span>
+                        <span>{{ cartStore.total }} 元</span>
                     </div>
-                    <div class="allDiscount" :style="discountStyle">
+                    <div class="allDiscount">
                         <span class="leftText">折扣:<span style="font-size: small;"> (已使用折扣碼 {{ cartStore.couponName }} )</span></span>
-                        <span>{{ discount }} 元</span>
+                        <span>{{ cartStore.total - cartStore.paymentPrice - cartStore.usedBunnyCoins }} 元</span>
                     </div>
-                    <div class="ownDiscount" v-if="memberlevel != '白兔'">
+                    <!-- <div class="ownDiscount" v-if="memberlevel != '白兔'">
                         <span class="leftText">{{ memberlevel }}會員專屬折扣:
                             <span>(會員折扣詳見<span @click="handleOpenModal" class="memberLevel">會員分級</span>)</span>
                         </span>
                         <span>{{ memberdiscount }} 元</span>
-                    </div>
+                    </div> -->
                     <div class="bunnyCoinDiscount">
                         <span class="leftText">Bunny Coin折扣:</span>
-                        <span>{{ appliedBunnyQuantity }} 元</span>
+                        <span>{{ cartStore.usedBunnyCoins }} 元</span>
                     </div>
-                    <div class="cartLine"></div>
+                    <!-- <div class="cartLine"></div>
                     <div class="finalPrice">合計:
-                        <span class="finalTotalPrice">{{ finaltotal }}</span> 元
-                    </div>
+                        <span class="finalTotalPrice">{{ cartStore.paymentPrice }}</span> 元
+                    </div> -->
                 </div>
             </div>
         </div>

@@ -16,7 +16,6 @@ export const useCartStore = defineStore('cart', {
     productId: 0,
     product: {},
     otherProducts: [],
-  
    
   
   }),

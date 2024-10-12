@@ -75,6 +75,12 @@ const clearInput = (e) => {
 
 const countTotal = () => {
     cartStore.updateTotal(totalPrice.value)
+    console.log(cartStore.couponName);
+    cartStore.usedBunnyCoins = appliedBunnyQuantity.value
+    console.log(cartStore.usedBunnyCoins);
+    console.log(cartStore.total);
+    
+    
 }
 
 const resetDiscount = () => {
@@ -91,6 +97,7 @@ const getCart = () => {
     axiosInstanceForInsertHeader.get('/cart').then((res) => {
         isGetCart.value = true
         items.value = res.data
+             console.log(items.value);
              
         const data = res.data;
         if (items.value.length !== 0) {
