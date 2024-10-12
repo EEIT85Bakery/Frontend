@@ -22,7 +22,7 @@
                   <th>商品編號</th>
                   <th>商品名稱</th>
                   <th>售出數量</th>
-                  <th>營收</th>
+                  <th>營收(台幣: 元)</th>
                 </tr>
               </thead>
               <tbody>
@@ -35,7 +35,7 @@
               </tbody>
               <tfoot>
                 <tr>
-                  <td colspan="3" class="dataInfo">總營業額</td>
+                  <td colspan="3" class="dataInfo">總營業額(台幣: 元)</td>
                   <td class="dataInfo">{{ totalRevenue }}</td>
                 </tr>
               </tfoot>
