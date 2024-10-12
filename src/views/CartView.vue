@@ -162,6 +162,8 @@ const totalPrice = computed(() => {
 
 const calculateDiscount = () => {
     const price = totalPrice.value;
+    console.log(costPerPrice.value);
+    
     if (validDiscountCode.value && price >= costPerPrice.value) {
         if (memberlevel.value === "白兔") {
             let discount = Math.floor(price / costPerPrice.value) * discountNumber.value;
@@ -180,7 +182,7 @@ const calculateDiscount = () => {
 
 const calculateMemberDiscount = () => {
     // 首先計算基礎折扣
-    let baseDiscount = Math.floor(totalPrice.value / 1000) * discountNumber.value;
+    let baseDiscount = Math.floor(totalPrice.value / costPerPrice.value) * discountNumber.value;
     
     // 根據會員等級應用倍數，並確保結果為整數
     let finalDiscount;
@@ -293,17 +295,6 @@ function applyBunnyCoin() {
 const remainingBunnyQuantity = computed(() => {
     return maxBunnyQuantity.value - appliedBunnyQuantity.value;
 });
-
-
-// const finaltotal = computed(() => {
-//     if (memberlevel.value !== '白兔') {
-//         return totalPrice.value - memberdiscount.value - appliedBunnyQuantity.value
-//     } else {
-//         return totalPrice.value - Generaldiscount.value - appliedBunnyQuantity.value
-//     }
-// })
-
-
 
 const add = (item) => {
     if (item.stocks == item.quantity) {
