@@ -41,7 +41,7 @@ const searchMember = () => {
                         <div class="line"></div>
                     </div>
                     <li class="navItem">
-                        <RouterLink class="navLink" to="SalesData">銷售數據</RouterLink>
+                        <RouterLink class="navLink" to="SalesStatistics">銷售數據</RouterLink>
                     </li>
                     <li class="navItem">
                         <RouterLink class="navLink" to="backProducts">商品管理</RouterLink>
@@ -54,9 +54,6 @@ const searchMember = () => {
                     </li>
                     <li class="navItem">
                         <RouterLink class="navLink" to="AdminMembers">會員管理</RouterLink>
-                    </li>
-                    <li class="navItem">
-                        <RouterLink class="navLink" to="SalesStatistics">銷售數據</RouterLink>
                     </li>
                 </ul>
                 <div class="lineContainer">
