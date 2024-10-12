@@ -74,7 +74,7 @@ const clearInput = (e) => {
 }
 
 const countTotal = () => {
-    cartStore.updateTotal(totalPrice)
+    cartStore.updateTotal(totalPrice.value)
 }
 
 const resetDiscount = () => {
@@ -162,8 +162,6 @@ const totalPrice = computed(() => {
 
 const calculateDiscount = () => {
     const price = totalPrice.value;
-    console.log(costPerPrice.value);
-    
     if (validDiscountCode.value && price >= costPerPrice.value) {
         if (memberlevel.value === "白兔") {
             let discount = Math.floor(price / costPerPrice.value) * discountNumber.value;
