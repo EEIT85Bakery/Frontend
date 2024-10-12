@@ -192,7 +192,7 @@ const handlePageChange = (newPage) => {
          
           <div v-for="product in products" :key="product.id" class="products-item"> 
             <RouterLink :to="{ name: '單一產品頁面', params: { id: product.id } }">
-            <img :src="`data:${mimeType};base64,${product.img1}`" :alt="product.name" class="products-image" />
+            <img :src="`data:;base64,${product.img1}`" :alt="product.name" class="products-image" />
             <div class="products-name">{{ product.productName }}</div>
             <!-- <div class="products-name">{{ product.description }}</div> -->
             <div class="products-price">價格：{{ product.price }}元</div>

@@ -54,16 +54,18 @@ const getProduct = async () => {
 
 
 const addToCart = (buy) => {
+    if (isNaN(Number(productAmount.value)) || productAmount.value === "") {
+  SwalHandle.showErrorMsg("請填入數字");
+  return
+}
+
     if(productAmount.value < 1) {
         SwalHandle.showErrorMsg('購買數量不得小於1')
         productAmount.value = 1
         return
     }
 
-    if (isNaN(Number(productAmount.value)) || productAmount.value === "" || Number(productAmount.value) < 0) {
-  SwalHandle.showErrorMsg("請填入數字");
-  return
-}
+    
     if(productAmount.value <= product.value.stocks) {
     axiosInstanceForInsertHeader.post('/cart', {
         productId: product.value.id,
