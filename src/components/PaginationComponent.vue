@@ -64,4 +64,17 @@ export default {
         background-color: rgba(225, 220, 217, 0.5);
     }
 
+
+    .page-item.active .page-link {
+  color: #ffffff; /* 文字顏色 */
+  background-color: rgba(166, 127, 120, 1); /* 背景顏色 */
+  border-color: rgba(166, 127, 120, 1); /* 邊框顏色 */
+}
+
+/* 可選：懸停效果 */
+.page-item.active .page-link:hover {
+  color: #ffffff;
+  background-color: rgba(146, 107, 100, 1); /* 稍微深一點的顏色 */
+  border-color: rgba(146, 107, 100, 1);
+}
 </style>
