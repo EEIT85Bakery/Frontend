@@ -30,13 +30,13 @@
                   <td>{{ item.productId }}</td>
                   <td>{{ item.productName }}</td>
                   <td class="dataInfo">{{ item.sumQuantity }}</td>
-                  <td class="dataInfo">{{ item.totalSales }}</td>
+                  <td class="dataInfo">{{ item.totalSales.toLocaleString() }}</td>
                 </tr>
               </tbody>
               <tfoot>
                 <tr>
                   <td colspan="3" class="dataInfo">總營業額(台幣: 元)</td>
-                  <td class="dataInfo">{{ totalRevenue }}</td>
+                  <td class="dataInfo">{{ totalRevenue.toLocaleString() }}</td>
                 </tr>
               </tfoot>
             </table>
