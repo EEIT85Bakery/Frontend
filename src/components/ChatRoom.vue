@@ -2,85 +2,91 @@
 import { ref, onMounted, onUnmounted } from "vue";
 import Swal from "sweetalert2";
 import { useRouter } from 'vue-router';
-import Stomp from 'stompjs'; // 確保導入 Stomp
+import Stomp from 'stompjs';
 
 const router = useRouter();
-const isVisible = ref(true); // 控制聊天室顯示/隱藏
+const isVisible = ref(true);
 const messages = ref([]);
 const newMessage = ref("");
 let socket = null;
-let stompClient = null; // 確保 stompClient 為全局變數
+let stompClient = null;
 
 const checkLogin = () => {
-  const jwt = localStorage.getItem("jwt"); // 檢查是否有JWT
+  const jwt = localStorage.getItem("jwt");
   if (!jwt) {
-    isVisible.value = false; // 關閉聊天室
+    isVisible.value = false;
     Swal.fire({
       title: '未登入',
       text: '請先登入！',
       icon: 'warning',
       confirmButtonText: '確認',
       customClass: { confirmButton: 'myConfirmBtn' },
-      timer: 2000, // 2 秒後自動關閉
-      timerProgressBar: true // 顯示進度條
+      timer: 2000,
+      timerProgressBar: true
     }).then(() => {
-      router.push({ name: '登入頁面' }); // 跳轉到登入頁面
+      router.push({ name: '登入頁面' });
     });
   }
 };
 
 const connectWebSocket = () => {
   const jwt = localStorage.getItem("jwt");
-  socket = new WebSocket("ws://localhost:8080/ws/chat"); // 使用全局 socket 變數
-  stompClient = Stomp.over(socket); // 正確設置 stompClient 為全局變數
+  const account = localStorage.getItem("account");
+  socket = new WebSocket("ws://localhost:8080/ws/chat");
+  stompClient = Stomp.over(socket);
 
   stompClient.connect({ Authorization: `Bearer ${jwt}` }, () => {
     console.log("WebSocket 連接成功");
 
-    // 訂閱訊息
-    stompClient.subscribe("/topic/messages", (message) => {
-      const receivedMessage = JSON.parse(message.body); // 確保將接收到的訊息解析為 JSON
-      console.log("接收到的訊息:", receivedMessage); // 在控制台打印訊息
-      // 不添加到 messages 陣列中，因此不顯示在聊天室中
+    // 訂閱用戶特定的消息主題
+    stompClient.subscribe(`/user/${account}/topic/messages`, (message) => {
+      handleIncomingMessage(JSON.parse(message.body));
     });
   }, (error) => {
     console.error("WebSocket 錯誤:", error);
   });
 };
 
+const handleIncomingMessage = (message) => {
+  console.log("接收到的訊息:", message);
+  messages.value.push({
+    content: message.content,
+    senderId: message.senderId
+  });
+};
+
 const sendMessage = () => {
   const jwt = localStorage.getItem("jwt");
+  const account = localStorage.getItem("account");
   if (newMessage.value.trim() !== "") {
     const messageToSend = {
       content: newMessage.value,
-      senderId: jwt
+      senderId: account,
+      jwt: jwt
     };
-    stompClient.send("/app/send", {}, JSON.stringify(messageToSend)); // 使用 JSON.stringify 來將對象轉換為JSON字串
-    newMessage.value = ""; // 清空輸入框
+    stompClient.send("/app/send", {}, JSON.stringify(messageToSend));
+    newMessage.value = "";
   }
 };
 
 const closeChat = () => {
-  isVisible.value = false; // 隱藏聊天室
-  // 如果需要，還可以添加其他邏輯，比如關閉 WebSocket
+  isVisible.value = false;
   if (socket) {
-    socket.close(); // 關閉 WebSocket 連接
+    socket.close();
   }
 };
 
 onMounted(() => {
-  checkLogin(); // 檢查用戶是否登入
-  connectWebSocket(); // 建立 WebSocket 連接
+  checkLogin();
+  connectWebSocket();
 });
 
 onUnmounted(() => {
   if (socket) {
-    socket.close(); // 關閉 WebSocket 連接
+    socket.close();
   }
 });
 </script>
-
-
 
 <template>
   <transition name="fade-slide">
@@ -90,8 +96,8 @@ onUnmounted(() => {
         <button @click="closeChat" class="close-btn">&times;</button>
       </div>
       <div class="chat-messages">
-        <div v-for="(message, index) in messages" :key="index" class="message">
-          {{ message }}
+        <div v-for="(message, index) in messages" :key="index" :class="['message', message.senderId === localStorage.getItem('account') ? 'user-message' : 'bot-message']">
+          {{ message.content }}
         </div>
       </div>
       <div class="chat-input">
