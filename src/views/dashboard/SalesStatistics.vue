@@ -8,7 +8,7 @@
       <div class="col-md-6 mb-4">
         <div class="dataContainer revenueChart">
           <h2 class="mt-4">各產品營收比重</h2>
-          <PieChart />
+          <PieChart :chartData="chartData" />
         </div>
       </div>
       
@@ -30,13 +30,13 @@
                   <td>{{ item.productId }}</td>
                   <td>{{ item.productName }}</td>
                   <td class="dataInfo">{{ item.sumQuantity }}</td>
-                  <td class="dataInfo">{{ item.sumPrice }}</td>
+                  <td class="dataInfo">{{ item.totalSales.toLocaleString() }}</td>
                 </tr>
               </tbody>
               <tfoot>
                 <tr>
                   <td colspan="3" class="dataInfo">總營業額(台幣: 元)</td>
-                  <td class="dataInfo">{{ totalRevenue }}</td>
+                  <td class="dataInfo">{{ totalRevenue.toLocaleString() }}</td>
                 </tr>
               </tfoot>
             </table>
@@ -53,12 +53,23 @@ import DashBoardNavBarOrder from '@/components/DashBoardNavBarOrder.vue';
 import PieChart from '@/components/PieChart.vue';
 import axiosInstanceForInsertHeader from '@/axios/axiosInstanceForInsertHeader';
 
-const salesData = ref([]);
+const salesReportData = ref({ productSalesDto: [], totalRevenue: 0 });
 const startTime = ref(null);
 const endTime = ref(null);
 
-const totalRevenue = computed(() => {
-  return salesData.value.reduce((total, item) => total + item.sumPrice, 0);
+const salesData = computed(() => salesReportData.value.productSalesDto);
+const totalRevenue = computed(() => salesReportData.value.totalRevenue);
+
+const chartData = computed(() => {
+  return {
+    labels: salesData.value.map(item => item.productName),
+    datasets: [{
+      data: salesData.value.map(item => item.totalSales),
+      backgroundColor: [
+        // Add your color array here
+      ]
+    }]
+  };
 });
 
 const getSalesData = () => {
@@ -69,7 +80,7 @@ const getSalesData = () => {
   axiosInstanceForInsertHeader
     .get(url)
     .then((res) => {
-      salesData.value = res.data;
+      salesReportData.value = res.data;
     })
     .catch(() => {
       alert('取得銷售數據失敗');
@@ -80,6 +91,10 @@ onMounted(() => {
   getSalesData();
 });
 </script>
+
+<style scoped>
+/* Your existing styles here */
+</style>
 
 <style scoped>
 .salesData {

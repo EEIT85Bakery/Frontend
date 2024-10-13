@@ -62,7 +62,25 @@ const finaltotal = computed(() => {
     } else {
         return totalprice.value - discount.value - appliedBunnyQuantity.value
     }
-})
+});
+
+// 將 base64 字符串轉換為 DataURL
+const convertToDataURL = (base64String) => {
+  if (!base64String) return null;
+  const isPNG = base64String.charAt(0) === 'i';
+  const mimeType = isPNG ? 'image/png' : 'image/jpeg';
+  return `data:${mimeType};base64,${base64String}`;
+};
+
+const processOrderDetailsImages = async (details) => {
+  return details.map((item) => ({
+    ...item,
+    img1: convertToDataURL(item.img1),
+    img2: convertToDataURL(item.img2),
+    img3: convertToDataURL(item.img3),
+    img4: convertToDataURL(item.img4),
+  }));
+};
 
 const fetchOrderDetail = () => {
   isLoading.value = true; 
@@ -70,8 +88,11 @@ const fetchOrderDetail = () => {
   axiosInstanceForInsertHeader.get('/orders/byOrderNumber', {
     params: { orderNumber: orderNumber.value }
   })
-  .then((response) => {
-    orderDetail.value = response.data; // 取得訂單詳細資料
+  .then(async (response) => {
+    const data = response.data;
+    // 轉換圖片 URL
+    data.orderDetails = await processOrderDetailsImages(data.orderDetails);
+    orderDetail.value = data;
     console.log('訂單詳細資料:', orderDetail.value);
     console.log('訂單詳細資料中的商品:', orderDetail.value.orderDetails);
 
@@ -126,7 +147,7 @@ onMounted(() => {
                 <div class="itemContainer" v-for="(item, index) in orderDetail.orderDetails" :key="index">
                     <div class="items">
                         <div class="productImg">
-                            <img :src="productimg.imageUrl" alt="" class="itemImg">
+                            <img :src="item.img1" alt="" class="itemImg">
                         </div>
                         <div class="productInfo">{{ item.productName }}</div>
                         <div class="priceInfo">{{ item.price }} 元</div>
