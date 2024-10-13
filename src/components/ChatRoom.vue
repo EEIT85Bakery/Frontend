@@ -37,8 +37,11 @@ const connectWebSocket = () => {
   stompClient.connect({ Authorization: `Bearer ${jwt}` }, () => {
     console.log("WebSocket 連接成功");
 
+    // 訂閱訊息
     stompClient.subscribe("/topic/messages", (message) => {
-      messages.value.push(JSON.parse(message.body)); // 確保將接收到的訊息解析為 JSON
+      const receivedMessage = JSON.parse(message.body); // 確保將接收到的訊息解析為 JSON
+      console.log("接收到的訊息:", receivedMessage); // 在控制台打印訊息
+      // 不添加到 messages 陣列中，因此不顯示在聊天室中
     });
   }, (error) => {
     console.error("WebSocket 錯誤:", error);
@@ -46,10 +49,11 @@ const connectWebSocket = () => {
 };
 
 const sendMessage = () => {
+  const jwt = localStorage.getItem("jwt");
   if (newMessage.value.trim() !== "") {
     const messageToSend = {
       content: newMessage.value,
-      recipientId: "Hightwo" // 替換為實際接收者的ID
+      senderId: jwt
     };
     stompClient.send("/app/send", {}, JSON.stringify(messageToSend)); // 使用 JSON.stringify 來將對象轉換為JSON字串
     newMessage.value = ""; // 清空輸入框

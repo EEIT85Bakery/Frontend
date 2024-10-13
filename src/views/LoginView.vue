@@ -32,7 +32,9 @@ const usersLogin = async () => {
     if (response.status === 200) {
       const token = response.data.token;
       const role = response.data.user;
+      const account = response.data.account
       // 儲存 token 到 localStorage裡面
+      localStorage.setItem('account', account);
       localStorage.setItem('jwt', token);
       localStorage.setItem('user', role);
       console.log('成功獲得 JWT token:', token);
