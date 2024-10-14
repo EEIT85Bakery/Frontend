@@ -1,53 +1,83 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import PaginationComponent from '@/components/PaginationComponent.vue';
 import { SwalHandle } from '@/stores/sweetAlertStore';
+import axiosInstanceForInsertHeader from '@/axios/axiosInstanceForInsertHeader';
+
+const wishListItems = ref([]); // 保存從後端取得的收藏清單數據
+
+const fetchWishListItems = () => {
+
+    axiosInstanceForInsertHeader
+        .get('/wishList/items')
+        .then((response) => {
+            console.log(response);
+            wishListItems.value = response.data.content;
+           
+        })
+        .catch((error) => {
+            console.error('Error fetching wish List items:', error);
+        });
+};
+
+onMounted(() => {
+    fetchWishListItems();
+})
+
+
+
+
+
 
 const showSuccess = () => {
-  SwalHandle.showSuccessMsg('成功加入購物車！');
+    SwalHandle.showSuccessMsg('成功加入購物車！');
 };
 
 const deleteItem = (item) => {
-  SwalHandle.confirm(
-    '確認刪除',
-    `您確定要刪除 ${item.name} 嗎？`,
-    '刪除成功！', 
-    () => {
-      // 執行刪除操作，例如：
-      items.value = items.value.filter(i => i !== item);
-      SwalHandle.showSuccessMsg(`成功刪除 ${item.name}`);
-    }
-  );
+    SwalHandle.confirm(
+        '確認刪除',
+        `您確定要刪除 ${item.name} 嗎？`,
+        '刪除成功！',
+        () => {
+            // 執行刪除操作，例如：
+            items.value = items.value.filter(i => i !== item);
+            SwalHandle.showSuccessMsg(`成功刪除 ${item.name}`);
+        }
+    );
 };
 
 
-const items = ref([
-    {
-        ImageUrl: '../../public/imgZip/Sample/cake1.jpg',
-        name: '雙重莓果饗宴蛋糕',
-        price: '360元'
-    },
-    {
-        ImageUrl: '../../public/imgZip/Sample/cake1.jpg',
-        name: '雙重莓果饗宴蛋糕',
-        price: '360元'
-    },
-    {
-        ImageUrl: '../../public/imgZip/Sample/cake1.jpg',
-        name: '雙重莓果饗宴蛋糕',
-        price: '360元'
-    },
-    {
-        ImageUrl: '../../public/imgZip/Sample/cake1.jpg',
-        name: '雙重莓果饗宴蛋糕',
-        price: '360元'
-    },
-    {
-        ImageUrl: '../../public/imgZip/Sample/cake1.jpg',
-        name: '雙重莓果饗宴蛋糕',
-        price: '360元'
-    }
-]);
+// const items = ref([
+//     {
+//         ImageUrl: '../../public/imgZip/Sample/cake1.jpg',
+//         name: '雙重莓果饗宴蛋糕',
+//         price: '360元'
+//     },
+//     {
+//         ImageUrl: '../../public/imgZip/Sample/cake1.jpg',
+//         name: '雙重莓果饗宴蛋糕',
+//         price: '360元'
+//     },
+//     {
+//         ImageUrl: '../../public/imgZip/Sample/cake1.jpg',
+//         name: '雙重莓果饗宴蛋糕',
+//         price: '360元'
+//     },
+//     {
+//         ImageUrl: '../../public/imgZip/Sample/cake1.jpg',
+//         name: '雙重莓果饗宴蛋糕',
+//         price: '360元'
+//     },
+//     {
+//         ImageUrl: '../../public/imgZip/Sample/cake1.jpg',
+//         name: '雙重莓果饗宴蛋糕',
+//         price: '360元'
+//     }
+// ]);
+
+
+
+
 
 
 
@@ -99,7 +129,7 @@ const items = ref([
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="(item, index) in items" :key="index">
+                            <tr v-for="(item, index) in wishListItems" :key="index">
                                 <td class="imgTd">
                                     <img :src="item.ImageUrl" alt="img" class="img">
                                     <span>{{ item.name }}</span>
@@ -108,7 +138,8 @@ const items = ref([
                                 <td>
                                     <button class="btnRight" @click="showSuccess">加入購物車</button>
                                 </td>
-                                <td @click="deleteItem(item)"><i class="bi bi-x-circle" style="color: darkgray; cursor: pointer;"></i></td>
+                                <td @click="deleteItem(item)"><i class="bi bi-x-circle"
+                                        style="color: darkgray; cursor: pointer;"></i></td>
                             </tr>
                         </tbody>
                     </table>
