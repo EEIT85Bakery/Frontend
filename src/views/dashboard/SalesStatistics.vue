@@ -14,7 +14,9 @@
         <input type="date" v-model="endDate" class="form-control" />
       </div>
     </div>
-    <button @click="fetchSalesData" class="btn btn-primary mb-4">查詢</button>
+    <div class="button-container">
+      <button @click="fetchSalesData" class="btn btn-primary mb-4 searchButton">查詢</button>
+    </div>
     
     <div class="row">
       <div class="col-md-6 mb-4">
@@ -147,6 +149,15 @@ onMounted(() => {
     font-weight: bold;
     margin-bottom: 3%;
     cursor: pointer;
+}
+
+.button-container {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.searchButton {
+  background-color: rgba(166, 127, 120, 0.5);
 }
 
 .contentTable {
