@@ -1,29 +1,25 @@
 <template>
   <div class="chart-container">
-    <canvas ref="chartCanvas"></canvas>
+    <canvas v-if="chartData && chartData.labels && chartData.labels.length" ref="chartCanvas"></canvas>
+    <p v-else class="no-data-text">無銷售數據</p>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted, watch } from 'vue';
 import Chart from 'chart.js/auto';
-import axiosInstanceForInsertHeader from '@/axios/axiosInstanceForInsertHeader';
 
 const chartCanvas = ref(null);
 let chart = null;
 
-const salesReportData = ref({ productSalesDto: [], totalRevenue: 0 });
-
-const fetchSalesData = async () => {
-  try {
-    const response = await axiosInstanceForInsertHeader.get('/admin/sales');
-    salesReportData.value = response.data;
-  } catch (error) {
-    console.error('Failed to fetch sales data:', error);
-    alert('取得銷售數據失敗');
+const props = defineProps({
+  chartData: {
+    type: Object,
+    required: true
   }
-};
+});
 
+// 當數據變化時更新圖表
 const createChart = () => {
   if (chart) {
     chart.destroy();
@@ -31,21 +27,9 @@ const createChart = () => {
 
   const ctx = chartCanvas.value.getContext('2d');
 
-  const labels = salesReportData.value.productSalesDto.map(item => item.productName);
-  const data = salesReportData.value.productSalesDto.map(item => item.totalSales);
-
   chart = new Chart(ctx, {
     type: 'pie',
-    data: {
-      labels: labels,
-      datasets: [{
-        data: data,
-        backgroundColor: [
-          '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF',
-          '#FF9F40', '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0'
-        ]
-      }]
-    },
+    data: props.chartData,
     options: {
       responsive: true,
       maintainAspectRatio: false,
@@ -62,13 +46,16 @@ const createChart = () => {
   });
 };
 
-onMounted(async () => {
-  await fetchSalesData();
-  createChart();
+onMounted(() => {
+  if (props.chartData && props.chartData.labels && props.chartData.labels.length) {
+    createChart();
+  }
 });
 
-watch(salesReportData, () => {
-  createChart();
+watch(() => props.chartData, (newValue) => {
+  if (newValue && newValue.labels && newValue.labels.length) {
+    createChart();
+  }
 }, { deep: true });
 </script>
 
@@ -77,5 +64,12 @@ watch(salesReportData, () => {
   position: relative;
   height: 400px;
   width: 100%;
+}
+
+.no-data-text {
+  text-align: center;
+  color: red;
+  font-weight: bold;
+  margin-top: 20px;
 }
 </style>

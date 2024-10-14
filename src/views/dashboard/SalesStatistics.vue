@@ -3,12 +3,26 @@
 
   <div class="container-fluid salesData">
     <h1 class="my-3 salesTitle">銷售數據表</h1>
+
+    <div class="row mb-4">
+      <div class="col-md-6">
+        開始日期
+        <input type="date" v-model="startDate" class="form-control" />
+      </div>
+      <div class="col-md-6">
+        結束日期
+        <input type="date" v-model="endDate" class="form-control" />
+      </div>
+    </div>
+    <button @click="fetchSalesData" class="btn btn-primary mb-4">查詢</button>
     
     <div class="row">
       <div class="col-md-6 mb-4">
         <div class="dataContainer revenueChart">
           <h2 class="mt-4">各產品營收比重</h2>
-          <PieChart :chartData="chartData" />
+          <!-- 只有當 chartData 有數據時才傳遞給 PieChart -->
+          <PieChart v-if="chartData && chartData.labels && chartData.labels.length" :chartData="chartData" />
+          <p v-else>無銷售數據</p>
         </div>
       </div>
       
@@ -30,13 +44,13 @@
                   <td>{{ item.productId }}</td>
                   <td>{{ item.productName }}</td>
                   <td class="dataInfo">{{ item.sumQuantity }}</td>
-                  <td class="dataInfo">{{ item.totalSales.toLocaleString() }}</td>
+                  <td class="dataInfo">{{ safeToLocaleString(item.totalSales) }}</td>
                 </tr>
               </tbody>
               <tfoot>
                 <tr>
                   <td colspan="3" class="dataInfo">總營業額(台幣: 元)</td>
-                  <td class="dataInfo">{{ totalRevenue.toLocaleString() }}</td>
+                  <td class="dataInfo">{{ safeToLocaleString(totalRevenue) }}</td>
                 </tr>
               </tfoot>
             </table>
@@ -54,8 +68,8 @@ import PieChart from '@/components/PieChart.vue';
 import axiosInstanceForInsertHeader from '@/axios/axiosInstanceForInsertHeader';
 
 const salesReportData = ref({ productSalesDto: [], totalRevenue: 0 });
-const startTime = ref(null);
-const endTime = ref(null);
+const startDate = ref('');
+const endDate = ref('');
 
 const salesData = computed(() => salesReportData.value.productSalesDto);
 const totalRevenue = computed(() => salesReportData.value.totalRevenue);
@@ -66,16 +80,18 @@ const chartData = computed(() => {
     datasets: [{
       data: salesData.value.map(item => item.totalSales),
       backgroundColor: [
-        // Add your color array here
-      ]
+          '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF',
+          '#FF9F40', '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0'
+        ]
     }]
   };
 });
 
-const getSalesData = () => {
-  const url = startTime.value && endTime.value
-    ? `/admin/sales/timeRange?startTime=${startTime.value}&endTime=${endTime.value}`
-    : '/admin/sales';
+const fetchSalesData = () => {
+  let url = '/admin/sales';
+  if (startDate.value && endDate.value) {
+    url = `/admin/sales/dateRange?startDate=${startDate.value}&endDate=${endDate.value}`;
+  }
 
   axiosInstanceForInsertHeader
     .get(url)
@@ -87,14 +103,16 @@ const getSalesData = () => {
     });
 };
 
+const safeToLocaleString = (value) => {
+  return value ? value.toLocaleString() : '0';
+};
+
 onMounted(() => {
-  getSalesData();
+  fetchSalesData();
 });
 </script>
 
-<style scoped>
-/* Your existing styles here */
-</style>
+
 
 <style scoped>
 .salesData {
