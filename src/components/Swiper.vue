@@ -137,6 +137,7 @@ onMounted(() => {
 .imgWrapper {
   position: relative;
   display: inline-block;
+  cursor: pointer;
 }
 
 .moreImg {
