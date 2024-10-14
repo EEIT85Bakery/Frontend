@@ -161,6 +161,11 @@ const routes = [
           path: '/SalesStatistics',
           name: '銷售數據',
           component: () => import('../views/dashboard/SalesStatistics.vue')
+        },
+        {
+          path: '/ChatManage',
+          name: '聊天總管',
+          component: () => import('../views/dashboard/ChatManageView.vue')
         }
     ]
   },

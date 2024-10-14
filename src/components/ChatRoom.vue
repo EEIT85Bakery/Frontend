@@ -31,7 +31,7 @@ const checkLogin = () => {
 
 const connectWebSocket = () => {
   const jwt = localStorage.getItem("jwt");
-  const account = localStorage.getItem("account");
+  const recipientId = localStorage.getItem("account");
   socket = new WebSocket("ws://localhost:8080/ws/chat");
   stompClient = Stomp.over(socket);
 
@@ -39,7 +39,7 @@ const connectWebSocket = () => {
     console.log("WebSocket 連接成功");
 
     // 訂閱用戶特定的消息主題
-    stompClient.subscribe(`/user/${account}/topic/messages`, (message) => {
+    stompClient.subscribe(`/user/${recipientId}/topic/messages`, (message) => {
       handleIncomingMessage(JSON.parse(message.body));
     });
   }, (error) => {
@@ -58,11 +58,13 @@ const handleIncomingMessage = (message) => {
 const sendMessage = () => {
   const jwt = localStorage.getItem("jwt");
   const account = localStorage.getItem("account");
+  const recipient_id = "ADMIN";
   if (newMessage.value.trim() !== "") {
     const messageToSend = {
       content: newMessage.value,
       senderId: account,
-      jwt: jwt
+      jwt: jwt,
+      recipientId: recipient_id,
     };
     stompClient.send("/app/send", {}, JSON.stringify(messageToSend));
     newMessage.value = "";
