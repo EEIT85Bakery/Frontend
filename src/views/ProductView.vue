@@ -20,6 +20,19 @@ const otherProductsLoaded = ref(false)
 const isGetProduct = ref(false)
 const cartStore = useCartStore()
 
+const checkNumber = () => {
+    if(isNaN(Number(productAmount.value)) || productAmount.value === "") {
+  SwalHandle.showErrorMsg("請填入數字")
+        productAmount.value = 1
+ 
+}else if (typeof(productAmount.value == "number")) {
+    if (productAmount.value < 1) {
+      SwalHandle.showErrorMsg("數量不得小於1")
+      productAmount.value = 1
+    }
+}
+}
+
 
 const clearInput = () => {
     productAmount.value = ""
@@ -54,11 +67,7 @@ const getProduct = async () => {
 
 
 const addToCart = (buy) => {
-    if (isNaN(Number(productAmount.value)) || productAmount.value === "") {
-  SwalHandle.showErrorMsg("請填入數字");
-  return
-}
-
+    
     if(productAmount.value < 1) {
         SwalHandle.showErrorMsg('購買數量不得小於1')
         productAmount.value = 1
@@ -103,20 +112,9 @@ function handleOpenModal() {
 
 const isLoading = ref(true);
 
-
-// const startLoading = () => {
-//     setTimeout(() => {
-//         isLoading.value = false;
-//     }, 600);
-// };
-
 watch(route, () => {
     isLoading.value = true;
 });
-
-
-
-
 
 const imgItems = ref([
     { imageUrl: '../../public/imgZip/Sample/apple pie.jpg' },
@@ -127,28 +125,7 @@ const imgItems = ref([
 
 const selectedImage = ref(imgItems.value);
 
-
-// const productName = "草莓乳酪杯子蛋糕";
-// const productDescription = "訂購天數需要3~7個工作天（不含訂購當天）為保持風味最佳，請於隔日內享用完畢";
-// const productIngredients = "| 新鮮草莓 | 動物性鮮奶油 | 奶油乳酪 | 海綿蛋糕 | ";
 const discountExp = "2024/11/30";
-// const price = "160";
-
-// const moreItems = ref([
-//     {
-//         imageUrl: '../../public/imgZip/Sample/apple pie.jpg',
-//         name: '商品一號'
-//     },
-//     {
-//         imageUrl: '../../public/imgZip/Sample/cake1.jpg',
-//         name: '商品二號'
-//     },
-//     {
-//         imageUrl: '../../public/imgZip/Sample/cake2.jpg',
-//         name: '商品三號'
-//     },
-
-// ]);
 
 function selectImage(item) {
     selectedImage.value = item.imageUrl;
@@ -180,7 +157,7 @@ onMounted(() => {
                 <!-- :class="'Item' + (index + 1)" -->
 
                 <!-- 下一張小圖按鈕 -->
-                <div class="nextOne"><i class="bi bi-chevron-compact-down"></i></div>
+                <!-- <div class="nextOne"><i class="bi bi-chevron-compact-down"></i></div> -->
             </div>
 
             <!-- 產品大圖 -->
@@ -219,7 +196,7 @@ onMounted(() => {
             <div class="productDiscount">
                 <div class="d-flex">
                     <i class="bi bi-caret-right-fill me-2"></i>
-                    <span>即日起至<b class="discountExp">{{ discountExp }}</b>，結帳輸入「<b>HappyHalloween</b>」，全館商品滿1000折50</span>
+                    <span>即日起至<b class="discountExp">{{ discountExp }}</b>，結帳輸入「<b>bunnySugar</b>」，全館商品滿1000折50   </span>
                 </div>
                 <div class="d-flex">
                     <i class="bi bi-caret-right-fill me-2"></i>
@@ -241,7 +218,7 @@ onMounted(() => {
         </div>
             <div class="productQuantity">
                 <div class="quantityText">數量： </div>
-                <input type="number" min="1" class="quantityInput" placeholder="請選擇數量" v-model="productAmount" @focus="clearInput">
+                <input type="number" min="1" class="quantityInput" placeholder="請選擇數量" v-model="productAmount" @focus="clearInput" @blur="checkNumber">
             </div>
 
             <div class="buttons">

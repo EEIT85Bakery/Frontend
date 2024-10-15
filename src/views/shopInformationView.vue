@@ -2,6 +2,7 @@
 import { ref, watch, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import Loading from '@/components/Loading.vue';
+import { Carousel } from 'bootstrap';
 
 const isLoading = ref(true);
 
@@ -21,6 +22,15 @@ watch(route, () => {
 onMounted(() => {
     isLoading.value = true;
     startLoading();
+
+    const carouselElement = document.getElementById('demo');
+    if (carouselElement) {
+        const carousel = new Carousel(carouselElement, {
+            interval: 3000,
+            ride: 'carousel'
+        });
+    }
+
 });
 
 </script>
@@ -37,8 +47,7 @@ onMounted(() => {
 
         <div class="carouselContainer">
             <!-- Carousel -->
-            <div id="carouselExampleFade" class="carousel slide carousel-fade" data-bs-ride="carousel"
-                data-bs-interval="3000">
+            <div id="demo" class="carousel slide carousel-fade" data-bs-ride="carousel">
                 <div class="carousel-inner">
                     <div class="carousel-item active">
                         <img src="../../public/imgZip/shop/cafeShop.webp" class="d-block w-100" alt="...">
@@ -108,7 +117,6 @@ onMounted(() => {
 </template>
 
 <style scoped>
-
 .imgContainer {
     display: flex;
     justify-content: center;

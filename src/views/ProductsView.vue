@@ -4,6 +4,8 @@ import axios from 'axios';
 import Loading from '@/components/Loading.vue';
 import PaginationComponent from '@/components/PaginationComponent.vue';
 import { useRouter, useRoute } from 'vue-router';
+import axiosInstanceForInsertHeader from '@/axios/axiosInstanceForInsertHeader';
+import { SwalHandle } from '@/stores/sweetAlertStore';
 
 // 狀態變量
 const isLoading = ref(true);
@@ -185,6 +187,44 @@ const toggleLike = (index) => {
   }
 };
 
+
+// 新增商品至我的收藏
+const addToWishList = (product) => {
+
+  console.log("Adding to wishlist:", product);
+  console.log("Product ID:", product.id); 
+  
+  axiosInstanceForInsertHeader.post('/wishList/add', {
+    productId: product.id
+  }).then(() => {
+    SwalHandle.showSuccessMsg("成功新增到我的收藏")
+  }).catch((err) => {
+    console.log(err);
+    console.error("Error adding to wishlist:", err);
+    if (err.response) {
+        console.error("Response data:", err.response.data);
+        console.error("Response status:", err.response.status);
+        console.error("Response headers:", err.response.headers);
+    } else {
+        console.error("Error message:", err.message);
+    }
+  })
+}
+
+// 加入購物車
+const addToCart = (product) => {
+  
+    axiosInstanceForInsertHeader.post('/cart', {
+        productId: product.id,
+        quantity: 1,
+        price: product.price
+    }).then(() => {
+        SwalHandle.showSuccessMsg("成功新增到購物車")
+    }).catch((err) => {
+        console.log(err);
+    })
+}
+
 </script>
 
 
@@ -235,10 +275,10 @@ const toggleLike = (index) => {
               <div class="products-price">{{ product.price }} <span style="font-size: small;">元</span></div>
             </RouterLink>
             <button type="button" class="moreImgBtn" :class="{ 'visible': hoveredIndex === index }"
-              @click="addToCart(item)">
+              @click="addToCart(product)">
               加入購物車
             </button>
-            <i class="bi bi-suit-heart heartIcon1" v-if="!likedIndexes.includes(index)" @click="toggleLike(index)"></i>
+            <i class="bi bi-suit-heart heartIcon1" v-if="!likedIndexes.includes(index)" @click="addToWishList(product)"></i>
             <i class="bi bi-suit-heart-fill heartIcon2" v-else @click="toggleLike(index)"></i>
           </div>
         </div>

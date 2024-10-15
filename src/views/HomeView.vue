@@ -3,6 +3,8 @@ import { ref, onMounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import Loading from '@/components/Loading.vue';
 import axiosInstanceForInsertHeader from '@/axios/axiosInstanceForInsertHeader';
+import { Carousel } from 'bootstrap';
+import axios from 'axios';
 
 const isLoading = ref(true);
 
@@ -10,7 +12,12 @@ const route = useRoute();
 //anniversaries//
 const userEmail = ref("")
 const getMemberInfo = () => {
-  axiosInstanceForInsertHeader.get('/memberPage/info').then(res => {
+  const token = localStorage.getItem('jwt')
+  axios.get('/api/memberPage/info', {
+    headers: {
+    Authorization: `Bearer ${token}`
+    }
+  }).then(res => {
     userEmail.value = res.data.email;
     getAllAnniversaries()
   }).catch(err => console.log(err))
@@ -126,6 +133,15 @@ onMounted(() => {
   imgElements.forEach(img => {
     observer.observe(img); // 為每個圖片元素添加觀察者
   });
+
+  const carouselElement = document.getElementById('demo');
+  if (carouselElement) {
+    const carousel = new Carousel(carouselElement, {
+      interval: 2000,
+      ride: 'carousel'
+    });
+  }
+
 });
 
 </script>
