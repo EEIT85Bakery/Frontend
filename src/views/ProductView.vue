@@ -196,7 +196,7 @@ onMounted(() => {
             <div class="productDiscount">
                 <div class="d-flex">
                     <i class="bi bi-caret-right-fill me-2"></i>
-                    <span>即日起至<b class="discountExp">{{ discountExp }}</b>，結帳輸入「<b>HappyHalloween</b>」，全館商品滿1000折50</span>
+                    <span>即日起至<b class="discountExp">{{ discountExp }}</b>，結帳輸入「<b>bunnySugar</b>」，全館商品滿1000折50   </span>
                 </div>
                 <div class="d-flex">
                     <i class="bi bi-caret-right-fill me-2"></i>
