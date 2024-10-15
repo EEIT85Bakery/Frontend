@@ -12,16 +12,16 @@ const newMessage = ref('');
 let stompClient;
 let socket;
 
-// 格式化時間的通用方法
 const formatTimestamp = (timestampArray) => {
-  if (Array.isArray(timestampArray) && timestampArray.length === 6) {
-    const [year, month, day, hours, minutes] = timestampArray;
-    return `${year}/${String(month).padStart(2, '0')}/${String(day).padStart(2, '0')}, ${String(hours).padStart(2, '0')}時 ${String(minutes).padStart(2, '0')}分`;
+  if (Array.isArray(timestampArray)) {
+    const [year, month, day, hours, minutes, seconds = 0] = timestampArray; // 默認秒數為 0
+    return `${year}/${String(month).padStart(2, '0')}/${String(day).padStart(2, '0')}, ${String(hours).padStart(2, '0')}時 ${String(minutes).padStart(2, '0')}分 ${String(seconds).padStart(2, '0')}秒`; // 添加秒數
   } else {
-    console.warn("無效的時間格式:", timestampArray); // 警告輸出
+    console.warn("無效的時間格式:", timestampArray);
     return '無效時間'; // 返回無效時間的字串
   }
 };
+
 
 // 建立 WebSocket 連接
 const connectWebSocket = () => {
@@ -32,7 +32,13 @@ const connectWebSocket = () => {
     console.log("WebSocket 連接成功");
 
     // 訂閱當前用戶的訊息
+    stompClient.subscribe(`/user/ADMIN/topic/messages`, (message) => {
+      console.log("接收到來自 WebSocket 的消息:", message.body);
+      handleIncomingMessage(JSON.parse(message.body));
+    });
+
     stompClient.subscribe(`/user/${props.recipientId}/topic/messages`, (message) => {
+      console.log("接收到自己發出的消息:", message.body);
       handleIncomingMessage(JSON.parse(message.body));
     });
 
@@ -85,18 +91,20 @@ const handleIncomingMessage = async (msg) => {
         date.getDate(),
         date.getHours(),
         date.getMinutes(),
-        date.getSeconds(),
+        date.getSeconds(), // 確保傳遞秒數，這裡應該不會缺失
       ]);
 
-      // 將接收到的消息推送到 chatMessages
+    if (msg.recipientId === 'ADMIN' && msg.senderId === props.recipientId) {
       chatMessages.value.push({
         content: msg.content,
         senderId: msg.senderId,
         timestamp: formattedTimestamp // 使用格式化的時間
       });
+    }
 
       // 強制更新，確保 UI 反映最新消息
       await nextTick();
+      scrollToBottom(); // 在接收到新消息後自動滾動到底部
       console.log("推送到聊天消息:", chatMessages.value);
     } else {
       console.warn("無效的日期:", msg.timestamp); // 警告輸出
@@ -107,7 +115,7 @@ const handleIncomingMessage = async (msg) => {
 };
 
 
-const sendMessage = () => {
+const sendMessage = async () => {
   const jwt = localStorage.getItem("jwt");
   const account = "ADMIN"; 
   const recipientId = props.recipientId; // 從 props 獲取 recipientId
@@ -124,11 +132,44 @@ const sendMessage = () => {
       timestamp: isoTimestamp // 保持為 ISO 格式
     };
 
-    // 先發送消息到後端
-    stompClient.send("/app/send", {}, JSON.stringify(messageToSend));
+    try {
+      // 先發送消息到後端
+      await stompClient.send("/app/send", {}, JSON.stringify(messageToSend));
+      
+      // 格式化時間
+      const formattedTimestamp = formatTimestamp([
+        new Date().getFullYear(),
+        new Date().getMonth() + 1, // 月份從 0 開始
+        new Date().getDate(),
+        new Date().getHours(),
+        new Date().getMinutes(),
+        new Date().getSeconds(),
+      ]);
 
-    // 將格式化的訊息推送到聊天室
-    newMessage.value = ""; // 清空輸入框
+      // 將訊息推送到聊天室
+      chatMessages.value.push({
+        content: newMessage.value,
+        senderId: account,
+        timestamp: formattedTimestamp // 使用格式化的時間
+      });
+
+      // 清空輸入框
+      newMessage.value = ""; 
+      await nextTick(); // 確保 UI 更新
+      scrollToBottom(); // 在接收到新消息後自動滾動到底部
+
+    } catch (error) {
+      console.error("發送訊息失敗:", error);
+    }
+  }
+};
+
+
+//收到訊息滾到最下面
+const scrollToBottom = () => {
+  const messagesContainer = document.querySelector('.messages');
+  if (messagesContainer) {
+    messagesContainer.scrollTop = messagesContainer.scrollHeight; // 滾動到底部
   }
 };
 
@@ -175,11 +216,14 @@ onUnmounted(() => {
 .chat-container {
   display: flex;
   flex-direction: column;
+  height: 700px; /* 限制整個聊天框的總高度 */
 }
 
 .messages {
   flex: 1;
-  overflow-y: auto;
+  overflow-y: auto; /* 當訊息超過大小時允許滾動 */
+  max-height: 650px; /* 限制聊天訊息區域的高度 */
+  padding: 10px;
 }
 
 .user-message {
@@ -201,5 +245,11 @@ onUnmounted(() => {
 .timestamp {
   font-size: 0.8em;
   color: gray;
+}
+
+input {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
 }
 </style>

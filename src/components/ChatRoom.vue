@@ -1,8 +1,9 @@
 <script setup>
-import { ref, onMounted, onUnmounted, computed } from "vue";
+import { ref, onMounted, onUnmounted, computed, nextTick } from "vue";
 import Swal from "sweetalert2";
 import { useRouter } from 'vue-router';
 import Stomp from 'stompjs';
+import axios from 'axios';
 
 const router = useRouter();
 const isVisible = ref(true);
@@ -10,29 +11,31 @@ const messages = ref([]);
 const newMessage = ref("");
 let socket = null;
 let stompClient = null;
+const messagesContainer = ref(null); // 引用容器
 
 const checkLogin = () => {
-  const jwt = localStorage.getItem("jwt");
-  if (!jwt) {
-    isVisible.value = false;
-    Swal.fire({
-      title: '未登入',
-      text: '請先登入！',
-      icon: 'warning',
-      confirmButtonText: '確認',
-      customClass: { confirmButton: 'myConfirmBtn' },
-      timer: 2000,
-      timerProgressBar: true
-    }).then(() => {
-      router.push({ name: '登入頁面' });
-    });
+  if (typeof localStorage !== 'undefined') {
+    const jwt = localStorage.getItem("jwt");
+    if (!jwt) {
+      isVisible.value = false;
+      Swal.fire({
+        title: '未登入',
+        text: '請先登入！',
+        icon: 'warning',
+        confirmButtonText: '確認',
+        customClass: { confirmButton: 'myConfirmBtn' },
+        timer: 2000,
+        timerProgressBar: true
+      }).then(() => {
+        router.push({ name: '登入頁面' });
+      });
+    }
+  } else {
+    console.error("localStorage 不可用");
   }
 };
 
-// 計算屬性，安全訪問 localStorage
-const recipientId = computed(() => {
-  return localStorage.getItem("account");
-});
+const accountId = computed(() => localStorage.getItem('account') || '');
 
 const connectWebSocket = () => {
   const jwt = localStorage.getItem("jwt");
@@ -43,48 +46,83 @@ const connectWebSocket = () => {
     console.log("WebSocket 連接成功");
 
     // 訂閱用戶特定的消息主題
-    stompClient.subscribe(`/user/${recipientId.value}/topic/messages`, (message) => {
+    stompClient.subscribe(`/user/${accountId.value}/topic/messages`, (message) => {
       handleIncomingMessage(JSON.parse(message.body));
     });
+    
+    // 獲取歷史訊息
+    fetchChatMessages();
   }, (error) => {
     console.error("WebSocket 錯誤:", error);
   });
 };
 
-// 處理接收到的訊息
-const handleIncomingMessage = (msg) => {
-  console.log("接收到的訊息:", msg); // 確認接收到的訊息
+const fetchChatMessages = async () => {
+  try {
+    const response = await axios.get(`/get/messages`, {
+      params: { userId: accountId.value },
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
 
-  let timestamp;
+    console.log("獲取的消息:", response.data);
+    messages.value = response.data.map(message => ({
+      content: message.content,
+      senderId: message.senderId,
+      timestamp: formatTimestamp(message.timestamp)
+    }));
 
-  // 解析 ISO 8601 格式的 timestamp
-  if (typeof msg.timestamp === 'string') {
-    const date = new Date(msg.timestamp);
-    
-    // 格式化為所需的字符串格式
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0'); // 月份從0開始
-    const day = String(date.getDate()).padStart(2, '0');
-    const hours = String(date.getHours()).padStart(2, '0');
-    const minutes = String(date.getMinutes()).padStart(2, '0');
+    // 確保在加載歷史訊息後滾動到最底部
+    scrollToBottom();
 
-    timestamp = `${year}/${month}/${day}, ${hours}時 ${minutes}分`;
-  } else {
-    console.warn("無效的 timestamp 類型:", msg.timestamp);
-    timestamp = '無效時間';
+  } catch (error) {
+    console.error("無法獲取聊天消息:", error);
   }
+};
 
-  chatMessages.value.push({
-    ...msg,
-    timestamp // 使用格式化後的時間戳
+const scrollToBottom = () => {
+  nextTick(() => { // 確保 DOM 更新完成後再滾動
+    if (messagesContainer.value) {
+      messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight;
+    }
   });
 };
 
+const handleIncomingMessage = (msg) => {
+  console.log("接收到的訊息:", msg);
+
+  messages.value.push({
+    content: msg.content,
+    senderId: msg.senderId,
+    timestamp: formatTimestamp(msg.timestamp)
+  });
+  
+  scrollToBottom(); // 滾動到最底部
+};
+
+const formatTimestamp = (timestamp) => {
+  let date;
+
+  if (Array.isArray(timestamp)) {
+    date = new Date(...timestamp);
+  } else {
+    date = new Date(timestamp);
+  }
+
+  if (isNaN(date.getTime())) {
+    console.error("無效的時間戳:", timestamp);
+    return "未知時間";
+  }
+
+  return `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}, ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+};
 
 const sendMessage = () => {
   const jwt = localStorage.getItem("jwt");
   const account = localStorage.getItem("account");
   const recipient_id = "ADMIN";
+
   if (newMessage.value.trim() !== "") {
     const messageToSend = {
       content: newMessage.value,
@@ -92,8 +130,17 @@ const sendMessage = () => {
       jwt: jwt,
       recipientId: recipient_id,
     };
+    
     stompClient.send("/app/send", {}, JSON.stringify(messageToSend));
-    newMessage.value = "";
+
+    messages.value.push({
+      content: newMessage.value,
+      senderId: account,
+      timestamp: formatTimestamp(new Date().toISOString())
+    });
+
+    newMessage.value = ""; // 清空輸入框
+    scrollToBottom(); // 滾動到最底部
   }
 };
 
@@ -123,9 +170,10 @@ onUnmounted(() => {
         <h3>聊天室</h3>
         <button @click="closeChat" class="close-btn">&times;</button>
       </div>
-      <div class="chat-messages">
-        <div v-for="(message, index) in messages" :key="index" :class="['message', message.senderId === localStorage.getItem('account') ? 'user-message' : 'bot-message']">
-          {{ message.content }}
+      <div class="chat-messages" ref="messagesContainer">
+        <div v-for="(message, index) in messages" :key="index" :class="['message', message.senderId === accountId ? 'user-message' : 'bot-message']">
+          <span v-if="message.senderId === accountId">我：{{ message.content }} <span class="timestamp">{{ message.timestamp }}</span></span>
+          <span v-else>客服：{{ message.content }} <span class="timestamp">{{ message.timestamp }}</span></span>
         </div>
       </div>
       <div class="chat-input">
@@ -246,13 +294,20 @@ onUnmounted(() => {
   margin-left: 10px;
   padding: 10px 15px;
   background-color: #ffaa0098;
-  color: white;
   border: none;
   border-radius: 5px;
+  color: white;
+  font-weight: bold;
   cursor: pointer;
 }
 
 .send-btn:hover {
-  background-color: #ffaa0098;
+  background-color: #ff8800;
+}
+
+.timestamp {
+  font-size: 12px;
+  color: #888;
+  margin-left: 5px;
 }
 </style>

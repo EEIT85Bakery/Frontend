@@ -11,6 +11,23 @@ const chatMessages = ref({}); // 存儲每個聊天室的訊息
 let stompClient; // STOMP 客戶端
 let socket; // WebSocket 變量
 
+// 載入聊天室，並清除所有新消息標記
+const loadChatRooms = () => {
+  const storedChatRooms = JSON.parse(localStorage.getItem('chatRooms')) || [];
+  
+  // 清除所有聊天室的新消息標記
+  storedChatRooms.forEach(room => {
+    room.newMessage = false; // 清除新消息標記
+  });
+
+  chatRooms.value = storedChatRooms; // 將聊天室列表賦值
+};
+
+// 保存聊天室狀態到 localStorage
+const saveChatRooms = () => {
+  localStorage.setItem('chatRooms', JSON.stringify(chatRooms.value));
+};
+
 // 建立 WebSocket 連接
 const connectWebSocketForAdmin = () => {
   socket = new WebSocket("ws://localhost:8080/ws/chat");
@@ -35,10 +52,10 @@ const handleIncomingMessage = (msg) => {
   // 如果聊天室不存在則創建一個
   let chatRoom = chatRooms.value.find(room => room.userId === senderId);
   if (!chatRoom) {
-    chatRoom = { userId: senderId, highlighted: true }; // 初始化聊天室並高亮
+    chatRoom = { userId: senderId, newMessage: true }; // 初始化聊天室並標記新消息
     chatRooms.value.push(chatRoom); // 新增到收件匣
   } else {
-    chatRoom.highlighted = true; // 收到新訊息時高亮
+    chatRoom.newMessage = true; // 收到新訊息時標記新消息
   }
 
   // 將訊息加入到對應的用戶聊天室中
@@ -46,6 +63,9 @@ const handleIncomingMessage = (msg) => {
     chatMessages.value[senderId] = []; // 初始化訊息列表
   }
   chatMessages.value[senderId].push(msg);
+
+  // 保存聊天室狀態到 localStorage
+  saveChatRooms();
 };
 
 // 請求該用戶的聊天記錄
@@ -62,10 +82,11 @@ const fetchChatMessages = async (userId) => {
 
 // 點擊用戶聊天室
 const openChat = async (userId) => {
-  // 將當前選中的聊天室的高亮狀態設為 false
-  chatRooms.value.forEach(room => {
-    room.highlighted = room.userId === userId ? false : room.highlighted; // 點擊時取消高亮
-  });
+  // 只將當前選中的聊天室的新消息標記設為 false
+  const chatRoom = chatRooms.value.find(room => room.userId === userId);
+  if (chatRoom) {
+    chatRoom.newMessage = false; // 只清除當前聊天室的新消息標記
+  }
 
   activeUserId.value = userId; // 更新當前選中的用戶 ID
 
@@ -73,7 +94,11 @@ const openChat = async (userId) => {
   if (!chatMessages.value[userId]) {
     await fetchChatMessages(userId);
   }
+
+  // 保存聊天室狀態到 localStorage
+  saveChatRooms();
 };
+
 
 // 發送消息到用戶
 const sendMessageToUser = (message) => {
@@ -99,8 +124,9 @@ const closeChat = () => {
   activeUserId.value = null; // 清除當前選中的用戶 ID
 };
 
-// 組件掛載時建立 WebSocket 連接
+// 組件掛載時載入聊天室及建立 WebSocket 連接
 onMounted(() => {
+  loadChatRooms(); // 加載聊天室
   connectWebSocketForAdmin();
 });
 
@@ -121,9 +147,10 @@ onBeforeUnmount(() => {
           v-for="room in chatRooms" 
           :key="room.userId" 
           @click="openChat(room.userId)"
-          :class="{ active: room.highlighted }" 
+          :class="{ active: activeUserId === room.userId }" 
         >
           {{ room.userId }}
+          <span v-if="room.newMessage" class="new-message">New!</span> <!-- 新消息標記 -->
         </li>
       </ul>
     </div>
@@ -166,9 +193,31 @@ onBeforeUnmount(() => {
 .inbox li {
   cursor: pointer;
   padding: 10px;
+  height: 40px; /* 設定固定高度，根據需要調整 */
+  position: relative; /* 相對定位以便於使用絕對定位的新消息標記 */
+  display: flex; /* 使內容在水平方向上排列 */
+  align-items: center; /* 垂直居中對齊 */
 }
 
-.inbox li.active {
-  background-color: #d1e7dd; /* Active item highlight */
+.new-message {
+  color: cadetblue;
+  font-family: 'Comic Sans MS', cursive, sans-serif; 
+  font-weight: bold;
+  font-size: 1.4em;
+  margin-left: 10px;
+  font-style: italic; 
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 </style>
