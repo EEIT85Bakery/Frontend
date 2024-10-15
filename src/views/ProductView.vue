@@ -103,20 +103,9 @@ function handleOpenModal() {
 
 const isLoading = ref(true);
 
-
-// const startLoading = () => {
-//     setTimeout(() => {
-//         isLoading.value = false;
-//     }, 600);
-// };
-
 watch(route, () => {
     isLoading.value = true;
 });
-
-
-
-
 
 const imgItems = ref([
     { imageUrl: '../../public/imgZip/Sample/apple pie.jpg' },
@@ -127,28 +116,7 @@ const imgItems = ref([
 
 const selectedImage = ref(imgItems.value);
 
-
-// const productName = "草莓乳酪杯子蛋糕";
-// const productDescription = "訂購天數需要3~7個工作天（不含訂購當天）為保持風味最佳，請於隔日內享用完畢";
-// const productIngredients = "| 新鮮草莓 | 動物性鮮奶油 | 奶油乳酪 | 海綿蛋糕 | ";
 const discountExp = "2024/11/30";
-// const price = "160";
-
-// const moreItems = ref([
-//     {
-//         imageUrl: '../../public/imgZip/Sample/apple pie.jpg',
-//         name: '商品一號'
-//     },
-//     {
-//         imageUrl: '../../public/imgZip/Sample/cake1.jpg',
-//         name: '商品二號'
-//     },
-//     {
-//         imageUrl: '../../public/imgZip/Sample/cake2.jpg',
-//         name: '商品三號'
-//     },
-
-// ]);
 
 function selectImage(item) {
     selectedImage.value = item.imageUrl;
@@ -180,7 +148,7 @@ onMounted(() => {
                 <!-- :class="'Item' + (index + 1)" -->
 
                 <!-- 下一張小圖按鈕 -->
-                <div class="nextOne"><i class="bi bi-chevron-compact-down"></i></div>
+                <!-- <div class="nextOne"><i class="bi bi-chevron-compact-down"></i></div> -->
             </div>
 
             <!-- 產品大圖 -->

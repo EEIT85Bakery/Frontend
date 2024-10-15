@@ -56,14 +56,21 @@ onMounted(() => {
 })
 
 const deleteItem = (item) => {
+    console.log(item.productId);
+    
     SwalHandle.confirm(
         '確認刪除',
-        `您確定要刪除 ${item.name} 嗎？`,
-        '刪除成功！',
+        `您確定要刪除 ${item.productName} 嗎？`,
+        '',
         () => {
             // 執行刪除操作，例如：
-            items.value = items.value.filter(i => i !== item);
-            SwalHandle.showSuccessMsg(`成功刪除 ${item.name}`);
+            axiosInstanceForInsertHeader.delete(`/wishList/delete/${item.productId}`)
+                .then(() => {
+                    SwalHandle.showSuccessMsg(`已刪除${item.productName}`);
+                    fetchWishListItems(currentPage.value);
+                }).catch((err) => {
+                    console.log(err);
+                })
         }
     );
 };
@@ -127,7 +134,7 @@ const deleteItem = (item) => {
                                     <img :src="`data:;base64,${item.img1}`" alt="img" class="img">
                                     <span>{{ item.productName }}</span>
                                 </td>
-                                <td>{{ item.price }}</td>
+                                <td>{{ item.price }} 元</td>
                                 <td>
                                     <button class="btnRight" @click="addToCart(item)">加入購物車</button>
                                 </td>
