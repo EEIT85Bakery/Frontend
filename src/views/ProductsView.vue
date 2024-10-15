@@ -13,7 +13,7 @@ const products = ref([]);
 const categories = ref([]);
 const categoryFlavors = ref({});
 const field = ref("全部商品");
-const rank = ref("由新到舊");
+const rank = ref("new");
 const selectedCategory = ref(null);
 const selectedFlavor = ref(null);
 const currentPage = ref(1);
@@ -88,7 +88,7 @@ const fetchProducts = async () => {
   let params = {
     page: currentPage.value - 1,
     size: pageSize.value,
-    sort: rank.value === "由新到舊" ? "createTime,desc" : "createTime,asc" // 商品新舊排序
+    sort: rank.value === "new" ? "createTime,desc" : "createTime,asc" // 商品新舊排序
   };
 
   // 如果 flavor、category 和 keyword 都為空，顯示全部商品
@@ -164,7 +164,6 @@ const fetchProductsByFlavor = (flavor) => {
 };
 
 const toggleRank = () => {
-  rank.value = rank.value === "由新到舊" ? "由舊到新" : "由新到舊";
   fetchProducts(); // 排序方式改變後重新加載產品
 };
 
@@ -258,10 +257,10 @@ const addToCart = (product) => {
         <!-- <div class="categoryText2" @click="toggleRank">商品排序 >> {{ rank }}</div> -->
         <div class="categoryText2">
           商品排序 >>
-          <select name="productsRank" class="rankMenu" @change="toggleRank">
+          <select name="productsRank" class="rankMenu" v-model="rank" @change="toggleRank">
             <option class="rankOption" value="new">由新到舊</option>
             <option class="rankOption" value="old">由舊到新</option>
-            <option class="rankOption" value="popular">人氣熱銷</option>
+            <!-- <option class="rankOption" value="popular">人氣熱銷</option> -->
           </select>
         </div>
         <div class="ProductsContainer">
