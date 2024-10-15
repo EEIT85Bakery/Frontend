@@ -20,6 +20,19 @@ const otherProductsLoaded = ref(false)
 const isGetProduct = ref(false)
 const cartStore = useCartStore()
 
+const checkNumber = () => {
+    if(isNaN(Number(productAmount.value)) || productAmount.value === "") {
+  SwalHandle.showErrorMsg("請填入數字")
+        productAmount.value = 1
+ 
+}else if (typeof(productAmount.value == "number")) {
+    if (productAmount.value < 1) {
+      SwalHandle.showErrorMsg("數量不得小於1")
+      productAmount.value = 1
+    }
+}
+}
+
 
 const clearInput = () => {
     productAmount.value = ""
@@ -54,11 +67,7 @@ const getProduct = async () => {
 
 
 const addToCart = (buy) => {
-    if (isNaN(Number(productAmount.value)) || productAmount.value === "") {
-  SwalHandle.showErrorMsg("請填入數字");
-  return
-}
-
+    
     if(productAmount.value < 1) {
         SwalHandle.showErrorMsg('購買數量不得小於1')
         productAmount.value = 1
@@ -209,7 +218,7 @@ onMounted(() => {
         </div>
             <div class="productQuantity">
                 <div class="quantityText">數量： </div>
-                <input type="number" min="1" class="quantityInput" placeholder="請選擇數量" v-model="productAmount" @focus="clearInput">
+                <input type="number" min="1" class="quantityInput" placeholder="請選擇數量" v-model="productAmount" @focus="clearInput" @blur="checkNumber">
             </div>
 
             <div class="buttons">

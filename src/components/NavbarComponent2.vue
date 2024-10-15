@@ -156,7 +156,7 @@ const goToProducts = () => {
 
                 <RouterLink class="cartContainer" to="cart">
                     <i class="bi bi-cart4 cartBtn"></i>
-                </RouterLink>
+                </RouterLink>   
             </div>
 
             <!-- 小於768PX -->
