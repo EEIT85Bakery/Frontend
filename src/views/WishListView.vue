@@ -6,13 +6,44 @@ import axiosInstanceForInsertHeader from '@/axios/axiosInstanceForInsertHeader';
 
 const wishListItems = ref([]); // 保存從後端取得的收藏清單數據
 
-const fetchWishListItems = () => {
 
+const itemsPerPage = ref(3);
+const currentPage = ref(1);
+const totalItems = ref(0);
+const totalPages = ref(0);
+
+const handlePageChange = (page) => {
+  currentPage.value = page;
+  fetchWishListItems(page);
+};
+
+const addToCart = (product) => {
+    axiosInstanceForInsertHeader.post('/cart', {
+        productId: product.productId,
+        quantity: 1,
+        price: product.price
+    }).then(() => {
+        SwalHandle.showSuccessMsg("成功新增到購物車")
+    }).catch((err) => {
+        console.log(err);
+    })
+}
+
+const fetchWishListItems = (page) => {
+    const params = {
+    page: page - 1,
+    size: itemsPerPage.value
+  };
     axiosInstanceForInsertHeader
-        .get('/wishList/items')
+        .get('/wishList/items',{params})
         .then((response) => {
-            console.log(response);
-            wishListItems.value = response.data.content;
+            const { content, totalElements, totalPages: backendTotalPages, size, number } = response.data;
+      totalItems.value = totalElements;
+      totalPages.value = backendTotalPages;
+      currentPage.value = number + 1;
+      itemsPerPage.value = size;
+            wishListItems.value = content;
+           console.log(wishListItems.value);    
            
         })
         .catch((error) => {
@@ -21,17 +52,8 @@ const fetchWishListItems = () => {
 };
 
 onMounted(() => {
-    fetchWishListItems();
+    fetchWishListItems(1);
 })
-
-
-
-
-
-
-const showSuccess = () => {
-    SwalHandle.showSuccessMsg('成功加入購物車！');
-};
 
 const deleteItem = (item) => {
     SwalHandle.confirm(
@@ -45,35 +67,6 @@ const deleteItem = (item) => {
         }
     );
 };
-
-
-// const items = ref([
-//     {
-//         ImageUrl: '../../public/imgZip/Sample/cake1.jpg',
-//         name: '雙重莓果饗宴蛋糕',
-//         price: '360元'
-//     },
-//     {
-//         ImageUrl: '../../public/imgZip/Sample/cake1.jpg',
-//         name: '雙重莓果饗宴蛋糕',
-//         price: '360元'
-//     },
-//     {
-//         ImageUrl: '../../public/imgZip/Sample/cake1.jpg',
-//         name: '雙重莓果饗宴蛋糕',
-//         price: '360元'
-//     },
-//     {
-//         ImageUrl: '../../public/imgZip/Sample/cake1.jpg',
-//         name: '雙重莓果饗宴蛋糕',
-//         price: '360元'
-//     },
-//     {
-//         ImageUrl: '../../public/imgZip/Sample/cake1.jpg',
-//         name: '雙重莓果饗宴蛋糕',
-//         price: '360元'
-//     }
-// ]);
 
 
 
@@ -131,12 +124,12 @@ const deleteItem = (item) => {
                         <tbody>
                             <tr v-for="(item, index) in wishListItems" :key="index">
                                 <td class="imgTd">
-                                    <img :src="item.ImageUrl" alt="img" class="img">
-                                    <span>{{ item.name }}</span>
+                                    <img :src="`data:;base64,${item.img1}`" alt="img" class="img">
+                                    <span>{{ item.productName }}</span>
                                 </td>
                                 <td>{{ item.price }}</td>
                                 <td>
-                                    <button class="btnRight" @click="showSuccess">加入購物車</button>
+                                    <button class="btnRight" @click="addToCart(item)">加入購物車</button>
                                 </td>
                                 <td @click="deleteItem(item)"><i class="bi bi-x-circle"
                                         style="color: darkgray; cursor: pointer;"></i></td>
@@ -144,7 +137,9 @@ const deleteItem = (item) => {
                         </tbody>
                     </table>
                 </div>
-                <PaginationComponent />
+                <PaginationComponent :totalPages="totalPages" 
+            :currentPage="currentPage" @pageChange="handlePageChange">
+            </PaginationComponent>
             </div>
         </div>
     </div>

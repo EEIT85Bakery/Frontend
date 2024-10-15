@@ -3,6 +3,7 @@ import { ref, onMounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import Loading from '@/components/Loading.vue';
 import axiosInstanceForInsertHeader from '@/axios/axiosInstanceForInsertHeader';
+import { Carousel } from 'bootstrap';
 
 const isLoading = ref(true);
 
@@ -126,6 +127,15 @@ onMounted(() => {
   imgElements.forEach(img => {
     observer.observe(img); // 為每個圖片元素添加觀察者
   });
+
+  const carouselElement = document.getElementById('demo');
+  if (carouselElement) {
+    const carousel = new Carousel(carouselElement, {
+      interval: 2000,
+      ride: 'carousel'
+    });
+  }
+
 });
 
 </script>
