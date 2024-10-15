@@ -29,14 +29,18 @@ const backgroundImage = ref('../../public/imgZip/header/ProductListPageHeaderAll
 
 // 根據 currentTheme 的值動態切換背景圖片
 const themeImages = {
+  all: '../../public/imgZip/header/ProductListPageHeaderAll.png',
   theme1: '../../public/imgZip/header/ProductListPageHeaderCake.png',
-  theme2: '../../public/imgZip/header/ProductListPageHeaderCookie',
+  theme2: '../../public/imgZip/header/ProductListPageHeaderCookie.png',
   theme3: '../../public/imgZip/header/ProductListPageHeaderSnack.png',
 };
 
-watch(currentTheme, (newTheme) => {
-  backgroundImage.value = themeImages[newTheme] || '../../public/imgZip/header/ProductListPageHeaderAll.png'; // 如果找不到對應圖片則使用預設
-});
+const categoryThemeMap = {
+  '蛋糕': 'theme1',
+  '餅乾': 'theme2',
+  '其他': 'theme3'
+};
+
 
 // 組件加載時初始化數據
 onMounted(() => {
@@ -125,32 +129,40 @@ const fetchProducts = async () => {
 const updateFieldValue = () => {
   if (selectedFlavor.value) {
     field.value = selectedFlavor.value;
+    const category = Object.keys(categoryFlavors.value).find(cat => 
+      categoryFlavors.value[cat].includes(selectedFlavor.value)
+    );
+    currentTheme.value = category ? categoryThemeMap[category] : 'all';
   } else if (selectedCategory.value) {
     field.value = `${selectedCategory.value}專區`;
+    currentTheme.value = categoryThemeMap[selectedCategory.value] || 'all';
   } else if (keyword.value) {
     field.value = keyword.value;
+    currentTheme.value = 'all'; 
   } else {
     field.value = "全部商品";
-  }
+    currentTheme.value = 'all';
+  };
+  backgroundImage.value = themeImages[currentTheme.value] || themeImages.all;
 };
 
 watch(() => route.query, (newQuery) => {
   console.log('Route query changed:', newQuery);
-  // 優先處理風味查詢
   selectedFlavor.value = newQuery.flavor || null;
-  // 如果沒有風味，再檢查是否有關鍵字
   keyword.value = selectedFlavor.value ? '' : newQuery.keyword || '';
   selectedCategory.value = newQuery.category || null;
   currentPage.value = 1;
+  updateFieldValue(); 
   fetchProducts();
 }, { immediate: true, deep: true });
 
-// 監聽路由變化，重置篩選條件並重新加載產品
+// 按種類獲取產品
 const fetchProductsByCategory = (category) => {
   selectedCategory.value = category;
   selectedFlavor.value = null;
   keyword.value = '';
   currentPage.value = 1;
+  updateFieldValue(); 
   fetchProducts();
 };
 
@@ -160,6 +172,7 @@ const fetchProductsByFlavor = (flavor) => {
   selectedCategory.value = null;
   keyword.value = '';
   currentPage.value = 1;
+  updateFieldValue(); 
   fetchProducts();
 };
 
@@ -252,7 +265,6 @@ const addToCart = (product) => {
       <!-- 商品列表 -->
       <div class="productsList d-flexbox w-100">
         <div class="productsPageTop" :style="{ backgroundImage: `url(${backgroundImage})` }">
-
         </div>
         <!-- <div class="categoryText2" @click="toggleRank">商品排序 >> {{ rank }}</div> -->
         <div class="categoryText2">
