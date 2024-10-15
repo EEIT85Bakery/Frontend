@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, onUnmounted } from "vue";
+import { ref, onMounted, onUnmounted, computed } from "vue";
 import Swal from "sweetalert2";
 import { useRouter } from 'vue-router';
 import Stomp from 'stompjs';
@@ -29,9 +29,13 @@ const checkLogin = () => {
   }
 };
 
+// 計算屬性，安全訪問 localStorage
+const recipientId = computed(() => {
+  return localStorage.getItem("account");
+});
+
 const connectWebSocket = () => {
   const jwt = localStorage.getItem("jwt");
-  const recipientId = localStorage.getItem("account");
   socket = new WebSocket("ws://localhost:8080/ws/chat");
   stompClient = Stomp.over(socket);
 
@@ -39,7 +43,7 @@ const connectWebSocket = () => {
     console.log("WebSocket 連接成功");
 
     // 訂閱用戶特定的消息主題
-    stompClient.subscribe(`/user/${recipientId}/topic/messages`, (message) => {
+    stompClient.subscribe(`/user/${recipientId.value}/topic/messages`, (message) => {
       handleIncomingMessage(JSON.parse(message.body));
     });
   }, (error) => {
@@ -47,13 +51,35 @@ const connectWebSocket = () => {
   });
 };
 
-const handleIncomingMessage = (message) => {
-  console.log("接收到的訊息:", message);
-  messages.value.push({
-    content: message.content,
-    senderId: message.senderId
+// 處理接收到的訊息
+const handleIncomingMessage = (msg) => {
+  console.log("接收到的訊息:", msg); // 確認接收到的訊息
+
+  let timestamp;
+
+  // 解析 ISO 8601 格式的 timestamp
+  if (typeof msg.timestamp === 'string') {
+    const date = new Date(msg.timestamp);
+    
+    // 格式化為所需的字符串格式
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // 月份從0開始
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+
+    timestamp = `${year}/${month}/${day}, ${hours}時 ${minutes}分`;
+  } else {
+    console.warn("無效的 timestamp 類型:", msg.timestamp);
+    timestamp = '無效時間';
+  }
+
+  chatMessages.value.push({
+    ...msg,
+    timestamp // 使用格式化後的時間戳
   });
 };
+
 
 const sendMessage = () => {
   const jwt = localStorage.getItem("jwt");
