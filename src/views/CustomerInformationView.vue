@@ -111,6 +111,7 @@ const deleteMember = () => {
 
           localStorage.removeItem('jwt');
           localStorage.removeItem('user');
+          localStorage.removeItem('account');
           router.push('/'); // 刪除成功後回到首頁
         })
         .catch((error) => {
