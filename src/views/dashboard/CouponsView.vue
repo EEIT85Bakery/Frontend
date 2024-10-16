@@ -8,6 +8,9 @@ import { SwalHandle } from '@/stores/sweetAlertStore';
 import axiosInstanceForInsertHeader from '@/axios/axiosInstanceForInsertHeader';
 import router from '@/router';
 import { useRoute } from 'vue-router';
+import Loading from '@/components/Loading.vue';
+
+const isLoading = ref(true)
 
 
 const route = useRoute();
@@ -18,7 +21,7 @@ const coupons = ref([]);
     const totalPages = ref(1);
     const itemsPerPage = ref(5);
     const totalItems = ref(0)
-    //還未使用到
+
     const today = new Date().toISOString().split('T')[0];
     const minDate = ref(today);
     // const isModalOpen = ref(false);
@@ -78,7 +81,7 @@ const coupons = ref([]);
       currentPage.value = number + 1;
       itemsPerPage.value = size;
       coupons.value = content;
-      console.log(coupons.value);
+      isLoading.value = false
       
     })
     .catch(err => console.log(err));
@@ -127,7 +130,7 @@ onMounted(() => {
 </script>
 
 <template>
-
+  <Loading v-if="isLoading"></Loading>
   <DashBoardNavBarCoupon />
 
     <div class="pageContainer">

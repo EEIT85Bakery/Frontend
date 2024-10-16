@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
   <div>
    <div class="sendok" :style="{ opacity: sendokOpacity, letterSpacing: sendokLetterSpacing }">
         <span class="bigok">{{ "紀念日提醒" }}</span><br><br>{{ "記得到信箱看看你的紀念日哦～" }}
@@ -262,4 +262,4 @@ h4.mainfield {
   letter-spacing: 2px;
 }
 
-</style>
+</style> -->

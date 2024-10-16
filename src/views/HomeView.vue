@@ -144,7 +144,7 @@ userEmail: userEmail.value
 const startLoading = () => {
   setTimeout(() => {
     isLoading.value = false;
-  }, 600);
+  }, 50);
 };
 
 watch(route, () => {

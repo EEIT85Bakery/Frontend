@@ -6,6 +6,7 @@ import MemberLevelModal from '@/components/MemberLevelModal.vue';
 import { SwalHandle } from '@/stores/sweetAlertStore';
 import { onMounted } from 'vue';
 import axiosInstanceForInsertHeader from "@/axios/axiosInstanceForInsertHeader.js";
+import Loading from '@/components/Loading.vue';
 const cartStore = useCartStore()
 
 const nextLevel = ref("")
@@ -39,6 +40,7 @@ const discountNumber = ref(50)
 const costPerPrice = ref(2000)
 const appliedCoupon = ref(null) 
 const isCartStoreTotalBigger = ref(false)
+const isLoading = ref(true)
 
 const getCoupon = () => {
     axiosInstanceForInsertHeader.get('/admin/coupon').then(res => {
@@ -90,6 +92,7 @@ const resetDiscount = () => {
 
 const getCart = () => {
     axiosInstanceForInsertHeader.get('/cart').then((res) => {
+        isLoading.value = false
         isGetCart.value = true
         items.value = res.data
              console.log(items.value);
@@ -386,6 +389,7 @@ onMounted(() => {
         </div>
 
         <div v-else>
+            <Loading v-if="isLoading" />
             <CartTopComponent1 />
 
             <!-- 購物車 -->

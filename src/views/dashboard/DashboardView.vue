@@ -19,7 +19,7 @@ watch(
 const startLoading = () => {
   setTimeout(() => {
     isLoading.value = false;
-  }, 600);
+  }, 50);
 };
 
 // 組件掛載時延遲取消加載
@@ -33,7 +33,7 @@ onMounted(() => {
     <div class="BG">
         <div class="wrapper">
             <div>
-                <Loading v-if="isLoading" />
+                <!-- <Loading v-if="isLoading" /> -->
                 <RouterView />
             </div>
         </div>
