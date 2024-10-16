@@ -72,6 +72,9 @@ const searchProduct = () => {
           </button>
         </form>
                     </div>
+                    <RouterLink to="ChatManage" >
+                        <i class="navbarIcon bi bi-chat-dots me-2"></i>
+                    </RouterLink>
                     <RouterLink to="/">
                         <i class="navbarIcon bi bi-box-arrow-right"></i>
                     </RouterLink>
@@ -85,6 +88,10 @@ const searchProduct = () => {
 </template>
 
 <style>
+
+.navbarIcon:hover {
+    opacity: 0.7;
+}
 
 .navbarSearchInput {
     font-size: small;

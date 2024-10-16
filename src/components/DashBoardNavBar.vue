@@ -54,6 +54,9 @@
                             </button>
                         </form>
                     </div>
+                    <RouterLink to="ChatManage" >
+                        <i class="navbarIcon bi bi-chat-dots me-2"></i>
+                    </RouterLink>
                     <RouterLink to="/">
                         <i class="navbarIcon bi bi-box-arrow-right"></i>
                     </RouterLink>
@@ -71,6 +74,7 @@
 .navbarSearchInput {
     font-size: small;
     border: 0;
+    border-radius: 0%;
     border-bottom: #32435F solid 1px;
     background-color: transparent;
     outline: none;
@@ -158,6 +162,10 @@
     color: rgba(50, 67, 95, 0.7);
     font-size: 1.7rem;
     cursor: pointer;
+}
+
+.navbarIcon:hover {
+    opacity: 0.7;
 }
 
 .navbarSearchIcon {

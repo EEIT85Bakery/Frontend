@@ -205,11 +205,12 @@ onUnmounted(() => {
     </div>
     <div class="input-container">
       <input 
+        class="textInput"
         v-model="newMessage" 
         @keyup.enter="sendMessage" 
         placeholder="輸入訊息..."
       />
-      <button @click="sendMessage">發送</button>
+      <button class="inputBtn" @click="sendMessage">發送</button>
     </div>
   </div>
 </template>
@@ -274,14 +275,14 @@ input {
   align-items: center; /* 使按鈕和輸入框在垂直方向上對齊 */
 }
 
-input {
+.textInput {
   padding: 10px;
   border: 1px solid #8F8681; /* 使用 #8F8681 代替邊框顏色 */
   border-radius: 5px;
   flex: 1; /* 使輸入框佔據剩餘空間 */
 }
 
-button {
+.inputBtn {
   padding: 10px 15px;
   margin-left: 10px; /* 按鈕與輸入框之間的間距 */
   border: none;
@@ -291,7 +292,7 @@ button {
   cursor: pointer; /* 游標樣式 */
 }
 
-button:hover {
+.inputBtn:hover {
   background-color: #A67F78; /* 鼠標懸停時的顏色 */
 }
 </style>
