@@ -15,14 +15,12 @@ import { onMounted, ref, watch } from 'vue';
             service@bunnysugar.com
         </div>
         <div class="d-flexbox bottom-item">
-            <RouterLink to="customerInformation">
             <div class="bottomLogo" >
                 <img src="../../public/imgZip/Logo/logo.png" alt="Bunny" class="bunny-bottom">
             </div>
-            </RouterLink>
             <div class="flex bottom-socialMedia">
                 <i class="bi bi-facebook socialMedia"></i>
-                <RouterLink to="product"><i class="bi bi-instagram socialMedia"></i></RouterLink>
+                <i class="bi bi-instagram socialMedia"></i>
                 <i class="bi bi-line socialMedia"></i>
             </div>
         </div>

@@ -32,6 +32,22 @@ const checkNumber = () => {
     }
 }
 }
+const addToWishList = () => {
+
+    axiosInstanceForInsertHeader.post('wishList/add', {
+        productId: product.value.id
+    }).then(() => {
+        SwalHandle.showSuccessMsg("成功新增到我的收藏")
+    }).catch((err) => {
+        console.log(err);
+        
+        if(err.response.data == "該商品已經在收藏清單中") {
+        SwalHandle.showErrorMsg("該商品已經在收藏清單中")
+    }
+    })
+
+} 
+
 
 
 const clearInput = () => {
@@ -167,9 +183,9 @@ onMounted(() => {
                     <img  class="productImg" :src="`data:;base64,${selectedImage}`" alt="">
                     </div>
                 </div>
-                <div class="addWishList" @click="toggleIcon">
-                    <i v-if="isIconA" class="bi bi-suit-heart heartIcon"></i>
-                    <i v-else class="bi bi-suit-heart-fill heartIcon"></i>
+                <div class="addWishList" >
+                    <i v-if="isIconA" class="bi bi-suit-heart-fill heartIcon" @click="addToWishList"></i>
+                    <!-- <i v-else class="bi bi-suit-heart-fill heartIcon"></i> -->
                     加入我的收藏
                 </div>
             </div>
@@ -310,11 +326,16 @@ input[type="number"]::-webkit-inner-spin-button {
     text-align: center;
     color: rgba(225, 220, 217, 0.3);
     cursor: pointer;
-    /* background-color: rgba(255, 255, 255, 0.5); */
 }
 
 .heartIcon {
     margin-right: 5px;
+    color: rgba(166, 127, 120, 0.5);
+}
+
+.heartIcon:active {
+  color: rgba(166, 127, 120, 1);
+  transition: color 0.01s ease;
 }
 
 .addWishList {

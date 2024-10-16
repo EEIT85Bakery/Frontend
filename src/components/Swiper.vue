@@ -44,6 +44,18 @@ const getAllProducts = () => {
   )
 }
 
+const addToWishList = (item) => {
+
+  axiosInstanceForInsertHeader.post('/wishList/add', {
+    productId: item.id
+  }).then(() => {
+    SwalHandle.showSuccessMsg("成功新增到我的收藏")
+  })
+
+}
+
+
+
 const addToCart = (item) => {
   
   axiosInstanceForInsertHeader.post('/cart', {
@@ -110,12 +122,12 @@ onMounted(() => {
         <button type="button" class="moreImgBtn" :class="{ 'visible': hoveredIndex === index }" @click="addToCart(item)">
           加入購物車
         </button>
-        <i class="bi bi-suit-heart heartIcon1"
+        <i class="bi bi-suit-heart-fill heartIcon1"
             v-if="!likedIndexes.includes(index)"
-            @click="toggleLike(index)"></i>
-        <i class="bi bi-suit-heart-fill heartIcon2"
+            @click="addToWishList(item)"></i>
+        <!-- <i class="bi bi-suit-heart-fill heartIcon2"
             v-else
-            @click="toggleLike(index)"></i>
+            @click="toggleLike(index)"></i> -->
       </div>
       <RouterLink style="text-decoration: none;" to="/">
       <div class="moreProductName">{{ item.productName }}</div>
@@ -151,8 +163,7 @@ onMounted(() => {
   opacity: 0.3;
 }
 
-.heartIcon1,
-.heartIcon2 {
+.heartIcon1 {
   position: absolute;
   top: 12%;
   left: 10%;
@@ -161,6 +172,11 @@ onMounted(() => {
   text-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
   z-index: 10;
   cursor: pointer;
+}
+
+.heartIcon1:active {
+  color: rgba(166, 127, 120, 1);
+  transition: color 0.01s ease;
 }
 
 .moreImgBtn {

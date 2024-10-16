@@ -108,13 +108,15 @@ const fetchProducts = async () => {
   console.log('Fetching products with URL:', url, 'and params:', params);
 
   try {
-    const response = await axios.get(url, { params });
+    const response = await axios.get(url, { params });    
     if (response.data.content && response.data.content.length === 0) {
       console.log('No products found');
       field.value = keyword.value;
       products.value = [];
     } else {
       products.value = response.data.content;
+      console.log(products.value);
+      
       totalPages.value = response.data.totalPages;
       updateFieldValue();
     }
@@ -192,6 +194,9 @@ const hoveredIndex = ref(null);
 const likedIndexes = ref([]);
 
 const toggleLike = (index) => {
+
+  console.log("Toggling like for index:", index);
+
   if (likedIndexes.value.includes(index)) {
     likedIndexes.value = likedIndexes.value.filter(i => i !== index);
   } else {
@@ -199,9 +204,8 @@ const toggleLike = (index) => {
   }
 };
 
-
 // 新增商品至我的收藏
-const addToWishList = (product) => {
+const addToWishList = (product, index) => {
 
   console.log("Adding to wishlist:", product);
   console.log("Product ID:", product.id); 
@@ -209,19 +213,28 @@ const addToWishList = (product) => {
   axiosInstanceForInsertHeader.post('/wishList/add', {
     productId: product.id
   }).then(() => {
+    // console.log("debug1");
+    
     SwalHandle.showSuccessMsg("成功新增到我的收藏")
+    // console.log(3);
+    
+    toggleLike(index);
+    // console.log(4);
+    
   }).catch((err) => {
+    // console.log(2);
+    
     console.log(err);
-    console.error("Error adding to wishlist:", err);
-    if (err.response) {
-        console.error("Response data:", err.response.data);
-        console.error("Response status:", err.response.status);
-        console.error("Response headers:", err.response.headers);
-    } else {
-        console.error("Error message:", err.message);
+    
+    if(err.response.data == "該商品已經在收藏清單中") {
+      SwalHandle.showErrorMsg("該商品已經在收藏清單中")
     }
   })
 }
+
+
+
+
 
 // 加入購物車
 const addToCart = (product) => {
@@ -236,6 +249,8 @@ const addToCart = (product) => {
         console.log(err);
     })
 }
+
+
 
 </script>
 
@@ -289,8 +304,8 @@ const addToCart = (product) => {
               @click="addToCart(product)">
               加入購物車
             </button>
-            <i class="bi bi-suit-heart heartIcon1" v-if="!likedIndexes.includes(index)" @click="addToWishList(product)"></i>
-            <i class="bi bi-suit-heart-fill heartIcon2" v-else @click="toggleLike(index)"></i>
+            
+            <i tabindex="0" class="bi bi-suit-heart-fill heartIcon1" @click="addToWishList(product, index)"></i>
           </div>
         </div>
         <!-- 使用分頁組件 -->
@@ -316,16 +331,20 @@ const addToCart = (product) => {
   opacity: 0.3; 
 }
 
-.heartIcon1,
-.heartIcon2 {
+.heartIcon1 {
   position: absolute;
   top: 2%;
   left: 5%;
   font-size: x-large;
-  color: white;
+  color: rgba(255, 255, 255, 1);
   text-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
   z-index: 10;
   cursor: pointer;
+}
+
+.heartIcon1:active {
+  color: rgba(166, 127, 120, 1);
+  transition: color 0.01s ease;
 }
 
 .moreImgBtn {
