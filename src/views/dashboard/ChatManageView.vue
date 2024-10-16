@@ -99,7 +99,6 @@ const openChat = async (userId) => {
   saveChatRooms();
 };
 
-
 // 發送消息到用戶
 const sendMessageToUser = (message) => {
   if (!activeUserId.value) return; // 確保有選中用戶
@@ -124,6 +123,14 @@ const closeChat = () => {
   activeUserId.value = null; // 清除當前選中的用戶 ID
 };
 
+// 刪除指定用戶的聊天室
+const removeChatRoom = (userId) => {
+  chatRooms.value = chatRooms.value.filter(room => room.userId !== userId); // 刪除聊天室
+  delete chatMessages.value[userId]; // 刪除消息記錄
+
+  saveChatRooms(); // 更新 localStorage
+};
+
 // 組件掛載時載入聊天室及建立 WebSocket 連接
 onMounted(() => {
   loadChatRooms(); // 加載聊天室
@@ -141,7 +148,10 @@ onBeforeUnmount(() => {
 <template>
   <div class="chat-manage-view">
     <div class="inbox">
-      <h2>收件匣</h2>
+      <h2 class="centered-title">
+        <img class="imgSize" src="/public/imgZip/Logo/bunny.png" alt="用戶訊息圖標">用戶訊息
+        <img class="imgSize flip-horizontal" src="/public/imgZip/Logo/bunny.png" alt="翻轉圖標">
+      </h2>
       <ul>
         <li 
           v-for="room in chatRooms" 
@@ -151,38 +161,66 @@ onBeforeUnmount(() => {
         >
           {{ room.userId }}
           <span v-if="room.newMessage" class="new-message">New!</span> <!-- 新消息標記 -->
+          <button @click.stop="removeChatRoom(room.userId)" class="remove-button">X</button> <!-- 刪除聊天室按鈕 -->
         </li>
       </ul>
     </div>
     
-    <div class="chat-container" v-if="activeUserId">
-      <ChatRoomForCS 
-        :recipientId="activeUserId" 
-        :messages="chatMessages[activeUserId]" 
-        @send="sendMessageToUser"
-        @close="closeChat" 
-      />
+    <div class="chat-container">
+      <transition name="fade" mode="out-in">
+        <ChatRoomForCS 
+          v-if="activeUserId" 
+          :key="activeUserId" 
+          :recipientId="activeUserId" 
+          :messages="chatMessages[activeUserId]" 
+          @send="sendMessageToUser"
+          @close="closeChat" 
+        />
+      </transition>
     </div>
   </div>
 </template>
 
+
 <style scoped>
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.5s;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active in <2.1.8 */ {
+  opacity: 0;
+}
+
 .chat-manage-view {
   display: flex;
   width: 100%;
   height: 100vh;
+  font-family: 'Microsoft JhengHei', sans-serif; /* 設定字型為微軟正黑體 */
 }
 
 .inbox {
-  width: 30%;
-  background-color: #f9f9f9;
+  width: 400px;
+  background-color: #E1DCD9; /* 使用 #E1DCD9 代替原背景色 */
   padding: 20px;
-  border-right: 1px solid #ddd;
+  border-right: 1px solid #8F8681; /* 使用 #8F8681 代替原邊框顏色 */
+  border: 1px solid #A67F78; /* 使用 #A67F78 代替外框顏色 */
+  border-radius: 8px; /* 邊角圓滑 */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* 添加陰影 */
 }
 
 .chat-container {
-  flex-grow: 1;
+  flex-grow: 1; /* 確保這個區域可以增長填滿剩餘空間 */
+  height: 100%; /* 添加高度以確保其填滿父容器 */
   padding: 20px;
+  display: flex; /* 可選，根據需要調整顯示方式 */
+  flex-direction: column; /* 可選，根據需要調整方向 */
+  overflow-y: auto; /* 使內容可以滾動 */
+}
+
+.inbox h2 {
+  color: #32435F; /* 使用 #32435F 代替標題顏色 */
+  font-size: 40px; /* 增加字體大小 */
+  font-weight: bold; /* 粗體 */
+  margin-bottom: 20px; /* 標題底部間距 */
 }
 
 .inbox ul {
@@ -197,27 +235,66 @@ onBeforeUnmount(() => {
   position: relative; /* 相對定位以便於使用絕對定位的新消息標記 */
   display: flex; /* 使內容在水平方向上排列 */
   align-items: center; /* 垂直居中對齊 */
+  border: 3px solid #8F8681; /* 使用 #8F8681 代替框線顏色 */
+  border-radius: 5px; /* 邊角圓滑 */
+  margin-bottom: 10px; /* 項目之間的間距 */
+  transition: background-color 0.3s; /* 過渡效果 */
+  font-family: 'Microsoft JhengHei', sans-serif; /* 設定字型為微軟正黑體 */
+  font-weight: bold; /* 粗體 */
+}
+
+.inbox li:hover {
+  background-color: #f1f1f1; /* 鼠標懸停時的背景色 */
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1); /* 初始和結束狀態 */
+  }
+  50% {
+    transform: scale(1.2); /* 中間狀態，變大 */
+  }
 }
 
 .new-message {
-  color: cadetblue;
+  color: #A67F78; /* 使用 #A67F78 代替新消息顏色 */
   font-family: 'Comic Sans MS', cursive, sans-serif; 
   font-weight: bold;
   font-size: 1.4em;
   margin-left: 10px;
-  font-style: italic; 
-  animation: pulse 1.5s infinite;
+  font-style: italic; /* 新消息標記為斜體 */
+  animation: pulse 1s infinite; /* 添加動畫效果 */
 }
 
-@keyframes pulse {
-  0% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.2);
-  }
-  100% {
-    transform: scale(1);
-  }
+.active {
+  background-color: #C19A6B; /* 使用 #C19A6B 代替當前選中聊天室的背景色 */
+}
+
+.remove-button {
+  background-color: transparent; /* 按鈕背景色透明 */
+  border: none; /* 不顯示邊框 */
+  color: black; /* 使用你希望的顏色 */
+  cursor: pointer; /* 鼠標懸停時顯示為可點擊 */
+  margin-left: auto; /* 將按鈕推到最右邊 */
+}
+
+.remove-button:hover {
+  color: #C19A6B; /* 鼠標懸停時改變顏色 */
+}
+
+.imgSize {
+  margin-bottom: 10px;
+  margin-right: 5px;
+  height: 50px;
+  width: 50px;
+}
+
+.flip-horizontal {
+  transform: scaleX(-1); /* 水平翻轉 */
+}
+
+.centered-title {
+  text-align: center; /* 使文本置中 */
 }
 </style>
+

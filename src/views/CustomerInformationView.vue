@@ -131,6 +131,7 @@ const logout = () => {
       () => {
         localStorage.removeItem('jwt');
         localStorage.removeItem('user');
+        localStorage.removeItem('account');
 
         router.push({ name: '首頁' }).then(() => {
           SwalHandle.showSuccessMsg('您已成功登出，返回首頁。');

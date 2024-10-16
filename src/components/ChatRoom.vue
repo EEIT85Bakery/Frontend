@@ -115,7 +115,7 @@ const formatTimestamp = (timestamp) => {
     return "未知時間";
   }
 
-  return `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}, ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+  return `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')} ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
 };
 
 const sendMessage = () => {
@@ -171,9 +171,9 @@ onUnmounted(() => {
         <button @click="closeChat" class="close-btn">&times;</button>
       </div>
       <div class="chat-messages" ref="messagesContainer">
-        <div v-for="(message, index) in messages" :key="index" :class="['message', message.senderId === accountId ? 'user-message' : 'bot-message']">
-          <span v-if="message.senderId === accountId">我：{{ message.content }} <span class="timestamp">{{ message.timestamp }}</span></span>
-          <span v-else>客服：{{ message.content }} <span class="timestamp">{{ message.timestamp }}</span></span>
+        <div v-for="(message, index) in messages" :key="index" :class="['message', message.senderId === accountId ? 'user-message' : 'admin-message']">
+          <span v-if="message.senderId === accountId">我：{{ message.content }}<br /><span class="timestamp">{{ message.timestamp }}</span></span>
+          <span v-else>客服：{{ message.content }}<br /><span class="timestamp">{{ message.timestamp }}</span></span>
         </div>
       </div>
       <div class="chat-input">
@@ -221,7 +221,7 @@ onUnmounted(() => {
   justify-content: space-between;
   align-items: center;
   padding: 10px 12.5px;
-  background-color: #ffaa0098;
+  background-color: #A67F78;
   color: white;
   font-weight: bold;
   font-size: 18px;
@@ -249,25 +249,26 @@ onUnmounted(() => {
   align-items: flex-start; /* 默認對齊到左側 */
 }
 
-/* 用戶訊息與機器人訊息的樣式 */
+/* 用戶訊息與客服訊息的樣式 */
 .message {
   margin: 5px 0;
   padding: 10px;
   border-radius: 8px;
   font-size: 14px;
-  max-width: 75%; /* 限制最大寬度 */
+  max-width: 60%; /* 限制最大寬度 */
+  word-wrap: break-word; /* 超過寬度時換行 */
 }
 
 /* 用戶訊息樣式 */
 .user-message {
-  background-color: #cce5ff; /* 用戶訊息背景顏色 */
+  background-color: #cce5ffaa; /* 用戶訊息背景顏色 */
   align-self: flex-end; /* 用戶訊息靠右 */
 }
 
-/* 機器人訊息樣式 */
-.bot-message {
-  background-color: #e9ecef; /* 機器人訊息背景顏色 */
-  align-self: flex-start; /* 機器人訊息靠左 */
+/* 客服訊息樣式 */
+.admin-message {
+  background-color: #e9ecef; /* 客服訊息背景顏色 */
+  align-self: flex-start; /* 客服訊息靠左 */
 }
 
 .chat-input {
@@ -287,27 +288,28 @@ onUnmounted(() => {
 
 .chat-input input:focus {
   outline: none;
-  border-color: #ffaa0098;
+  border-color: #A67F78;
 }
 
 .send-btn {
   margin-left: 10px;
   padding: 10px 15px;
-  background-color: #ffaa0098;
+  background-color: #A67F78;
+  color: white;
   border: none;
   border-radius: 5px;
-  color: white;
-  font-weight: bold;
   cursor: pointer;
 }
 
 .send-btn:hover {
-  background-color: #ff8800;
+  background-color: #a66e64;
 }
 
+/* 訊息時間的樣式 */
 .timestamp {
-  font-size: 12px;
-  color: #888;
-  margin-left: 5px;
+  display: block; /* 讓時間獨占一行 */
+  font-size: 12px; /* 縮小字體大小 */
+  color: #888; /* 顏色 */
+  margin-top: 3px; /* 增加間距 */
 }
 </style>

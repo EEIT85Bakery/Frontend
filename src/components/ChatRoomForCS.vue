@@ -22,7 +22,6 @@ const formatTimestamp = (timestampArray) => {
   }
 };
 
-
 // 建立 WebSocket 連接
 const connectWebSocket = () => {
   socket = new WebSocket("ws://localhost:8080/ws/chat");
@@ -94,13 +93,13 @@ const handleIncomingMessage = async (msg) => {
         date.getSeconds(), // 確保傳遞秒數，這裡應該不會缺失
       ]);
 
-    if (msg.recipientId === 'ADMIN' && msg.senderId === props.recipientId) {
-      chatMessages.value.push({
-        content: msg.content,
-        senderId: msg.senderId,
-        timestamp: formattedTimestamp // 使用格式化的時間
-      });
-    }
+      if (msg.recipientId === 'ADMIN' && msg.senderId === props.recipientId) {
+        chatMessages.value.push({
+          content: msg.content,
+          senderId: msg.senderId,
+          timestamp: formattedTimestamp // 使用格式化的時間
+        });
+      }
 
       // 強制更新，確保 UI 反映最新消息
       await nextTick();
@@ -113,7 +112,6 @@ const handleIncomingMessage = async (msg) => {
     console.warn("無效的消息格式:", msg); // 警告輸出，顯示無效的消息
   }
 };
-
 
 const sendMessage = async () => {
   const jwt = localStorage.getItem("jwt");
@@ -164,7 +162,6 @@ const sendMessage = async () => {
   }
 };
 
-
 //收到訊息滾到最下面
 const scrollToBottom = () => {
   const messagesContainer = document.querySelector('.messages');
@@ -200,15 +197,20 @@ onUnmounted(() => {
         :key="msg.timestamp" 
         :class="{'user-message': msg.senderId !== 'ADMIN', 'admin-message': msg.senderId === 'ADMIN'}"
       >
-        <strong>{{ msg.senderId }}:</strong> {{ msg.content }}
-        <span class="timestamp">{{ msg.timestamp }}</span>
+        <div class="message-bubble">
+          <strong>{{ msg.senderId }}:</strong> {{ msg.content }}
+          <span class="timestamp">{{ msg.timestamp }}</span>
+        </div>
       </div>
     </div>
-    <input 
-      v-model="newMessage" 
-      @keyup.enter="sendMessage" 
-      placeholder="輸入訊息..."
-    />
+    <div class="input-container">
+      <input 
+        v-model="newMessage" 
+        @keyup.enter="sendMessage" 
+        placeholder="輸入訊息..."
+      />
+      <button @click="sendMessage">發送</button>
+    </div>
   </div>
 </template>
 
@@ -216,30 +218,43 @@ onUnmounted(() => {
 .chat-container {
   display: flex;
   flex-direction: column;
-  height: 700px; /* 限制整個聊天框的總高度 */
+  height: 900px; /* 限制整個聊天框的總高度 */
+  width: 100%;
+  background-color: white;
 }
 
 .messages {
   flex: 1;
   overflow-y: auto; /* 當訊息超過大小時允許滾動 */
-  max-height: 650px; /* 限制聊天訊息區域的高度 */
+  max-height: 850px; /* 限制聊天訊息區域的高度 */
   padding: 10px;
 }
 
 .user-message {
-  text-align: left;
-  background-color: #e1ffc7; /* 用戶訊息背景顏色 */
-  padding: 5px;
-  margin: 5px;
-  border-radius: 5px;
+  text-align: left; /* 用戶訊息靠左 */
 }
 
 .admin-message {
-  text-align: right;
-  background-color: #c7d3ff; /* 管理員訊息背景顏色 */
-  padding: 5px;
+  text-align: right; /* 管理員訊息靠右 */
+}
+
+.message-bubble {
+  display: inline-block;
+  padding: 10px;
+  border-radius: 15px;
   margin: 5px;
-  border-radius: 5px;
+  max-width: 30%; /* 設定最大寬度為 30% */
+  word-wrap: break-word; /* 允許單詞換行 */
+  overflow-wrap: break-word; /* 確保兼容性 */
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2); /* 添加陰影效果 */
+}
+
+.user-message .message-bubble {
+  background-color: #E1DCD9; /* 用戶訊息背景顏色 */
+}
+
+.admin-message .message-bubble {
+  background-color: #e3b781; /* 管理員訊息背景顏色 */
 }
 
 .timestamp {
@@ -249,7 +264,34 @@ onUnmounted(() => {
 
 input {
   padding: 10px;
-  border: 1px solid #ccc;
+  border: 1px solid #8F8681; /* 使用 #8F8681 代替邊框顏色 */
   border-radius: 5px;
+}
+
+.input-container {
+  display: flex;
+  margin-top: 20px;
+  align-items: center; /* 使按鈕和輸入框在垂直方向上對齊 */
+}
+
+input {
+  padding: 10px;
+  border: 1px solid #8F8681; /* 使用 #8F8681 代替邊框顏色 */
+  border-radius: 5px;
+  flex: 1; /* 使輸入框佔據剩餘空間 */
+}
+
+button {
+  padding: 10px 15px;
+  margin-left: 10px; /* 按鈕與輸入框之間的間距 */
+  border: none;
+  border-radius: 5px;
+  background-color: #32435F; /* 按鈕顏色 */
+  color: white; /* 按鈕文字顏色 */
+  cursor: pointer; /* 游標樣式 */
+}
+
+button:hover {
+  background-color: #A67F78; /* 鼠標懸停時的顏色 */
 }
 </style>
