@@ -1,10 +1,10 @@
 <template>
-  <DashBoardNavBarOrder />
+  <DashBoardNavBar />
 
   <div class="container-fluid salesData">
-    <h1 class="my-3 salesTitle">銷售數據表</h1>
+    <!-- <div class="my-3 salesTitle">銷售數據表</div> -->
 
-    <div class="row mb-4">
+    <!-- <div class="row mb-4">
       <div class="col-md-6">
         開始日期
         <input type="date" v-model="startDate" class="form-control" />
@@ -16,21 +16,37 @@
     </div>
     <div class="button-container">
       <button @click="fetchSalesData" class="btn btn-primary mb-4 searchButton">查詢</button>
+    </div> -->
+
+    <div class="searchContainer">
+      <div class="searchInputContainer">
+          <!-- <span class="hintText">
+            請選擇欲查詢的時間區間
+            <i class="bi bi-arrow-right-circle ms-1"></i>
+          </span> -->
+          <span class="me-2"><b>開始日期:</b></span>
+          <input type="date" v-model="startDate" class="searchInput me-5">
+          <span class="me-2"><b>結束日期:</b></span>
+          <input type="date" v-model="endDate" class="searchInput me-3">
+          <button @click="fetchSalesData" class="btn searchButton">查詢</button>
+      </div>
     </div>
-    
+
+
     <div class="row">
       <div class="col-md-6 mb-4">
+
         <div class="dataContainer revenueChart">
-          <h2 class="mt-4">各產品營收比重</h2>
+          <div class="salesTitle">各產品營收比重</div>
           <!-- 只有當 chartData 有數據時才傳遞給 PieChart -->
           <PieChart v-if="chartData && chartData.labels && chartData.labels.length" :chartData="chartData" />
           <p v-else>無銷售數據</p>
         </div>
       </div>
-      
+
       <div class="col-md-6 mb-4">
         <div class="dataContainer salesDetails">
-          <h2 class="mt-4">商品銷售詳情</h2>
+          <div class="salesTitle">商品銷售詳情</div>
           <div class="contentContainer">
             <table class="contentTable">
               <thead>
@@ -38,7 +54,7 @@
                   <th>商品編號</th>
                   <th>商品名稱</th>
                   <th>售出數量</th>
-                  <th>營收(台幣: 元)</th>
+                  <th>營收</th>
                 </tr>
               </thead>
               <tbody>
@@ -46,13 +62,13 @@
                   <td>{{ item.productId }}</td>
                   <td>{{ item.productName }}</td>
                   <td class="dataInfo">{{ item.sumQuantity }}</td>
-                  <td class="dataInfo">{{ safeToLocaleString(item.totalSales) }}</td>
+                  <td class="dataInfo">{{ safeToLocaleString(item.totalSales) }} 元</td>
                 </tr>
               </tbody>
               <tfoot>
                 <tr>
-                  <td colspan="3" class="dataInfo">總營業額(台幣: 元)</td>
-                  <td class="dataInfo">{{ safeToLocaleString(totalRevenue) }}</td>
+                  <td colspan="3" class="dataInfo">總營業額</td>
+                  <td class="dataInfo">{{ safeToLocaleString(totalRevenue) }} 元</td>
                 </tr>
               </tfoot>
             </table>
@@ -65,7 +81,7 @@
 
 <script setup>
 import { ref, onMounted, computed } from 'vue';
-import DashBoardNavBarOrder from '@/components/DashBoardNavBarOrder.vue';
+import DashBoardNavBar from '@/components/DashBoardNavBar.vue';
 import PieChart from '@/components/PieChart.vue';
 import axiosInstanceForInsertHeader from '@/axios/axiosInstanceForInsertHeader';
 
@@ -84,7 +100,7 @@ const chartData = computed(() => {
       backgroundColor: [
         '#FF7A94', '#5CB8F0', '#FFD76E', '#65CCCC', '#A37BFF',
         '#FFB055', '#FF4F74', '#2592DF', '#FFBE40', '#3BAEA6'
-        ]
+      ]
     }]
   };
 });
@@ -123,9 +139,9 @@ onMounted(() => {
 
 .dataContainer {
   background-color: white;
-  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
-  padding: 20px;
-  border-radius: 5px;
+  /* box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25); */
+  padding: 5%;
+  /* border-radius: 5px; */
   height: 100%;
 }
 
@@ -141,14 +157,15 @@ onMounted(() => {
 }
 
 .salesTitle {
-    display: flex;
-    width: 100%;
-    height: 2%;
-    color: rgb(74, 95, 128);
-    font-size: 2.2vw;
-    font-weight: bold;
-    margin-bottom: 3%;
-    cursor: pointer;
+  /* display: flex; */
+  width: 100%;
+  /* height: 2%; */
+  color: rgba(166, 127, 120, 1);
+  /* font-size: 2.2vw; */
+  font-size: x-large;
+  font-weight: bold;
+  margin-bottom: 3%;
+  text-align: center;
 }
 
 .button-container {
@@ -156,8 +173,39 @@ onMounted(() => {
   justify-content: flex-end;
 }
 
+.hintText {
+  color: rgba(143, 134, 129, 0.8);
+  font-weight: bold;
+  margin-right: 10%;
+  /* font-size: small; */
+}
+
+.searchInputContainer {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 1% 0;
+  padding: 1.5%;
+  background-color: rgba(255, 255, 255, 0.8);
+}
+
+.searchInput {
+  /* flex: 30%; */
+  color: rgba(50, 67, 95, 1);
+  /* margin-right: 3%; */
+  padding: 0.5% 1%;
+  border-radius: 5px;
+  border: rgba(50, 67, 95, 0.3) solid 1px;
+}
+
+
 .searchButton {
-  background-color: rgba(166, 127, 120, 0.5);
+  /* font-weight: bold; */
+  color: white;
+  background-color: rgba(166, 127, 120, 1);
+  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.1);
+
 }
 
 .contentTable {
@@ -202,7 +250,7 @@ tr:last-child td:last-child {
   .row {
     display: flex;
   }
-  
+
   .col-md-6 {
     flex: 0 0 50%;
     max-width: 50%;
@@ -214,7 +262,7 @@ tr:last-child td:last-child {
   .col-md-6 {
     width: 100%;
   }
-  
+
   .revenueChart,
   .salesDetails {
     margin-bottom: 20px;
