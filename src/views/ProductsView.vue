@@ -38,7 +38,7 @@ const themeImages = {
 const categoryThemeMap = {
   '蛋糕': 'theme1',
   '餅乾': 'theme2',
-  '其他': 'theme3'
+  '點心': 'theme3'
 };
 
 
