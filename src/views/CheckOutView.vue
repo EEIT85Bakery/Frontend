@@ -22,7 +22,6 @@ const cartItems = ref([])
 const getCart = () => {
     axiosInstanceForInsertHeader.get('/cart').then(res => {
         cartItems.value = res.data
-        console.log(cartItems.value);
         
     }).catch(err => console.log(err))
 }
@@ -58,9 +57,7 @@ const combinedDateTime = computed(() => {
       return null;
     });
 
-const submitOrders = () => {
-    console.log(123);
-    
+const submitOrders = () => {    
     const randomOrderId = () => {
   return Math.random().toString(36).substring(2, 10).toUpperCase();
 };
@@ -78,9 +75,6 @@ const submitOrders = () => {
     }).then(() => { 
         if (paymentMethod.value == "門市付款") {
             SwalHandle.showSuccessMsg("訂單已成立")
-            axiosInstanceForInsertHeader.delete('/cart').then(() => console.log("清空購物車成功")
-            ).catch(err => console.log(err)
-            )
             router.push({
                 path: '/orderDetail',
                 query: { orderNumber: cartStore.merchantNo } // 訂單號作為 query 參數傳遞
@@ -89,6 +83,9 @@ const submitOrders = () => {
                 router.push("/pay")
                 SwalHandle.showSuccessMsg("已建立訂單，可以去結帳囉！")
             }
+            axiosInstanceForInsertHeader.delete('/cart').then(() => console.log("清空購物車成功")
+            ).catch(err => console.log(err)
+            )
     }).catch(() => {
         SwalHandle.showErrorMsg("新增訂單異常，請聯繫網站管理員")
     })
@@ -264,7 +261,7 @@ onMounted(() => {
                         <input type="tel" name="mail" placeholder="直接帶入會員電話" disabled class="infoInput" v-model="memberInfo.phone">
                     </form>
                 </div>
-                <RouterLink to="/testPay" style="position: absolute;">123</RouterLink>
+                <!-- <RouterLink to="/testPay" style="position: absolute;">123</RouterLink> -->
             </div>
         </div>
         <div class="pickupAndCreditInfo">

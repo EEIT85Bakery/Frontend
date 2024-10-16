@@ -7,12 +7,82 @@ import { Carousel } from 'bootstrap';
 import axios from 'axios';
 
 const isLoading = ref(true);
+const token = localStorage.getItem('jwt')
+
+//checkPay
+
+const userMerchantNos = ref([])
+const okMerchantNos = ref([])
+
+const getUserMerchantNo = () => {
+
+    axios.get('/api/pay/getMerchantNos', {
+      headers: {
+    Authorization: `Bearer ${token}`
+    }
+    }).then((res) => {      
+      userMerchantNos.value = res.data
+      queryPayMentStatus()
+      })
+} 
+
+const queryPayMentStatus = async () => {
+  try {
+    const promises = userMerchantNos.value.map(userMerchantNo =>     
+      axios.post('/api/queryOrder', {
+        "merchantID": "2000132",
+        "merchantTradeNo": userMerchantNo,
+        "timeStamp": "", // Unix timestamp
+        "checkMacValue": "",
+        "platformID": ""
+      },{
+        headers: {
+    Authorization: `Bearer ${token}`
+    }
+      }
+    )
+    );
+
+    const results = await Promise.all(promises);
+      
+    okMerchantNos.value = results
+      .map(res => {
+        const params = new URLSearchParams(res.data);
+        return {
+          tradeStatus: params.get('TradeStatus'),
+          merchantTradeNo: params.get('MerchantTradeNo')
+        };
+      })
+      .filter(result => result.tradeStatus == 1)
+      .map(result => result.merchantTradeNo);
+
+    for (const okMerchantNo of okMerchantNos.value) {
+      try {
+        const res = await axios.put('/api/pay/checkPaymentStatus', {
+          merchantNo: okMerchantNo
+        },
+        {
+          headers: {
+    Authorization: `Bearer ${token}`
+    }
+        }
+      );
+      } catch (err) {
+        console.error('Error updating payment status:', err);
+      }
+    }
+  } catch (error) {
+    console.error('Error in queryPayMentStatus:', error);
+  }
+};
+
+//
 
 const route = useRoute();
 //anniversaries//
 const userEmail = ref("")
 const getMemberInfo = () => {
-  const token = localStorage.getItem('jwt')
+  
   axios.get('/api/memberPage/info', {
     headers: {
     Authorization: `Bearer ${token}`
@@ -106,7 +176,7 @@ const navigateToProduct = (params) => {
 const images = ref([]); // 用來儲存所有圖片 DOM
 
 onMounted(() => {
-
+  getUserMerchantNo()
   getMemberInfo()
 
   isLoading.value = true;

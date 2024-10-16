@@ -75,12 +75,7 @@ const clearInput = (e) => {
 
 const countTotal = () => {
     cartStore.updateTotal(totalPrice.value)
-    console.log(cartStore.couponName);
     cartStore.usedBunnyCoins = appliedBunnyQuantity.value
-    console.log(cartStore.usedBunnyCoins);
-    console.log(cartStore.total);
-    
-    
 }
 
 const resetDiscount = () => {

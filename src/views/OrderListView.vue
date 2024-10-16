@@ -107,9 +107,9 @@ const handlePageChange = (newPage) => {
           <div class="levelAndCoin">
             <RouterLink to="discount" class="textColor">優惠專區</RouterLink>
           </div>
-          <div class="myDay">
+          <!-- <div class="myDay">
             <RouterLink to="anniversary" class="textColor">紀念日</RouterLink>
-          </div>
+          </div> -->
         </div>
         <div class="bottomOption">
           <div class="line"></div>
