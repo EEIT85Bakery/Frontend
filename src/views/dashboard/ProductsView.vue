@@ -7,8 +7,9 @@ import DashBoardNavBarProduct from '@/components/DashBoardNavBarProduct.vue';
 import { SwalHandle } from '@/stores/sweetAlertStore';
 import axiosInstanceForInsertHeader from '@/axios/axiosInstanceForInsertHeader';
 import { useRoute, useRouter } from 'vue-router';
+import Loading from '@/components/Loading.vue';
 
-
+const isLoading = ref(true)
 const route = useRoute();
 const router = useRouter();
 const currentPage = ref(1);
@@ -43,6 +44,7 @@ const getProducts = (page) => {
   }
   axiosInstanceForInsertHeader.get(`${url.value}`, {params})
     .then((res) => {
+      isLoading.value = false
       const { content, totalElements, totalPages: backendTotalPages, size, number } = res.data;
       totalItems.value = totalElements;
       totalPages.value = backendTotalPages;
@@ -101,7 +103,7 @@ watch(() => route.query.search, () => {
 
 
 <template>
-
+    <Loading v-if="isLoading" />
     <DashBoardNavBarProduct />
 
     <div class="pageContainer">

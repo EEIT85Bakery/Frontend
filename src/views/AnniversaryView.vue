@@ -3,6 +3,7 @@ import { onMounted, ref } from 'vue';
 import { SwalHandle } from '@/stores/sweetAlertStore';
 import axiosInstanceForInsertHeader from '@/axios/axiosInstanceForInsertHeader';
 import PaginationComponent from '@/components/PaginationComponent.vue';
+import Loading from '@/components/Loading.vue';
 
 const anniversaries = ref({})
 const currentPage = ref(1);
@@ -12,6 +13,8 @@ const currentPage = ref(1);
 
     const importantThing = ref("")
     const importantDate = ref(Date.now)
+    
+    const isLoading = ref(true)
 
     const handlePageChange = (page) => {
       currentPage.value = page;
@@ -68,6 +71,7 @@ const getAnniversaries = (page) => {
     size: itemsPerPage.value
   };
     axiosInstanceForInsertHeader.get('/anniversaries', {params}).then(res => {
+        isLoading.value = false
         anniversaries.value = res.data.content           
         const { content, totalElements, totalPages: backendTotalPages, size, number } = res.data;
         totalItems.value = totalElements;
@@ -118,6 +122,7 @@ onMounted(() => {
 </script>
 
 <template>
+    <Loading v-if="isLoading" />
     <div class="outsideContainer">
         <div class="infoContainer">
             <div class="menuContainer">
