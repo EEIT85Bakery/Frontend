@@ -50,10 +50,15 @@ const addToWishList = (item) => {
     productId: item.id
   }).then(() => {
     SwalHandle.showSuccessMsg("成功新增到我的收藏")
-  })
+  }).catch((err) => {
+        console.log(err);
+        
+        if(err.response.data == "該商品已經在收藏清單中") {
+        SwalHandle.showErrorMsg("該商品已經在收藏清單中")
+    }
+    })
 
 }
-
 
 
 const addToCart = (item) => {
@@ -67,25 +72,6 @@ const addToCart = (item) => {
   }).catch(err => console.log(err)
   )
 }
-
-// const images = ref([
-//   {
-//     imageUrl: '../../public/imgZip/Sample/cheeseCake.jpg',
-//     name: '草莓起司蛋糕'
-//   },
-//   {
-//     imageUrl: '../../public/imgZip/Sample/apple pie.jpg',
-//     name: '肉桂蘋果派'
-//   },
-//   {
-//     imageUrl: '../../public/imgZip/Sample/cranberry scone.jpg',
-//     name: '蔓越莓司康'
-//   },
-//   {
-//     imageUrl: '../../public/imgZip/Sample/hand-made cookies.jpg',
-//     name: '招牌手工餅乾'
-//   }
-// ])
 
 const hoveredIndex = ref(null);
 const likedIndexes = ref([]);
