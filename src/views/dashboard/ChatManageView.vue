@@ -159,7 +159,7 @@ onBeforeUnmount(() => {
           @click="openChat(room.userId)"
           :class="{ active: activeUserId === room.userId }" 
         >
-          {{ room.userId }}
+          {{ room.userId.length > 10 ? room.userId.slice(0, 10) + '...' : room.userId }}
           <span v-if="room.newMessage" class="new-message">New!</span> <!-- 新消息標記 -->
           <button @click.stop="removeChatRoom(room.userId)" class="remove-button">X</button> <!-- 刪除聊天室按鈕 -->
         </li>
@@ -285,8 +285,8 @@ onBeforeUnmount(() => {
 .imgSize {
   margin-bottom: 10px;
   margin-right: 5px;
-  height: 50px;
-  width: 50px;
+  height: 46px;
+  width: 46px;
 }
 
 .flip-horizontal {

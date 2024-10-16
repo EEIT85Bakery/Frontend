@@ -87,6 +87,8 @@ const loginWithGoogle = async () => {
     if (response.data.status === 'success') { // 檢查狀態是否成功
       const jwt = response.data.token; // 確保從後端獲取 JWT
       const role = response.data.user;
+      const account = response.data.account;
+      localStorage.setItem('account', account);
       localStorage.setItem('jwt', jwt); // 儲存 JWT 到 localStorage
       localStorage.setItem('user', role);
 
