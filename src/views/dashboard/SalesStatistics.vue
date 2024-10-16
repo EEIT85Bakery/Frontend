@@ -48,6 +48,15 @@
         <div class="dataContainer salesDetails">
           <div class="salesTitle">商品銷售詳情</div>
           <div class="contentContainer">
+            <div class="salesLimit mb-2">
+              <lebal class="me-2">顯示筆數：</lebal>
+              <select v-model="displayLimit" class="form_select w-auto">
+                <option value="5">5</option>
+                <option value="10">10</option>
+                <option value="20">15</option>
+                <option value="25">20</option>
+              </select>
+            </div>
             <table class="contentTable">
               <thead>
                 <tr class="content">
@@ -58,7 +67,7 @@
                 </tr>
               </thead>
               <tbody>
-                <tr v-for="(item, index) in salesData" :key="index">
+                <tr v-for="(item, index) in filteredSalesData" :key="index">
                   <td>{{ item.productId }}</td>
                   <td>{{ item.productName }}</td>
                   <td class="dataInfo">{{ item.sumQuantity }}</td>
@@ -68,7 +77,7 @@
               <tfoot>
                 <tr>
                   <td colspan="3" class="dataInfo">總營業額</td>
-                  <td class="dataInfo">{{ safeToLocaleString(totalRevenue) }} 元</td>
+                  <td class="dataInfo">{{ safeToLocaleString(filteredTotalRevenue) }} 元</td>
                 </tr>
               </tfoot>
             </table>
@@ -88,15 +97,15 @@ import axiosInstanceForInsertHeader from '@/axios/axiosInstanceForInsertHeader';
 const salesReportData = ref({ productSalesDto: [], totalRevenue: 0 });
 const startDate = ref('');
 const endDate = ref('');
+const displayLimit = ref(10); 
 
 const salesData = computed(() => salesReportData.value.productSalesDto);
-const totalRevenue = computed(() => salesReportData.value.totalRevenue);
 
 const chartData = computed(() => {
   return {
-    labels: salesData.value.map(item => item.productName),
+    labels: filteredSalesData.value.map(item => item.productName),
     datasets: [{
-      data: salesData.value.map(item => item.totalSales),
+      data: filteredSalesData.value.map(item => item.totalSales),
       backgroundColor: [
         '#FF7A94', '#5CB8F0', '#FFD76E', '#65CCCC', '#A37BFF',
         '#FFB055', '#FF4F74', '#2592DF', '#FFBE40', '#3BAEA6'
@@ -124,6 +133,14 @@ const fetchSalesData = () => {
 const safeToLocaleString = (value) => {
   return value ? value.toLocaleString() : '0';
 };
+
+const filteredSalesData = computed(() => {
+  return salesData.value.slice(0, displayLimit.value); // 根據顯示限制顯示數據
+});
+
+const filteredTotalRevenue = computed(() => {
+  return filteredSalesData.value.reduce((total, item) => total + item.totalSales, 0);
+});
 
 onMounted(() => {
   fetchSalesData();
@@ -172,6 +189,13 @@ onMounted(() => {
   display: flex;
   justify-content: flex-end;
 }
+
+.salesLimit {
+  display: flex; 
+  justify-content: flex-end;
+  color: rgba(166, 127, 120, 1);
+  font-weight: bold;
+};
 
 .hintText {
   color: rgba(143, 134, 129, 0.8);
