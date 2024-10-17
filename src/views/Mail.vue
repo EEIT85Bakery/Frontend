@@ -235,7 +235,7 @@ h4.mainfield {
   position: fixed;
   font-size: 18px;
   color: white;
-  top: 50%;
+  top: 35%;
   left: 50%;
   letter-spacing: 2px;
   opacity: 0;
@@ -245,12 +245,13 @@ h4.mainfield {
 }
 
 .bigok {
-  font-size: 60px;
+  font-size: 88px;
   letter-spacing: 2px;
 }
 
 .typing-text {
   display: inline-block;
   min-width: 1em;
+  font-size: 25px;
 }
 </style>
