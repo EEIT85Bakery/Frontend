@@ -1,8 +1,9 @@
-<!-- <template>
+<template>
   <div>
-   <div class="sendok" :style="{ opacity: sendokOpacity, letterSpacing: sendokLetterSpacing }">
-        <span class="bigok">{{ "紀念日提醒" }}</span><br><br>{{ "記得到信箱看看你的紀念日哦～" }}
-      </div>
+    <div class="sendok" :style="{ opacity: sendokOpacity, letterSpacing: sendokLetterSpacing }">
+      <span class="bigok">{{ "紀念日提醒" }}</span><br><br>
+      <span class="typing-text">{{ displayText }}</span>
+    </div>
     <div class="linemail" :style="lineMailStyle">
       <div class="lineinner" :style="{ top: lineInnerTop }"></div>
     </div>
@@ -12,25 +13,14 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 
-const name = ref('');
-const phone = ref('');
-const email = ref('');
-const message = ref('');
+const fullText = "記得到信箱看看你的紀念日哦～";
+const displayText = ref('');
+const currentIndex = ref(0);
 
 const tosayOpacity = ref(1);
 const sendokOpacity = ref(0);
 const sendokLetterSpacing = ref('2px');
 const lineInnerTop = ref('-160px');
-
-const mailStyle = ref({
-  height: '300px',
-  overflow: 'visible',
-  bottom: '0px',
-  width: '75%',
-  left: '50%',
-  transform: 'translateX(-50%)',
-  opacity: 1
-});
 
 const lineMailStyle = ref({
   opacity: 0,
@@ -39,28 +29,22 @@ const lineMailStyle = ref({
   transform: 'rotateZ(0deg)'
 });
 
-const adjustHeight = () => {
-  const count = message.value.split('\n').length;
-  mailStyle.value.height = `${200 + 25 * count}px`;
+const typeText = () => {
+  const timer = setInterval(() => {
+    if (currentIndex.value < fullText.length) {
+      displayText.value += fullText[currentIndex.value];
+      currentIndex.value++;
+    } else {
+      clearInterval(timer);
+    }
+  }, 250);
 };
 
 const sendMail = () => {
   tosayOpacity.value = 0;
-  mailStyle.value = {
-    ...mailStyle.value,
-    overflow: 'hidden',
-    height: '10px',
-    bottom: '150px',
-    width: '50px',
-    left: '30%',
-    transitionDuration: '0.9s',
-    transitionDelay: '0.3s',
-    transform: 'translateX(-50%) rotateZ(360deg)'
-  };
   lineMailStyle.value.opacity = 1;
   lineMailStyle.value.transform = 'rotateZ(360deg)';
 
-  setTimeout(() => { mailStyle.value.opacity = 0; }, 500);
   setTimeout(() => { lineInnerTop.value = '-80px'; }, 1000);
   setTimeout(() => { lineMailStyle.value.left = '45%'; }, 800);
   setTimeout(() => {
@@ -72,23 +56,23 @@ const sendMail = () => {
     lineMailStyle.value.scale = '200%';
     sendokOpacity.value = 1;
     sendokLetterSpacing.value = '5px';
+    // 開始打字效果
+    typeText();
   }, 1500);
 
   setTimeout(() => {
     window.location="http://127.0.0.1:5173"
-  }, 6000)
+  }, 6000);
 };
 
 onMounted(() => {
-  sendMail()
+  sendMail();
 });
 </script>
 
 <style>
-
 @charset "UTF-8";
 body {
-
   transition-duration: 0.6s;
   width: 100%;
   height: 500px;
@@ -154,6 +138,7 @@ h4.mainfield {
   width: 200px;
   transition-duration: 0.7s;
 }
+
 .lineinput:hover {
   background-color: rgba(255, 255, 255, 0);
 }
@@ -170,6 +155,7 @@ h4.mainfield {
   background-color: rgba(0, 0, 0, 0.1);
   transition-duration: 1s;
 }
+
 .maininput:hover {
   background-color: rgba(255, 255, 255, 0);
 }
@@ -192,6 +178,7 @@ h4.mainfield {
   top: 200px;
   cursor: pointer;
 }
+
 .sendmail:hover {
   background-color: #282120;
   color: white;
@@ -262,4 +249,8 @@ h4.mainfield {
   letter-spacing: 2px;
 }
 
-</style> -->
+.typing-text {
+  display: inline-block;
+  min-width: 1em;
+}
+</style>
