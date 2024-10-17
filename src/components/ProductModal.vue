@@ -7,6 +7,10 @@ import { useCartStore } from '@/stores/cartStore';
 import axiosInstanceForInsertHeader from '@/axios/axiosInstanceForInsertHeader';
 
 const cartStore = useCartStore()
+const previewImg1 = ref('');
+const previewImg2 = ref('');
+const previewImg3 = ref('');
+const previewImg4 = ref('');
 
 const resetImg = () => {
     cartStore.img1 = '',
@@ -124,163 +128,147 @@ const formData = ref({
    img4: ''
 });
 
-//把前端傳進來的圖片存進file
+// 處理圖片改變的函數
 const handleFileChange = (event) => {
-    console.log(event);
-        const file = event.target.files[0];
-        if (file) {
-          if (file.size > 5 * 1024 * 1024) {
+    const file = event.target.files[0];
+    if (file) {
+        if (file.size > 5 * 1024 * 1024) {
             alert("圖片超過5MB");
             return;
-          }
-          selectedFile.value = file;
-          
-        } else {
-          alert("Please select an image.");
         }
-      };
+        selectedFile.value = file;
+        // 預覽圖片
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            previewImg1.value = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    } else {
+        alert("Please select an image.");
+    }
+};
 
-      const handleFileChange2 = (event) => {
-        const file = event.target.files[0];
-        
-        if (file) {
-          if (file.size > 5 * 1024 * 1024) {
+const handleFileChange2 = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+        if (file.size > 5 * 1024 * 1024) {
             alert("圖片超過5MB");
             return;
-          }
-          selectedFile2.value = file;
-          console.log(selectedFile2.value);
-          
-        } else {
-          alert("Please select an image.");
         }
-      };
+        selectedFile2.value = file;
+        // 預覽圖片
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            previewImg2.value = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    } else {
+        alert("Please select an image.");
+    }
+};
 
-      const handleFileChange3 = (event) => {
-        const file = event.target.files[0];
-        if (file) {
-          if (file.size > 5 * 1024 * 1024) {
+const handleFileChange3 = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+        if (file.size > 5 * 1024 * 1024) {
             alert("圖片超過5MB");
             return;
-          }
-          selectedFile3.value = file;
-          console.log(selectedFile3.value);
-          
-        } else {
-          alert("Please select an image.");
         }
-      };
+        selectedFile3.value = file;
+        // 預覽圖片
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            previewImg3.value = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    } else {
+        alert("Please select an image.");
+    }
+};
 
-      const handleFileChange4 = (event) => {
-        const file = event.target.files[0];
-        if (file) {
-          if (file.size > 5 * 1024 * 1024) {
+const handleFileChange4 = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+        if (file.size > 5 * 1024 * 1024) {
             alert("圖片超過5MB");
             return;
-          }
-          selectedFile4.value = file;
-          console.log(selectedFile4.value);
-          
-        } else {
-          alert("Please select an image.");
         }
-      };
+        selectedFile4.value = file;
+        // 預覽圖片
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            previewImg4.value = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    } else {
+        alert("Please select an image.");
+    }
+};
 
-      //file轉成base 64格式 上傳圖片
-      const uploadImage = () => {
-        if (selectedFile.value) {            
-          const reader = new FileReader();
-          console.log("debug1" + reader.result)
-          reader.onload = () => {
+// 上傳圖片的函數
+const uploadImage = () => {
+    if (selectedFile.value) {
+        const reader = new FileReader();
+        reader.onload = () => {
             const base64String = reader.result.split(',')[1];
+            cartStore.img1 = base64String;
+            SwalHandle.showSuccessMsg('圖片一上傳成功');
+        };
+        reader.readAsDataURL(selectedFile.value);
+    } else {
+        alert("Please select an image.");
+    }
+};
 
-            //印出
-            cartStore.img1 = base64String
-            
-          };
-          reader.readAsDataURL(selectedFile.value);
-          
-          //測試傳送圖片
-          SwalHandle.showSuccessMsg('圖片一上傳成功')
-          
-        } else {
-          alert("Please select an image.");
-        }
-      };
-      const uploadImage2 = () => {
-        if (selectedFile2.value) {
-            
-          const reader = new FileReader();
-          console.log("debug2" + reader.result)
-          reader.onload = () => {
+const uploadImage2 = () => {
+    if (selectedFile2.value) {
+        const reader = new FileReader();
+        reader.onload = () => {
             const base64String = reader.result.split(',')[1];
+            cartStore.img2 = base64String;
+            SwalHandle.showSuccessMsg('圖片二上傳成功');
+        };
+        reader.readAsDataURL(selectedFile2.value);
+    } else {
+        alert("Please select an image.");
+    }
+};
 
-            //印出
-            cartStore.img2 = base64String
-            
-          };
-          reader.readAsDataURL(selectedFile2.value);
-          
-          SwalHandle.showSuccessMsg('圖片二上傳成功')
-          //測試傳送圖片
-        //   cartStore.img2 = selectedFile2.value
-          
-        } else {
-          alert("Please select an image.");
-        }
-      };
-
-      const uploadImage3 = () => {
-        if (selectedFile3.value) {
-            
-          const reader = new FileReader();
-          console.log("debug2" + reader.result)
-          reader.onload = () => {
+const uploadImage3 = () => {
+    if (selectedFile3.value) {
+        const reader = new FileReader();
+        reader.onload = () => {
             const base64String = reader.result.split(',')[1];
+            cartStore.img3 = base64String;
+            SwalHandle.showSuccessMsg('圖片三上傳成功');
+        };
+        reader.readAsDataURL(selectedFile3.value);
+    } else {
+        alert("Please select an image.");
+    }
+};
 
-            //印出
-            cartStore.img3 = base64String
-            
-          };
-          reader.readAsDataURL(selectedFile3.value);
-          
-          SwalHandle.showSuccessMsg('圖片三上傳成功')
-          //測試傳送圖片
-        //   cartStore.img2 = selectedFile2.value
-          
-        } else {
-          alert("Please select an image.");
-        }
-      };
-
-      const uploadImage4 = () => {
-        if (selectedFile4.value) {
-            
-          const reader = new FileReader();
-          console.log("debug4" + reader.result)
-          reader.onload = () => {
+const uploadImage4 = () => {
+    if (selectedFile4.value) {
+        const reader = new FileReader();
+        reader.onload = () => {
             const base64String = reader.result.split(',')[1];
-
-            //印出
-            cartStore.img4 = base64String
-            
-          };
-          reader.readAsDataURL(selectedFile4.value);
-          
-          //測試傳送圖片
-        //   cartStore.img4 = selectedFile4.value
-          
-        SwalHandle.showSuccessMsg('圖片四上傳成功')
-        } else {
-          alert("Please select an image.");
-        }
-      };
+            cartStore.img4 = base64String;
+            SwalHandle.showSuccessMsg('圖片四上傳成功');
+        };
+        reader.readAsDataURL(selectedFile4.value);
+    } else {
+        alert("Please select an image.");
+    }
+};
 
 watch(
     () => props.product,
     (newProduct) => {
         if (newProduct) {
             // 如果是編輯模式，將 product 的數據填入表單
+
+            previewImg1.value = newProduct.img1;
             formData.value = { ...newProduct };
         } else {
             // 如果是新增模式，清空表單
@@ -299,6 +287,7 @@ watch(
    img3: '',
    img4: ''
             };
+            resetImg()
         }
     },
     { immediate: true }
@@ -345,44 +334,57 @@ const submitForm = () => {
 
                         <div class="inputText">商品圖片</div>
                         <div class="img">
-                            <div class="imgItem" v-if="props.product">
-                                <img :src="props.product.img1" alt="" class="productImg">
-                                <div class="imgItemText">圖片一</div>
-                            </div>
-                            <div class="imgItem" v-if="props.product">
-                                <img :src="props.product.img2"  alt="" class="productImg">
-                                <div class="imgItemText">圖片二</div>
-                            </div>
-                            <div class="imgItem" v-if="props.product">
-                                <img :src="props.product.img3" alt="" class="productImg">
-                                <div class="imgItemText">圖片三</div>
-                            </div>
-                            <div class="imgItem" v-if="props.product">
-                                <img :src="props.product.img4" alt="" class="productImg">
-                                <div class="imgItemText">圖片四</div>
-                            </div>
-                        </div>
+    <div class="imgItem">
+        <img :src="previewImg1 || (props.product && props.product.img1)" 
+             alt="" 
+             class="productImg"
+             v-if="previewImg1 || (props.product && props.product.img1)">
+        <div class="imgItemText">圖片一</div>
+    </div>
+    <div class="imgItem">
+        <img :src="previewImg2 || (props.product && props.product.img2)" 
+             alt="" 
+             class="productImg"
+             v-if="previewImg2 || (props.product && props.product.img2)">
+        <div class="imgItemText">圖片二</div>
+    </div>
+    <div class="imgItem">
+        <img :src="previewImg3 || (props.product && props.product.img3)" 
+             alt="" 
+             class="productImg"
+             v-if="previewImg3 || (props.product && props.product.img3)">
+        <div class="imgItemText">圖片三</div>
+    </div>
+    <div class="imgItem">
+        <img :src="previewImg4 || (props.product && props.product.img4)" 
+             alt="" 
+             class="productImg"
+             v-if="previewImg4 || (props.product && props.product.img4)">
+        <div class="imgItemText">圖片四</div>
+    </div>
+</div>
+
                         <div class="inputText">新增或變更圖片</div>
                         <div class="imgItemUploadText">
-                            <span style="flex: 20%;">圖片一：</span>
-                            <input type="file" name="imgFile" class="inputContentFile file" id="fileInput" @change="handleFileChange"/>
-                            <button class="uploadBtn" @click="uploadImage">上傳</button>
-                        </div>
-                        <div class="imgItemUploadText">
-                            <span style="flex: 20%;">圖片二：</span>
-                            <input type="file" name="imgFile" class="inputContentFile file" id="fileInput" @change="handleFileChange2"/>
-                            <button class="uploadBtn" @click="uploadImage2">上傳</button>
-                        </div>
-                        <div class="imgItemUploadText">
-                            <span style="flex: 20%;">圖片三：</span>
-                            <input type="file" name="imgFile" class="inputContentFile file" id="fileInput" @change="handleFileChange3"/>
-                            <button class="uploadBtn" @click="uploadImage3">上傳</button>
-                        </div>
-                        <div class="imgItemUploadText">
-                            <span style="flex: 20%;">圖片四：</span>
-                            <input type="file" name="imgFile" class="inputContentFile file" id="fileInput" @change="handleFileChange4"/>
-                            <button class="uploadBtn" @click="uploadImage4">上傳</button>
-                        </div>
+    <span style="flex: 20%;">圖片一：</span>
+    <input type="file" name="imgFile" class="inputContentFile file" @change="handleFileChange"/>
+    <button class="uploadBtn" @click="uploadImage">上傳</button>
+</div>
+<div class="imgItemUploadText">
+    <span style="flex: 20%;">圖片二：</span>
+    <input type="file" name="imgFile" class="inputContentFile file" @change="handleFileChange2"/>
+    <button class="uploadBtn" @click="uploadImage2">上傳</button>
+</div>
+<div class="imgItemUploadText">
+    <span style="flex: 20%;">圖片三：</span>
+    <input type="file" name="imgFile" class="inputContentFile file" @change="handleFileChange3"/>
+    <button class="uploadBtn" @click="uploadImage3">上傳</button>
+</div>
+<div class="imgItemUploadText">
+    <span style="flex: 20%;">圖片四：</span>
+    <input type="file" name="imgFile" class="inputContentFile file" @change="handleFileChange4"/>
+    <button class="uploadBtn" @click="uploadImage4">上傳</button>
+</div>
                     </div>
 
                     <div class="textContainer">
