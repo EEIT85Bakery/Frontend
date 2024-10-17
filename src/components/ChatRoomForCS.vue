@@ -17,7 +17,7 @@ const formatTimestamp = (timestampArray) => {
     const [year, month, day, hours, minutes, seconds = 0] = timestampArray; // 默認秒數為 0
     return `${year}/${String(month).padStart(2, '0')}/${String(day).padStart(2, '0')}, ${String(hours).padStart(2, '0')}時 ${String(minutes).padStart(2, '0')}分 ${String(seconds).padStart(2, '0')}秒`; // 添加秒數
   } else {
-    console.warn("無效的時間格式:", timestampArray);
+    console.warn("喔莫，時間格式怪怪噠:", timestampArray);
     return '無效時間'; // 返回無效時間的字串
   }
 };
@@ -32,12 +32,12 @@ const connectWebSocket = () => {
 
     // 訂閱當前用戶的訊息
     stompClient.subscribe(`/user/ADMIN/topic/messages`, (message) => {
-      console.log("接收到來自 WebSocket 的消息:", message.body);
+      console.log("接收到來自 WebSocket 的訊息:", message.body);
       handleIncomingMessage(JSON.parse(message.body));
     });
 
     stompClient.subscribe(`/user/${props.recipientId}/topic/messages`, (message) => {
-      console.log("接收到自己發出的消息:", message.body);
+      console.log("接收到自己發出的訊息:", message.body);
       handleIncomingMessage(JSON.parse(message.body));
     });
 
@@ -48,7 +48,7 @@ const connectWebSocket = () => {
   });
 };
 
-// 獲取聊天歷史消息
+// 獲取聊天歷史訊息
 const fetchChatMessages = async (userId) => {
   try {
     const response = await axios.get(`/get/messages`, {
@@ -58,7 +58,7 @@ const fetchChatMessages = async (userId) => {
       }
     });
 
-    console.log("獲取的聊天消息:", response.data); // 調試輸出
+    console.log("獲取的聊天訊息:", response.data); // 調試輸出
 
     chatMessages.value = response.data.map(message => {
       const timestamp = formatTimestamp(message.timestamp);
@@ -70,13 +70,13 @@ const fetchChatMessages = async (userId) => {
     });
 
   } catch (error) {
-    console.error("無法獲取聊天消息:", error);
+    console.error("無法獲取聊天訊息:", error);
   }
 };
 
 // 處理接收到的訊息
 const handleIncomingMessage = async (msg) => {
-  console.log("收到的消息:", msg); // 確保 msg 的結構正確
+  console.log("收到的訊息:", msg); // 確保 msg 的結構正確
 
   // 檢查 msg.timestamp 是否為有效的 ISO 字串
   if (msg.timestamp && typeof msg.timestamp === 'string') {
@@ -86,30 +86,30 @@ const handleIncomingMessage = async (msg) => {
     if (!isNaN(date.getTime())) {
       const formattedTimestamp = formatTimestamp([
         date.getFullYear(),
-        date.getMonth() + 1, // 月份從 0 開始
+        date.getMonth() + 1, // 月份從 0 要+1
         date.getDate(),
         date.getHours(),
         date.getMinutes(),
-        date.getSeconds(), // 確保傳遞秒數，這裡應該不會缺失
+        date.getSeconds(),
       ]);
 
       if (msg.recipientId === 'ADMIN' && msg.senderId === props.recipientId) {
         chatMessages.value.push({
           content: msg.content,
           senderId: msg.senderId,
-          timestamp: formattedTimestamp // 使用格式化的時間
+          timestamp: formattedTimestamp // 使用處理過後的時間
         });
       }
 
-      // 強制更新，確保 UI 反映最新消息
+      // 強制更新，確保印出最新訊息
       await nextTick();
-      scrollToBottom(); // 在接收到新消息後自動滾動到底部
-      console.log("推送到聊天消息:", chatMessages.value);
+      scrollToBottom(); // 在接收到新訊息後自動滾動到底部
+      console.log("推送到聊天訊息:", chatMessages.value);
     } else {
       console.warn("無效的日期:", msg.timestamp); // 警告輸出
     }
   } else {
-    console.warn("無效的消息格式:", msg); // 警告輸出，顯示無效的消息
+    console.warn("無效的訊息格式:", msg); // 警告輸出，顯示無效的訊息
   }
 };
 
@@ -131,7 +131,7 @@ const sendMessage = async () => {
     };
 
     try {
-      // 先發送消息到後端
+      // 先發送訊息到後端
       await stompClient.send("/app/send", {}, JSON.stringify(messageToSend));
       
       // 格式化時間
@@ -154,7 +154,7 @@ const sendMessage = async () => {
       // 清空輸入框
       newMessage.value = ""; 
       await nextTick(); // 確保 UI 更新
-      scrollToBottom(); // 在接收到新消息後自動滾動到底部
+      scrollToBottom(); // 在接收到新訊息後自動滾動到底部
 
     } catch (error) {
       console.error("發送訊息失敗:", error);
@@ -244,18 +244,18 @@ onUnmounted(() => {
   padding: 10px;
   border-radius: 15px;
   margin: 5px;
-  max-width: 30%; /* 設定最大寬度為 30% */
-  word-wrap: break-word; /* 允許單詞換行 */
-  overflow-wrap: break-word; /* 確保兼容性 */
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2); /* 添加陰影效果 */
+  max-width: 30%; 
+  word-wrap: break-word; 
+  overflow-wrap: break-word; 
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2); 
 }
 
 .user-message .message-bubble {
-  background-color: #E1DCD9; /* 用戶訊息背景顏色 */
+  background-color: #E1DCD9; 
 }
 
 .admin-message .message-bubble {
-  background-color: #e3b781; /* 管理員訊息背景顏色 */
+  background-color: #e3b781; 
 }
 
 .timestamp {
@@ -265,34 +265,34 @@ onUnmounted(() => {
 
 input {
   padding: 10px;
-  border: 1px solid #8F8681; /* 使用 #8F8681 代替邊框顏色 */
+  border: 1px solid #8F8681; 
   border-radius: 5px;
 }
 
 .input-container {
   display: flex;
   margin-top: 20px;
-  align-items: center; /* 使按鈕和輸入框在垂直方向上對齊 */
+  align-items: center; 
 }
 
 .textInput {
   padding: 10px;
-  border: 1px solid #8F8681; /* 使用 #8F8681 代替邊框顏色 */
+  border: 1px solid #8F8681;
   border-radius: 5px;
-  flex: 1; /* 使輸入框佔據剩餘空間 */
+  flex: 1; 
 }
 
 .inputBtn {
   padding: 10px 15px;
-  margin-left: 10px; /* 按鈕與輸入框之間的間距 */
+  margin-left: 10px; 
   border: none;
   border-radius: 5px;
-  background-color: #32435F; /* 按鈕顏色 */
-  color: white; /* 按鈕文字顏色 */
-  cursor: pointer; /* 游標樣式 */
+  background-color: #32435F; 
+  color: white; 
+  cursor: pointer; 
 }
 
 .inputBtn:hover {
-  background-color: #A67F78; /* 鼠標懸停時的顏色 */
+  background-color: #A67F78; 
 }
 </style>
