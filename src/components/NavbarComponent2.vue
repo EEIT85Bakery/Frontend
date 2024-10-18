@@ -365,7 +365,7 @@ const goToProducts = () => {
 .AdContainer {
     color: white;
     text-align: center;
-    font-size: small;
+    font-size: medium;
     padding: 0.5%;
     background-color: rgba(143, 134, 129, 1);
 }
@@ -380,7 +380,7 @@ const goToProducts = () => {
     flex: 20%;
     display: flex;
     object-fit: contain;
-    padding: 0.5% 1%;
+    padding: 0.5% 2%;
 }
 
 .logo {
@@ -394,6 +394,7 @@ const goToProducts = () => {
     justify-content: space-around;
     align-items: center;
     font-weight: bold;
+    font-size: larger;
     padding: 0% 2%;
     /* background-color: lightcoral; */
 }
@@ -432,7 +433,7 @@ const goToProducts = () => {
 
 .searchInput::placeholder {
     color: rgba(50, 67, 95, 0.5);
-    font-size: small;
+    /* font-size: small; */
 }
 
 .searchInput:focus {

@@ -55,32 +55,26 @@ onMounted(() => {
 const items = ref([
     {
         imageUrl: '../../public/imgZip/Sample/apple pie.jpg',
-        title: '萬聖節活動開跑囉~',
-        content: '即日起至2024/11/30以前，結帳輸入折扣碼「HappyHalloween」，全館商品滿1000折50',
+        title: '聖誕節預購開始囉！',
+        content: '2024/12/01至2024/12/20期間，購買聖誕節蛋糕、禮盒，結帳輸入折扣瑪「MerryChristmas」，即享滿2000折100，再送聖誕節專屬裝飾',
         btn: '前往選購'
     },
     {
-        imageUrl: '../../public/imgZip/Sample/apple pie.jpg',
+        imageUrl: '../../public/imgZip/Sample/cake1.jpg',
         title: '萬聖節活動開跑囉~',
-        content: '即日起至2024/11/30以前，結帳輸入折扣碼「HappyHalloween」，全館商品滿1000折50',
+        content: '2024/11/01至2024/11/30以前，結帳輸入折扣碼「HappyHalloween」，全館商品滿1000折50，再送萬聖節神秘小禮物',
         btn: '前往選購'
     },
     {
-        imageUrl: '../../public/imgZip/Sample/apple pie.jpg',
-        title: '萬聖節活動開跑囉~',
-        content: '即日起至2024/11/30以前，結帳輸入折扣碼「HappyHalloween」，全館商品滿1000折50',
+        imageUrl: '../../public/imgZip/Sample/cheeseCake.jpg',
+        title: 'Bunny Sugar兩週年啦~',
+        content: '歡慶Bunny Sugar兩歲生日，2024/10/01至2024/10/31，結帳輸入折扣碼「HappyBirthday」，全館商品滿3000折200',
         btn: '前往選購'
     },
     {
-        imageUrl: '../../public/imgZip/Sample/apple pie.jpg',
-        title: '萬聖節活動開跑囉~',
-        content: '即日起至2024/11/30以前，結帳輸入折扣碼「HappyHalloween」，全館商品滿1000折50',
-        btn: '前往選購'
-    },
-    {
-        imageUrl: '../../public/imgZip/Sample/apple pie.jpg',
-        title: '萬聖節活動開跑囉~',
-        content: '即日起至2024/11/30以前，結帳輸入折扣碼「HappyHalloween」，全館商品滿1000折50',
+        imageUrl: '../../public/imgZip/Sample/cake2.jpg',
+        title: '9月份優惠來囉！',
+        content: '2024/09/01至2024/09/30以前，結帳輸入折扣碼「BunnySugar」，全館商品滿1000折50',
         btn: '前往選購'
     }
 ])
@@ -106,7 +100,7 @@ const items = ref([
 
         <div class="card" v-for="(item, index) in items" :key="index" ref="images">
             <img :src="item.imageUrl" class="card-img-top cardImg" alt="cardImg">
-            <div class="card-body">
+            <div class="card-body" style="position: relative;">
                 <div class="card-title cardTitle">{{ item.title }}</div>
                 <div class="card-text cardText">{{ item.content }}</div>
                 <div class="BtnContainer">
@@ -165,7 +159,7 @@ const items = ref([
 
 .titleContainer {
     text-align: center;
-    font-size: x-large;
+    font-size: xx-large;
     padding: 3% 10% 0% 10%;
     color: rgba(50, 67, 95, 1);
     font-weight: bold;
@@ -207,27 +201,35 @@ const items = ref([
 .cardTitle {
     display: flex;
     justify-content: center;
-    font-size: large;
+    font-size: x-large;
     font-weight: bold;
+    margin-bottom: 5%;
     color: rgba(143, 134, 129, 1);
 }
 
 .cardText {
-    font-size: small;
+    /* font-size: small; */
     color: rgba(50, 67, 95, 1);
-    margin-bottom: 10%;
+    margin-bottom: 25%;
+    /* font-weight: bold; */
+    padding: 0 5%;
 }
 
 .BtnContainer {
     text-align: center;
+    position: absolute;
+    bottom: 10%;
+    right: 0.1%;
+    width: 100%;
 }
 
 .cardBtn {
-    padding: 2% 30%;
+    width: 80%;
+    padding: 2% ;
     border: rgba(166, 127, 120, 0.3) solid 1px;
     border-radius: 5px;
     background-color: white;
-    margin-bottom: 3%;
+    /* margin-bottom: 3%; */
 }
 
 .Btn {

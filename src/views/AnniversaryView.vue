@@ -237,8 +237,15 @@ onMounted(() => {
                                     <i class="bi bi-x-circle delBtn"></i>
                                 </div>
                             </div> -->
-
+                            <PaginationComponent 
+      :totalPages="totalPages" 
+      :currentPage="currentPage" 
+      @pageChange="handlePageChange"
+      @getCoupons="getAnniversaries(currentPage)"
+    />
                         </div>
+
+                        
                     </div>
 
 
@@ -250,12 +257,7 @@ onMounted(() => {
 
 
                 </div>
-                <PaginationComponent 
-      :totalPages="totalPages" 
-      :currentPage="currentPage" 
-      @pageChange="handlePageChange"
-      @getCoupons="getAnniversaries(currentPage)"
-    />
+               
             </div>
             
         </div>
@@ -346,6 +348,7 @@ onMounted(() => {
 }
 
 .area2 {
+    flex-direction: column;
     flex: 60%;
     margin: 1%;
     border-radius: 10px;

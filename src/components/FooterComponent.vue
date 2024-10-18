@@ -7,12 +7,12 @@ import { onMounted, ref, watch } from 'vue';
 
     <div class="bottom-info">
         <div class="bottom-item">
-            客服服務時間<br />
-            週一至週日 10:00-17:00<br /><br />
-            客服專線<br />
-            04 - 2326 - 5860<br /><br />
-            客服信箱<br />
-            service@bunnysugar.com
+            <div class="mb-2 mt-4">客服服務時間</div>
+            <div class="mb-4">週一至週日 10:00-17:00</div>
+            <div class="mb-2">客服專線</div>
+            <div class="mb-4">04 - 2326 - 5860</div>
+            <div class="mb-2">客服信箱</div>
+            <div class="mb-1">service@bunnysugar.com</div>
         </div>
         <div class="d-flexbox bottom-item">
             <div class="bottomLogo" >
@@ -25,12 +25,12 @@ import { onMounted, ref, watch } from 'vue';
             </div>
         </div>
         <div class="bottom-item">
-            營業時間<br />
-            週一至週日 00:00-24:00<br /><br />
-            取貨時間<br />
-            24小時開放取貨<br /><br />
-            門市地址<br />
-            408台中市南屯區公益路二段51號18樓
+            <div class="mb-2 mt-4">營業時間</div>
+            <div class="mb-4">週一至週日 00:00-24:00</div>
+            <div class="mb-2">取貨時間</div>
+            <div class="mb-4">24小時開放取貨</div>
+            <div class="mb-2">門市地址</div>
+            <div class="mb-1">408台中市南屯區公益路二段51號18樓</div>
         </div>
     </div>
     <div class="bottom-warn">
@@ -50,6 +50,7 @@ import { onMounted, ref, watch } from 'vue';
     bottom: 0;
     padding: 30px;
     background-color: white;
+    font-size: large;
 }
 
 .bottom-warn {
