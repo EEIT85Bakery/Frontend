@@ -148,7 +148,6 @@ const submitForm = async () => {
 </template>
 
 <style>
-/* 保持原有的 CSS 代碼 */
 .registerformPage {
   display: flex;
   justify-content: center;

@@ -18,7 +18,7 @@ const formatTimestamp = (timestampArray) => {
     return `${year}/${String(month).padStart(2, '0')}/${String(day).padStart(2, '0')}, ${String(hours).padStart(2, '0')}時 ${String(minutes).padStart(2, '0')}分 ${String(seconds).padStart(2, '0')}秒`; // 添加秒數
   } else {
     console.warn("喔莫，時間格式怪怪噠:", timestampArray);
-    return '無效時間'; // 返回無效時間的字串
+    return '無效時間';
   }
 };
 

@@ -189,7 +189,6 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
-/* 添加過渡效果 */
 .fade-slide-enter-active,
 .fade-slide-leave-active {
   transition: all 0.3s ease;
@@ -215,7 +214,6 @@ onUnmounted(() => {
   flex-direction: column;
 }
 
-/* 聊天室標題區域美化 */
 .chat-header {
   display: flex;
   justify-content: space-between;
@@ -261,13 +259,13 @@ onUnmounted(() => {
 
 /* 用戶訊息樣式 */
 .user-message {
-  background-color: #cce5ffaa; /* 用戶訊息背景顏色 */
+  background-color: #cce5ffaa; 
   align-self: flex-end; /* 用戶訊息靠右 */
 }
 
 /* 客服訊息樣式 */
 .admin-message {
-  background-color: #e9ecef; /* 客服訊息背景顏色 */
+  background-color: #e9ecef; 
   align-self: flex-start; /* 客服訊息靠左 */
 }
 
