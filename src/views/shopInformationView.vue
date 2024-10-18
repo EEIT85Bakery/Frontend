@@ -11,7 +11,7 @@ const route = useRoute();
 const startLoading = () => {
     setTimeout(() => {
         isLoading.value = false;
-    }, 600);
+    }, 400);
 };
 
 watch(route, () => {

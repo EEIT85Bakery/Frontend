@@ -10,7 +10,7 @@ const route = useRoute();
 const startLoading = () => {
     setTimeout(() => {
         isLoading.value = false;
-    }, 600);
+    }, 1000);
 };
 
 watch(route, () => {
