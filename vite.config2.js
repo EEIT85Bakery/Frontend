@@ -18,5 +18,6 @@ export default defineConfig({
   server: {
     host: '127.0.0.1',
     port: 5174, // 指定不同的端口號
+    open: '/chatManage',
   }
 })
