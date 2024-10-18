@@ -4,6 +4,7 @@ import { useRoute, useRouter } from 'vue-router';
 import axiosInstanceForInsertHeader from '@/axios/axiosInstanceForInsertHeader.js';
 import PaginationComponent from '@/components/PaginationComponent.vue';
 import Loading from '@/components/Loading.vue';
+import axios from 'axios';
 
 // 用來儲存是否在加載中的狀態
 const isLoading = ref(false);
@@ -14,8 +15,80 @@ const pageSize = ref(10); // 每頁顯示10筆資料
 const router = useRouter();
 const route = useRoute();
 
+
+//checkPay
+const token = localStorage.getItem('jwt')
+
+const userMerchantNos = ref([])
+const okMerchantNos = ref([])
+
+const getUserMerchantNo = () => {
+
+    axios.get('/api/pay/getMerchantNos', {
+      headers: {
+    Authorization: `Bearer ${token}`
+    }
+    }).then((res) => {      
+      userMerchantNos.value = res.data
+      queryPayMentStatus()
+      })
+} 
+
+const queryPayMentStatus = async () => {
+  try {
+    const promises = userMerchantNos.value.map(userMerchantNo =>     
+      axios.post('/api/queryOrder', {
+        "merchantID": "2000132",
+        "merchantTradeNo": userMerchantNo,
+        "timeStamp": "", // Unix timestamp
+        "checkMacValue": "",
+        "platformID": ""
+      },{
+        headers: {
+    Authorization: `Bearer ${token}`
+    }
+      }
+    )
+    );
+
+    const results = await Promise.all(promises);
+      
+    okMerchantNos.value = results
+      .map(res => {
+        const params = new URLSearchParams(res.data);
+        return {
+          tradeStatus: params.get('TradeStatus'),
+          merchantTradeNo: params.get('MerchantTradeNo')
+        };
+      })
+      .filter(result => result.tradeStatus == 1)
+      .map(result => result.merchantTradeNo);
+
+    for (const okMerchantNo of okMerchantNos.value) {
+      try {
+        const res = await axios.put('/api/pay/checkPaymentStatus', {
+          merchantNo: okMerchantNo
+        },
+        {
+          headers: {
+    Authorization: `Bearer ${token}`
+    }
+        }
+      );
+      } catch (err) {
+        console.error('Error updating payment status:', err);
+      }
+    }
+  } catch (error) {
+    console.error('Error in queryPayMentStatus:', error);
+  }
+};
+
+//
+
 // 當頁面被掛載時，自動請求資料
 onMounted(() => {
+  getUserMerchantNo()
   fetchOrders();
 });
 
