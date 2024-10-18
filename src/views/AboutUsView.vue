@@ -139,6 +139,7 @@ onMounted(() => {
 .headerContainer {
     display: flex;
     object-fit: contain;
+    padding: 0 15%;
 }
 
 .headerImg {
@@ -148,41 +149,42 @@ onMounted(() => {
 
 .ImgContainer {
     position: relative;
+    padding: 0 15%;
 }
 
 .BestText {
     position: absolute;
-    right: 5%;
+    right: 17%;
     bottom: 10%;
     align-items: center;
-    width: 35%;
+    width: 25%;
 }
 
 .UniqueText {
     position: absolute;
-    left: 15%;
+    left: 20%;
     bottom: 20%;
-    width: 40%;
+    width: 30%;
 }
 
 .NewText {
     position: absolute;
-    width: 32%;
-    right: 5%;
+    width: 23%;
+    right: 17%;
     bottom: 10%;
 }
 
 .NutritiousText {
     position: absolute;
-    left: 30%;
+    left: 35%;
     bottom: 30%;
-    width: 40%;
+    width: 30%;
 }
 
 .YummyText {
     position: absolute;
-    width: 38%;
-    left: 5%;
+    width: 30%;
+    left: 18%;
     bottom: 30%;
 }
 </style>

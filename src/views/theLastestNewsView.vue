@@ -147,20 +147,19 @@ const items = ref([
 
 
 
-
-
 .imgContainer {
     display: flex;
     justify-content: center;
     align-items: center;
     height: auto;
     object-fit: cover;
+    padding: 0 15%;
 }
 
 .titleContainer {
     text-align: center;
     font-size: xx-large;
-    padding: 3% 10% 0% 10%;
+    padding: 3% 20% 0% 20%;
     color: rgba(50, 67, 95, 1);
     font-weight: bold;
 }
@@ -172,7 +171,7 @@ const items = ref([
 
 .cardContainer {
     display: flex;
-    padding: 1% 8%;
+    padding: 1% 20%;
     flex-wrap: wrap;
     justify-content: space-between;
 }
@@ -201,7 +200,7 @@ const items = ref([
 .cardTitle {
     display: flex;
     justify-content: center;
-    font-size: x-large;
+    font-size: larger;
     font-weight: bold;
     margin-bottom: 5%;
     color: rgba(143, 134, 129, 1);

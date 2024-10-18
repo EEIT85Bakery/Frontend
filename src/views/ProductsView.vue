@@ -269,7 +269,7 @@ const addToCart = (product) => {
               <div>{{ category }}專區</div>
             </div>
             <div class="categoryContent">
-              <div v-for="flavor in categoryFlavors[category]" :key="flavor" @click="fetchProductsByFlavor(flavor)">
+              <div v-for="flavor in categoryFlavors[category]" :key="flavor" @click="fetchProductsByFlavor(flavor)" class="flavorItem">
                 {{ flavor }}
               </div>
             </div>
@@ -318,6 +318,16 @@ const addToCart = (product) => {
 
 
 <style scoped>
+
+.flavorItem {
+  margin-bottom: 3%;
+}
+
+.flavorItem:hover {
+  color: rgba(50, 67, 95, 1);
+}
+
+
 /* .products-item:hover {
   opacity: 0.5;
 } */
@@ -333,7 +343,7 @@ const addToCart = (product) => {
 
 .heartIcon1 {
   position: absolute;
-  top: 2%;
+  top: 3%;
   left: 5%;
   font-size: x-large;
   color: rgba(255, 255, 255, 1);
@@ -353,7 +363,6 @@ const addToCart = (product) => {
   width: 80%;
   left: 10%;
   font-weight: bold;
-  /* font-size: small; */
   color: rgba(166, 127, 120, 1);
   background-color: white;
   border: rgba(166, 127, 120, 0.5) solid 1px;
@@ -377,13 +386,6 @@ const addToCart = (product) => {
 .moreImgBtn:hover {
   transform: scale(1.05);
 }
-
-
-
-
-
-
-
 
 
 .page {
@@ -420,6 +422,7 @@ const addToCart = (product) => {
   flex-direction: column;
   flex: 1;
   height: 100%;
+  padding: 0 15%;
 }
 
 .categoryText1 {
@@ -432,7 +435,7 @@ const addToCart = (product) => {
   color: rgba(50, 67, 95, 0.5);
   font-size: small;
   margin-top: 20px;
-  margin-right: 25px;
+  /* margin-right: 25px; */
   text-align: end;
   cursor: pointer;
 }
@@ -447,27 +450,32 @@ const addToCart = (product) => {
   width: 100%;
   height: 2%;
   color: rgba(50, 67, 95, 1);
-  font-size: 2.2vw;
+  /* font-size: 2.2vw; */
+  font-size: xx-large;
   font-weight: bold;
   margin-bottom: 3%;
   cursor: pointer;
 }
 
+.categoryTitle:hover {
+  opacity: 0.7;
+}
+
 .categoryImg {
   object-fit: contain;
-  width: 4vw;
+  width: 3vw;
   padding-right: 10px;
   padding-bottom: 10px;
 }
 
 .categoryContent {
   color: rgba(50, 67, 95, 0.5);
-  font-size: 1.4vw;
+  /* font-size: 1.4vw; */
+  font-size: larger;
   font-weight: bold;
   padding-left: 25%;
   padding-bottom: 3%;
   cursor: pointer;
-  /* padding-left: 5%; */
 }
 
 .flexItemCategory {
@@ -518,7 +526,7 @@ const addToCart = (product) => {
 .products-name {
   color: rgba(50, 67, 95, 1);
   font-weight: bold;
-  font-size: small;
+  /* font-size: small; */
   text-decoration: none;
 }
 
