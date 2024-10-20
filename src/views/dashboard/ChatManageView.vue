@@ -3,6 +3,8 @@ import { ref, onMounted, onBeforeUnmount } from "vue";
 import ChatRoomForCS from "@/components/ChatRoomForCS.vue";
 import { Stomp } from '@stomp/stompjs';
 import axios from 'axios';
+import { useRouter } from 'vue-router';
+const router = useRouter();
 
 const chatRooms = ref([]); // 用戶聊天室列表
 const activeUserId = ref(null); // 當前選中的用戶 ID
@@ -131,6 +133,10 @@ const removeChatRoom = (userId) => {
   saveChatRooms(); // 更新 localStorage
 };
 
+const goHome = () => {
+  router.push({ name: '首頁' });
+};
+
 // 組件掛載時載入聊天室及建立 WebSocket 連接
 onMounted(() => {
   loadChatRooms(); // 加載聊天室
@@ -164,7 +170,12 @@ onBeforeUnmount(() => {
           <button @click.stop="removeChatRoom(room.userId)" class="remove-button">X</button> <!-- 刪除聊天室按鈕 -->
         </li>
       </ul>
+      <div class="go-home" @click="goHome">
+        返回首頁
+      </div>
     </div>
+
+    
     
     <div class="chat-container">
       <transition name="fade" mode="out-in">
@@ -295,6 +306,22 @@ onBeforeUnmount(() => {
 
 .centered-title {
   text-align: center; /* 置中 */
+}
+
+.go-home {
+  margin-top: auto;
+  padding: 10px;
+  background-color: #A67F78;
+  color: white;
+  text-align: center;
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+
+.go-home:hover {
+  background-color: #C19A6B;
 }
 </style>
 
