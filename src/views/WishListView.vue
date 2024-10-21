@@ -295,7 +295,7 @@ const deleteItem = (item) => {
 
 .title {
     padding-bottom: 1.5%;
-    font-size: 1.8vw;
+    font-size: xx-large;
     color: rgba(166, 127, 120, 1);
 }
 
@@ -304,4 +304,24 @@ const deleteItem = (item) => {
     width: 100%;
     height: 100%;
 }
+
+.textColor:hover {
+  color: rgba(50, 67, 95, 1);
+    text-decoration: underline;
+}
+
+@media (max-width: 2000px) {
+    
+    .outsideContainer {
+        padding: 3% 15%;   
+    }
+
+    .menuContainer {
+        font-size: larger;
+        font-weight: bolder;
+    }
+
+}
+
+
 </style>

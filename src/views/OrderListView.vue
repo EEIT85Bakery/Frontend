@@ -216,7 +216,7 @@ const handlePageChange = (newPage) => {
                 <td>{{ order.paidPrice }} 元</td>
                 <td>{{ order.pickupStatus }}</td>
                 <td>
-                  <div @click="startProcess(order.orderNumber)">
+                  <div @click="startProcess(order.orderNumber)" class="infoBtn">
                     <i class="bi bi-info-circle-fill" style="color: darkgray;"></i>
                   </div>
                 </td>
@@ -235,7 +235,12 @@ const handlePageChange = (newPage) => {
 
 <style scoped>
 
-.bi:hover {
+.textColor:hover {
+  color: rgba(50, 67, 95, 1);
+    text-decoration: underline;
+}
+
+.infoBtn:hover {
     opacity: 0.7;
     cursor: pointer;
 }
@@ -350,7 +355,7 @@ const handlePageChange = (newPage) => {
 
 .title {
     padding-bottom: 1.5%;
-    font-size: 1.8vw;
+    font-size: xx-large;
     color: rgba(166, 127, 120, 1);
 }
 
@@ -359,4 +364,21 @@ const handlePageChange = (newPage) => {
     width: 100%;
     height: 100%;
 }
+
+@media (max-width: 2000px) {
+    
+    .outsideContainer {
+        padding: 3% 15%;   
+    }
+
+    .menuContainer {
+        font-size: larger;
+        font-weight: bolder;
+    }
+
+}
+
+
+
+
 </style>

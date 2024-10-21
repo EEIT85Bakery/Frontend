@@ -123,68 +123,60 @@ onMounted(() => {
     /* 回到初始位置 */
 }
 
+@media (max-width: 2000px) {
 
 
+    .headerContainer {
+        display: flex;
+        object-fit: contain;
+        padding: 0 15%;
+    }
 
+    .headerImg {
+        width: 100%;
+        height: 100%;
+    }
 
+    .ImgContainer {
+        position: relative;
+        padding: 0 15%;
+    }
 
+    .BestText {
+        position: absolute;
+        right: 17%;
+        bottom: 10%;
+        align-items: center;
+        width: 25%;
+    }
 
+    .UniqueText {
+        position: absolute;
+        left: 20%;
+        bottom: 20%;
+        width: 30%;
+    }
 
+    .NewText {
+        position: absolute;
+        width: 23%;
+        right: 17%;
+        bottom: 10%;
+    }
 
+    .NutritiousText {
+        position: absolute;
+        left: 35%;
+        bottom: 30%;
+        width: 30%;
+    }
 
+    .YummyText {
+        position: absolute;
+        width: 30%;
+        left: 18%;
+        bottom: 30%;
+    }
 
-
-
-
-.headerContainer {
-    display: flex;
-    object-fit: contain;
-    padding: 0 15%;
-}
-
-.headerImg {
-    width: 100%;
-    height: 100%;
-}
-
-.ImgContainer {
-    position: relative;
-    padding: 0 15%;
-}
-
-.BestText {
-    position: absolute;
-    right: 17%;
-    bottom: 10%;
-    align-items: center;
-    width: 25%;
-}
-
-.UniqueText {
-    position: absolute;
-    left: 20%;
-    bottom: 20%;
-    width: 30%;
-}
-
-.NewText {
-    position: absolute;
-    width: 23%;
-    right: 17%;
-    bottom: 10%;
-}
-
-.NutritiousText {
-    position: absolute;
-    left: 35%;
-    bottom: 30%;
-    width: 30%;
-}
-
-.YummyText {
-    position: absolute;
-    width: 30%;
-    left: 18%;
-    bottom: 30%;
 }
 </style>

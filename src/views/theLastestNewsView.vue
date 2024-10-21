@@ -129,6 +129,19 @@ const items = ref([
     }
 }
 
+
+@media (max-width: 2000px) {
+    .imgContainer {
+        padding: 0 15%;
+    }
+
+    .cardContainer {
+        margin: 0 5%;
+    }
+
+}
+
+
 .card {
     opacity: 0;
     /* 初始隱藏 */
@@ -153,7 +166,6 @@ const items = ref([
     align-items: center;
     height: auto;
     object-fit: cover;
-    padding: 0 15%;
 }
 
 .titleContainer {
@@ -171,7 +183,7 @@ const items = ref([
 
 .cardContainer {
     display: flex;
-    padding: 1% 20%;
+    padding: 1% 15%;
     flex-wrap: wrap;
     justify-content: space-between;
 }

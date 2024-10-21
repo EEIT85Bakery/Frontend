@@ -277,14 +277,19 @@ const additionalContentItems = {
 
     .wholeContainer {
         margin: 0 15%;
+        font-size: large;
+        font-weight: bold;
+    }
+    
+    .accordion-button {
+        font-size: large;
+    }
+
+    .content {
+        font-size: medium;
     }
 
 }
-
-
-
-
-
 
 
 
@@ -294,7 +299,7 @@ const additionalContentItems = {
 }
 
 .accordion-body {
-    color: rgba(50, 67, 95, 0.9);
+    color: rgba(50, 67, 95, 0.7);
 }
 
 .accordion-button:focus,

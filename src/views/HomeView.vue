@@ -309,6 +309,7 @@ onMounted(() => {
   justify-content: center;
   gap: 3%;
   object-fit: contain;
+  padding: 0 22%;
 }
 
 .rankListItem:hover {
@@ -361,6 +362,7 @@ onMounted(() => {
   flex-wrap: wrap;
   gap: 2%;
   margin: 1% 5%;
+  padding: 0 10%;
 }
 
 .imgItem {
@@ -390,6 +392,7 @@ onMounted(() => {
   margin-bottom: 5%;
   justify-content: center;
   justify-items: center;
+  /* padding: 0 5%; */
 }
 
 .saying {

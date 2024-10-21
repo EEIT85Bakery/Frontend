@@ -183,6 +183,7 @@ onMounted(() => {
 </template>
 
 <style scoped>
+
 .myMemberContainer {
     flex: 50%;
     margin: 0% 2%;
@@ -229,9 +230,9 @@ onMounted(() => {
 }
 
 .tableContainer {
-    margin: 1%;
+    margin-bottom: 3%;
     display: flex;
-    justify-content: center
+    justify-content: center;
     
 }
 
@@ -349,7 +350,7 @@ td {
 
 .title {
     padding-bottom: 1.5%;
-    font-size: 1.8vw;
+    font-size: xx-large;
     color: rgba(166, 127, 120, 1);
 }
 
@@ -359,4 +360,24 @@ td {
     height: 100%;
     padding: 1% 3%;
 }
+
+.textColor:hover {
+  color: rgba(50, 67, 95, 1);
+    text-decoration: underline;
+}
+
+@media (max-width: 2000px) {
+    
+    .outsideContainer {
+        padding: 3% 15%;   
+    }
+
+    .menuContainer {
+        font-size: larger;
+        font-weight: bolder;
+    }
+
+}
+
+
 </style>

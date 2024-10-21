@@ -223,6 +223,11 @@ onMounted(() => {
 
 
 <style scoped>
+
+
+
+
+
 .outsideContainer {
     width: 100%;
     display: flex;
@@ -263,6 +268,7 @@ onMounted(() => {
     margin-bottom: 10%;
 }
 
+
 .logoutOption {
     color: rgba(166, 127, 120, 1);
 }
@@ -283,6 +289,11 @@ onMounted(() => {
 .textColor {
     text-decoration: none;
     color: rgba(143, 134, 129, 1);
+}
+
+.textColor:hover {
+  color: rgba(50, 67, 95, 1);
+    text-decoration: underline;
 }
 
 .textColor:focus {
@@ -309,7 +320,7 @@ onMounted(() => {
 
 .title {
     padding-bottom: 1.5%;
-    font-size: 1.8vw;
+    font-size: xx-large;
     color: rgba(166, 127, 120, 1);
 }
 
@@ -317,11 +328,6 @@ onMounted(() => {
     display: flex;
     width: 100%;
     height: 100%;
-    /* background-image: url(../../public/imgZip/Logo/bunnyWhite.png);
-    background-repeat: no-repeat;
-    background-position: left bottom;
-    background-color: rgba(255, 255, 255, 0.9);
-    background-size: 30%; */
 }
 
 .leftSide {
@@ -348,19 +354,6 @@ onMounted(() => {
     border: rgba(143, 134, 129, 0.5) solid 1px;
     border-radius: 5px;
 }
-
-/* 
-.addBtn {
-    flex: 10%;
-    margin-left: 1%;
-    margin-bottom: 5%;
-    color: white;
-    background-color: rgba(166, 127, 120, 1);
-    border: 0;
-    border-radius: 10px;
-    font-size: small;
-    box-shadow: 0 4px 4px rgba(0, 0, 0, 0.15);
-} */
 
 .innerText {
     color: rgba(50, 67, 95, 1);
@@ -393,4 +386,20 @@ onMounted(() => {
     box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
     margin-left: 2%;
 }
+
+@media (max-width: 2000px) {
+    
+    .outsideContainer {
+        padding: 3% 15%;   
+    }
+
+    .menuContainer {
+        font-size: larger;
+        font-weight: bolder;
+    }
+
+}
+
+
+
 </style>
