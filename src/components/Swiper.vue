@@ -127,7 +127,7 @@ onMounted(() => {
 <style>
 .swiper {
   display: flex;
-  width: 85%;
+  width: 70%;
   height: auto;
   margin-bottom: 5%;
 }

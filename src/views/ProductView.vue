@@ -296,14 +296,20 @@ input[type="number"]::-webkit-inner-spin-button {
     margin: 4%;
 }
 
-.productImgItem.selected {
-    box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+.productImgItem:hover {
+    opacity: 0.7;
 }
 
 .productImg {
     object-fit: contain;
     width: 100%;
     height: 100%;
+}
+
+.productImgItem:active {
+
+    box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+
 }
 
 .Item1 {
@@ -349,7 +355,7 @@ input[type="number"]::-webkit-inner-spin-button {
     flex: 0 0 80%;
     display: flex;
     flex-direction: column;
-    padding: 1% 1% 0 1%;
+    padding: 0.8% 2.1% 0 2.1%;
 }
 
 .displayItem {
@@ -367,29 +373,29 @@ input[type="number"]::-webkit-inner-spin-button {
 
 .productName {
     flex: 1;
-    font-size: 2.5vw;
+    font-size: xx-large;
     font-weight: bolder;
     color: #32435F;
 }
 
 .productDescription {
     flex: 1;
-    color: rgba(50, 67, 95, 0.7);
+    color: rgba(50, 67, 95, 0.9);
 }
 
 .productIngredients {
     flex: 1;
-    color: rgba(50, 67, 95, 0.7);
+    color: rgba(50, 67, 95, 0.9);
 }
 
 .productDiscount {
     flex: 1;
     align-content: center;
-    color: rgba(50, 67, 95, 0.7);
+    color: rgba(50, 67, 95, 0.9);
 }
 
 .discountExp {
-    color: rgba(166, 127, 120, 0.8);
+    color: rgba(166, 127, 120, 1);
     font-style: italic;
 }
 
@@ -418,7 +424,8 @@ input[type="number"]::-webkit-inner-spin-button {
 
 .productQuantity {
     flex: 1;
-    color: rgba(166, 127, 120, 0.8);
+    color: rgba(166, 127, 120, 1);
+    font-size: large;
     font-weight: bold;
     align-content: center;
     display: flex;
@@ -509,7 +516,7 @@ input[type="number"]::-webkit-inner-spin-button {
     color: #8F8681;
     /* margin: 3% 0 0.5% 0; */
     font-weight: bold;
-    font-size: 2vw;
+    font-size: xx-large;
     text-align: center;
 }
 
@@ -583,5 +590,14 @@ input[type="number"]::-webkit-inner-spin-button {
 
 }
 
-@media (max-width: 576px) {}
+@media (max-width: 2000px) {
+
+    .productContainer {
+        padding: 0 10%;
+    }
+
+}
+
+
+
 </style>

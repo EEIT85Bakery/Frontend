@@ -414,8 +414,8 @@ onMounted(() => {
                             <div class="priceInfo">{{ item.price }} 元</div>
 
                             <div class="quantityInfo">
-                                <button style="margin-right: 5px; background-color: rgba(166, 127, 120, 0.5);border: none; 
-           padding: 5px 8px; 
+                                <button style="margin-right: 5px; background-color: rgba(166, 127, 120, 0.7);border: none; 
+           padding: 5px 10px; 
            font-size: 16px; 
            color: white; 
            border-radius: 8px; 
@@ -424,7 +424,7 @@ onMounted(() => {
            transition: all 0.3s ease;" @click="minus(item)" :disabled="item.quantity <= 0">-</button>
                                 <input type="number" min="1" v-model.number="item.quantity" class="quantityInput"
                                     @blur="updateCart(item)" @click="clearInput" />
-                                <button style="margin-left: 5px; background-color: rgba(166, 127, 120, 0.5);border: none; 
+                                <button style="margin-left: 5px; background-color: rgba(166, 127, 120, 0.7);border: none; 
            padding: 5px 8px; 
            font-size: 16px; 
            color: white; 
@@ -671,6 +671,7 @@ input[type="number"]::-webkit-outer-spin-button {
     object-fit: contain;
     width: 100%;
     height: 100%;
+    border-radius: 5px;
 }
 
 .productInfo {
@@ -803,7 +804,7 @@ input[type="number"]::-webkit-outer-spin-button {
 }
 
 .finalPrice {
-    margin-top: 3%;
+    margin-top: 1%;
     text-align: end;
     font-size: large;
 }
@@ -913,4 +914,25 @@ input[type="number"]::-webkit-outer-spin-button {
         font-size: 4vw;
     }
 }
+
+@media (max-width: 2000px) {
+    .cartContainer {
+        padding: 0 10% 2% 10%;
+    }
+
+    .orderDetailContainer {
+        padding: 0 10%; 
+    }
+
+    .btns {
+        padding: 1.5% 11% 1.5% 11%;
+    }
+
+    .items {
+        font-size: large;
+        font-weight: bold;
+    }
+}
+
+
 </style>

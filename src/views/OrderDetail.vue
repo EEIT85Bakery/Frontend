@@ -170,7 +170,7 @@ onMounted(() => {
                         <span class="leftText">Bunny Coin折扣:</span>
                         <span>{{ orderDetail.usedBunnyCoins }} 元</span>
                     </div>
-                    <div class="cartLine"></div>
+                    <!-- <div class="cartLine"></div> -->
                     <div class="finalPrice">合計:
                         <span class="finalTotalPrice">{{ orderDetail.paidPrice }}</span> 元
                     </div>
@@ -194,7 +194,7 @@ onMounted(() => {
         </div>
     </div>
 
-    <div class="container">
+    <div class="containerA">
         <div class="customerAndPayInfoContainer">
             <div class="customerInfo">
                 <div class="top">顧客資訊</div>
@@ -254,9 +254,10 @@ onMounted(() => {
 <style scoped>
 
 
-.container {
+.containerA {
     width: 100%;
     display: flex;
+    padding: 0 14%;
 }
 
 .customerAndPayInfoContainer {
@@ -386,7 +387,7 @@ onMounted(() => {
 
 .cartLine {
     width: 100%;
-    height: 0.5px;
+    height: 1px;
     background-color: rgba(166, 127, 120, 0.7);
 }
 
@@ -412,6 +413,7 @@ onMounted(() => {
     object-fit: contain;
     width: 100%;
     height: 100%;
+    border-radius: 5px;
 }
 
 .productInfo {
@@ -618,8 +620,18 @@ onMounted(() => {
     .pickupAndCreditInfo {
         padding: 0 5% 0 5%;
     }
-
-
-
 }
+
+@media (max-width: 2000px) {
+    .cartContainer {
+        padding: 0 10% 2% 10%;
+    }
+
+    .btns {
+        padding: 1.5% 11% 1.5% 11%;
+    }
+}
+
+
+
 </style>

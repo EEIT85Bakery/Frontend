@@ -117,4 +117,17 @@
     }
 }
 
+@media (max-width: 2000px) {
+    .stepIcon {
+        font-size: larger;
+    }
+
+    .flowText {
+        font-size: larger;
+    }
+}
+
+
+
+
 </style>

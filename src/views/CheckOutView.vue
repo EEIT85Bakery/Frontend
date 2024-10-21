@@ -228,26 +228,18 @@ onMounted(() => {
                         <span class="leftText">折扣:<span style="font-size: small;"> (已使用折扣碼 {{ cartStore.couponName }} )</span></span>
                         <span>{{ cartStore.total - cartStore.paymentPrice - cartStore.usedBunnyCoins }} 元</span>
                     </div>
-                    <!-- <div class="ownDiscount" v-if="memberlevel != '白兔'">
-                        <span class="leftText">{{ memberlevel }}會員專屬折扣:
-                            <span>(會員折扣詳見<span @click="handleOpenModal" class="memberLevel">會員分級</span>)</span>
-                        </span>
-                        <span>{{ memberdiscount }} 元</span>
-                    </div> -->
+                    
                     <div class="bunnyCoinDiscount">
                         <span class="leftText">Bunny Coin折扣:</span>
                         <span>{{ cartStore.usedBunnyCoins }} 元</span>
                     </div>
-                    <!-- <div class="cartLine"></div>
-                    <div class="finalPrice">合計:
-                        <span class="finalTotalPrice">{{ cartStore.paymentPrice }}</span> 元
-                    </div> -->
+                    
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="container">
+    <div class="containerA">
         <div class="customerAndPayInfoContainer">
             <div class="customerInfo">
                 <div class="top">顧客資訊</div>
@@ -314,9 +306,10 @@ onMounted(() => {
 </template>
 
 <style scoped>
-.container {
+.containerA {
     width: 100%;
     display: flex;
+    padding: 0 14%;
 }
 
 .customerAndPayInfoContainer {
@@ -426,7 +419,7 @@ onMounted(() => {
 
 .cartLine {
     width: 100%;
-    height: 0.5px;
+    height: 1px;
     background-color: rgba(166, 127, 120, 0.7);
 }
 
@@ -452,6 +445,7 @@ onMounted(() => {
     object-fit: contain;
     width: 100%;
     height: 100%;
+    border-radius: 5px;
 }
 
 .productInfo {
@@ -674,8 +668,18 @@ onMounted(() => {
     .pickupAndCreditInfo {
         padding: 0 5% 0 5%;
     }
-
-    
-    
 }
+
+@media (max-width: 2000px) {
+    .cartContainer {
+        padding: 0 10% 2% 10%;
+    }
+
+    .btns {
+        padding: 1.5% 11% 1.5% 11%;
+    }
+}
+
+
+
 </style>
