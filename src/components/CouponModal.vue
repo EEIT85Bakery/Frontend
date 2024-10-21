@@ -156,7 +156,7 @@ onMounted(() => {
                                   
                                  :min="minDate"
                                  v-model="formData.endDate" />
-                            <div class="inputText">商品是否啟用: 
+                            <div class="inputText">折扣碼是否啟用: 
                                 <input type="radio" v-model="formData.isEnable" name="isUsed" value=true class="inputRadio ms-3 md-3"  /> 是
                                 <input type="radio" v-model="formData.isEnable" name="isUsed" value=false class="inputRadio ms-3"  /> 否
                             </div>
