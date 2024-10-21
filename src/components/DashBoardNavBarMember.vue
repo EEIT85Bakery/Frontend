@@ -198,4 +198,20 @@ const searchMember = () => {
     color: #32435F;
     border: 0;
 }
+
+@media (max-width: 2000px) {
+
+.navLink {
+    font-size: larger;
+    font-weight: bold;
+}
+
+.navItem {
+    margin: auto 3rem;
+}
+
+.navbarIcon {
+    font-size: 2rem;
+}
+}
 </style>

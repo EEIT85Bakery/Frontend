@@ -155,7 +155,8 @@ onBeforeUnmount(() => {
   <div class="chat-manage-view">
     <div class="inbox">
       <h2 class="centered-title">
-        <img class="imgSize" src="/public/imgZip/Logo/bunny.png" alt="用戶訊息圖標">用戶訊息
+        <img class="imgSize" src="/public/imgZip/Logo/bunny.png" alt="用戶訊息圖標">
+        <span class="UserChatTitle">用戶訊息</span>
         <img class="imgSize flip-horizontal" src="/public/imgZip/Logo/bunny.png" alt="翻轉圖標">
       </h2>
       <ul>
@@ -194,6 +195,11 @@ onBeforeUnmount(() => {
 
 
 <style scoped>
+
+.UserChatTitle {
+  font-size: xx-large;
+}
+
 .fade-enter-active, .fade-leave-active {
   transition: opacity 0.5s;
 }
@@ -209,13 +215,14 @@ onBeforeUnmount(() => {
 }
 
 .inbox {
+  position: relative;
   width: 400px;
-  background-color: #E1DCD9;
-  padding: 20px;
-  border-right: 1px solid #8F8681;
-  border: 1px solid #A67F78;
-  border-radius: 8px; 
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); 
+  background-color: rgba(225, 220, 217, 0.5);
+  padding: 30px;
+  /* border-right: 1px solid #8F8681; */
+  /* border: 1px solid #A67F78; */
+  /* border-radius: 8px;  */
+  /* box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25); */
 }
 
 .chat-container {
@@ -228,7 +235,7 @@ onBeforeUnmount(() => {
 }
 
 .inbox h2 {
-  color: #32435F;
+  color: rgba(50, 67, 95, 0.8);
   font-size: 40px; /* 字體大小 */
   font-weight: bold; /* 粗體 */
   margin-bottom: 20px;
@@ -241,21 +248,26 @@ onBeforeUnmount(() => {
 
 .inbox li {
   cursor: pointer;
-  padding: 10px;
+  padding: 25px 10px;
   height: 40px; 
   position: relative;
   display: flex; /* 水平排列 */
   align-items: center; /* 垂直居中對齊 */
-  border: 3px solid #8F8681; 
-  border-radius: 5px; 
+  border: 1px solid rgba(143, 134, 129, 0.5); 
+  background-color: white;
+  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.25);
+  /* border-radius: 5px;  */
   margin-bottom: 10px; 
   transition: background-color 0.3s; /* 過渡效果 */
   font-family: 'Microsoft JhengHei', sans-serif; 
   font-weight: bold; /* 粗體 */
+  font-size: large;
+  color: #A67F78;
 }
 
 .inbox li:hover {
-  background-color: #f1f1f1;
+  background-color: rgba(166, 127, 120, 0.8);
+  color: white;
 }
 
 @keyframes pulse {
@@ -278,19 +290,19 @@ onBeforeUnmount(() => {
 }
 
 .active {
-  background-color: #C19A6B;
+  background-color: white;
 }
 
 .remove-button {
   background-color: transparent;
   border: none;
-  color: black; 
+  color: #A67F78; 
   cursor: pointer;
   margin-left: auto; 
 }
 
 .remove-button:hover {
-  color: #C19A6B;
+  color: white;
 }
 
 .imgSize {
@@ -309,6 +321,9 @@ onBeforeUnmount(() => {
 }
 
 .go-home {
+  width: 82%;
+  position: absolute;
+  bottom: 4.5%;
   margin-top: auto;
   padding: 10px;
   background-color: #A67F78;
@@ -321,7 +336,7 @@ onBeforeUnmount(() => {
 }
 
 .go-home:hover {
-  background-color: #C19A6B;
+  opacity: 0.7;
 }
 </style>
 

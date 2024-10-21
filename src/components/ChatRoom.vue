@@ -167,7 +167,7 @@ onUnmounted(() => {
   <transition name="fade-slide">
     <div v-if="isVisible" class="chat-room">
       <div class="chat-header">
-        <h3>線上客服</h3>
+        <div class="chatTitle">線上客服</div>
         <button @click="closeChat" class="close-btn">&times;</button>
       </div>
       <div class="chat-messages" ref="messagesContainer">
@@ -189,6 +189,13 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
+
+.chatTitle {
+  font-size: larger;
+  margin-left: 3%;
+}
+
+
 .fade-slide-enter-active,
 .fade-slide-leave-active {
   transition: all 0.3s ease;

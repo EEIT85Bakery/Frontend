@@ -2,21 +2,6 @@
   <DashBoardNavBar />
 
   <div class="container-fluid salesData">
-    <!-- <div class="my-3 salesTitle">銷售數據表</div> -->
-
-    <!-- <div class="row mb-4">
-      <div class="col-md-6">
-        開始日期
-        <input type="date" v-model="startDate" class="form-control" />
-      </div>
-      <div class="col-md-6">
-        結束日期
-        <input type="date" v-model="endDate" class="form-control" />
-      </div>
-    </div>
-    <div class="button-container">
-      <button @click="fetchSalesData" class="btn btn-primary mb-4 searchButton">查詢</button>
-    </div> -->
 
     <div class="searchContainer">
       <div class="searchInputContainer">
@@ -150,6 +135,14 @@ onMounted(() => {
 
 
 <style scoped>
+
+@media (max-width: 2000px) {
+  .salesData {
+    padding: 0 10%;
+  }
+}
+
+
 .salesData {
   color: rgba(50, 67, 95, 1);
 }

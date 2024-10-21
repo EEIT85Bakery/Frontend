@@ -228,7 +228,8 @@ onUnmounted(() => {
   flex: 1;
   overflow-y: auto; /* 當訊息超過大小時允許滾動 */
   max-height: 850px; /* 限制聊天訊息區域的高度 */
-  padding: 10px;
+  padding: 20px;
+  font-size: large;
 }
 
 .user-message {
@@ -242,8 +243,8 @@ onUnmounted(() => {
 .message-bubble {
   display: inline-block;
   padding: 10px;
-  border-radius: 15px;
-  margin: 5px;
+  border-radius: 10px;
+  margin: 0.5%;
   max-width: 30%; 
   word-wrap: break-word; 
   overflow-wrap: break-word; 
@@ -251,23 +252,25 @@ onUnmounted(() => {
 }
 
 .user-message .message-bubble {
-  background-color: #E1DCD9; 
+  background-color: white; 
+  border: rgba(166, 127, 120, 0.4) solid 1px;
 }
 
 .admin-message .message-bubble {
-  background-color: #e3b781; 
+  background-color: rgba(225, 220, 217, 0.5); 
+  border: rgba(166, 127, 120, 0.1) solid 1px;
 }
 
 .timestamp {
-  font-size: 0.8em;
-  color: gray;
+  font-size: small;
+  color: rgba(50, 67, 95, 0.5);
 }
 
-input {
+/* input {
   padding: 10px;
   border: 1px solid #8F8681; 
   border-radius: 5px;
-}
+} */
 
 .input-container {
   display: flex;
@@ -293,6 +296,6 @@ input {
 }
 
 .inputBtn:hover {
-  background-color: #A67F78; 
+  opacity: 0.7; 
 }
 </style>

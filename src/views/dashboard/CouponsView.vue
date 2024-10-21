@@ -209,7 +209,7 @@ onMounted(() => {
 .pageContainer {
     width: 100%;
     /* height: 45vw; */
-    padding: 2% 5%;
+    padding: 2% 5% 15% 5%;
     /* background-color: lightpink; */
 
 }
@@ -242,6 +242,18 @@ onMounted(() => {
 .editBtn {
     color: white;
     background-color: rgba(166, 127, 120, 0.8);
+}
+
+@media screen {
+  
+  .pageContainer {
+    padding: 2% 10% 30% 10%;
+  }
+
+  .addBtn {
+    font-size: medium;
+  }
+
 }
 
 </style>
