@@ -117,6 +117,25 @@ onMounted(() => {
 </template>
 
 <style scoped>
+
+@media (max-width : 2000px) {
+    .imgContainer {
+        padding: 0 15%;
+    }
+
+    .wholeContainer {
+        margin: 0 15%;
+    }
+
+}
+
+
+
+
+
+
+
+
 .imgContainer {
     display: flex;
     justify-content: center;

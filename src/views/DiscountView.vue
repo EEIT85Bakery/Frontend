@@ -147,10 +147,10 @@ onMounted(() => {
                     </div>
                 </div>
 
-            
+                <div class="tableTitle">會員分級說明表 <i class="bi bi-caret-down-fill"></i></div>
 
                 <div class="tableContainer">
-                    <div class="tableTitle">會員分級說明表 <i class="bi bi-caret-down-fill"></i></div>
+                    
                     <table>
                         <tr>
                             <th width="80"></th>
@@ -229,7 +229,10 @@ onMounted(() => {
 }
 
 .tableContainer {
-    margin: 2%;
+    margin: 1%;
+    display: flex;
+    justify-content: center
+    
 }
 
 tr {
@@ -257,6 +260,7 @@ td {
     font-size: small;
     color: rgba(143, 134, 129, 1);
     margin-bottom: 0.5%;
+    margin-top: 3%;
 }
 
 .outsideContainer {

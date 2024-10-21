@@ -269,6 +269,25 @@ const additionalContentItems = {
 
 
 <style scoped>
+
+@media (max-width : 2000px) {
+    .imgContainer {
+        padding: 0 15%;
+    }
+
+    .wholeContainer {
+        margin: 0 15%;
+    }
+
+}
+
+
+
+
+
+
+
+
 .accordion-button {
     color: rgba(50, 67, 95, 1);
     font-weight: bold;
