@@ -198,7 +198,8 @@ onUnmounted(() => {
         :class="{'user-message': msg.senderId !== 'ADMIN', 'admin-message': msg.senderId === 'ADMIN'}"
       >
         <div class="message-bubble">
-          <strong>{{ msg.senderId }}:</strong> {{ msg.content }}
+          <strong>{{ msg.senderId }}:</strong>
+          <div>{{ msg.content }}</div>
           <span class="timestamp">{{ msg.timestamp }}</span>
         </div>
       </div>
@@ -249,6 +250,7 @@ onUnmounted(() => {
   word-wrap: break-word; 
   overflow-wrap: break-word; 
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2); 
+  text-align: left;
 }
 
 .user-message .message-bubble {
