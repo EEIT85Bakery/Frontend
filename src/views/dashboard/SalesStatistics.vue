@@ -138,7 +138,7 @@ onMounted(() => {
 
 @media (max-width: 2000px) {
   .salesData {
-    padding: 0 10%;
+    padding: 0 10% 20% 10%;
   }
 }
 
