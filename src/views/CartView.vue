@@ -926,12 +926,28 @@ input[type="number"]::-webkit-outer-spin-button {
 
     .btns {
         padding: 1.5% 11% 1.5% 11%;
+        font-size: large;
     }
 
     .items {
         font-size: large;
         font-weight: bold;
     }
+
+    .titleContainer {
+        font-size: large;
+    }
+
+    .top {
+        font-size: larger;
+        font-weight: bold;
+    }
+
+    .orderDetail {
+        font-size: large;
+        font-weight: bold;
+    }
+
 }
 
 

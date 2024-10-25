@@ -677,7 +677,33 @@ onMounted(() => {
 
     .btns {
         padding: 1.5% 11% 1.5% 11%;
+        font-size: large;
     }
+
+    .items {
+        font-size: large;
+        font-weight: bold;
+    }
+
+    .titleContainer {
+        font-size: large;
+    }
+
+    .top {
+        font-size: larger;
+        font-weight: bold;
+    }
+
+    .detailContainer {
+        font-size: large;
+        font-weight: bold;
+    }
+    
+    .containerA {
+        font-size: large;
+    }
+    
+
 }
 
 

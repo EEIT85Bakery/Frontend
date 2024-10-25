@@ -206,11 +206,11 @@ const loginWithGoogle = async () => {
           <div class="registerText">電子信箱</div>
           <input type="email" v-model="email" placeholder="請輸入電子信箱" class="registerInput" />
           <div class="validContainer">
-            <button class="validButton d-flex" type="submit" :disabled="isButtonDisabled">
+            <button class="validButton d-flex mb-2" type="submit" :disabled="isButtonDisabled">
               <div class="validSendText">發送驗證碼到信箱</div>
               <div class="validSendIcon"><i class="bi bi-send"></i></div>
             </button>
-            <span v-if="isButtonDisabled" class="countdown">{{ countdown }}秒後可再次發送</span> <!-- 顯示倒數時間 -->
+            <span v-if="isButtonDisabled" class="countdown" style="color: rgba(50, 67, 95, 0.8);">{{ countdown }}秒後可再次發送</span> <!-- 顯示倒數時間 -->
           </div>
           <div class="validArrived" v-if="verificationSent"><span class="validArrived">已發送驗證碼</span></div>
           <div class="registerText" style="margin-top: 8%;">驗證碼</div>
@@ -426,6 +426,15 @@ const loginWithGoogle = async () => {
   .validButton {
     /* font-size: small; */
     padding: 2% 5% 2% 18%;
+  }
+
+}
+
+
+@media (max-width: 2000px) {
+
+  .registerContainer {
+    width: 30%;
   }
 
 }

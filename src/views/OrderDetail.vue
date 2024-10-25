@@ -180,7 +180,7 @@ onMounted(() => {
                             <div class="mb-1">
                                 <i class="bi bi-caret-right-fill"></i>
                                 單筆訂單滿500可以獲得1次遊戲機會，
-                                此筆訂單可獲得 <b style="color: rgba(166, 127, 120, 1); font-style: italic;"> {{ Math.floor(orderDetail.paidPrice / 500) }} </b> 次遊戲機會，已匯入您的遊玩次數中，
+                                此筆訂單可獲得  <b style="color: rgba(166, 127, 120, 1); font-style: italic; font-size: larger;"> {{ Math.floor(orderDetail.paidPrice / 500) }} </b>  次遊戲機會，已匯入您的遊玩次數中，
                                 記得前往賺取Bunny Coin呦~
                             </div>
                             <div>
@@ -629,6 +629,49 @@ onMounted(() => {
 
     .btns {
         padding: 1.5% 11% 1.5% 11%;
+    }
+
+    .titleContainer {
+        font-size: large;
+    }
+
+    .top {
+        font-size: larger;
+        font-weight: bold;
+    }
+
+    .items {
+        font-size: large;
+        font-weight: bold;
+    }
+
+    .detailContainer {
+        font-size: medium;
+        /* font-weight: bold; */
+    }
+
+    .total {
+        font-size: large;
+        font-weight: bold;
+    }
+
+    .allDiscount {
+        font-size: large;
+        font-weight: bold;
+    }
+
+    .bunnyCoinDiscount {
+        font-size: large;
+        font-weight: bold;
+    }
+
+    .containerA {
+        font-size: large;
+    }
+
+    .cartTop {
+        font-size: x-large;
+        font-weight: bold;
     }
 }
 

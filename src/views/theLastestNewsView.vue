@@ -105,7 +105,7 @@ const items = ref([
                 <div class="card-text cardText">{{ item.content }}</div>
                 <div class="BtnContainer">
                     <button class="cardBtn">
-                        <RouterLink to="productList" class="Btn">{{ item.btn }}</RouterLink>
+                        <RouterLink to="products" class="Btn">{{ item.btn }}</RouterLink>
                     </button>
                 </div>
             </div>

@@ -26,7 +26,7 @@ onMounted(() => {
     const carouselElement = document.getElementById('demo');
     if (carouselElement) {
         const carousel = new Carousel(carouselElement, {
-            interval: 3000,
+            interval: 2000,
             ride: 'carousel'
         });
     }

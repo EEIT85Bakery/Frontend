@@ -358,4 +358,15 @@ const loginWithGoogle = async () => {
     height: 20%;
   }
 }
+
+
+@media (max-width: 2000px) {
+  .loginContainer {
+    width: 30%;
+  }
+
+
+}
+
+
 </style>

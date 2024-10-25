@@ -72,6 +72,7 @@ const submitForm = async () => {
         icon: 'success',
         confirmButtonText: '確認',
         timer: 2000,
+        customClass: {confirmButton: 'myConfirmBtn'},
       });
       router.push({ name: '登入頁面' });
     }
@@ -82,6 +83,7 @@ const submitForm = async () => {
       text: '會員資料完善失敗，請重新輸入或洽詢客服',
       icon: 'error',
       confirmButtonText: '重新嘗試',
+      customClass: {confirmButton: 'myConfirmBtn'},
       timer: 2000,
     });
   }
@@ -136,13 +138,13 @@ const submitForm = async () => {
           <br/><br/>
           
           <div v-if="passwordMismatch" class="error-message">密碼不相同，請重新輸入。</div>
+          <hr>
           <button class="registerformNextPageButton" type="submit">完成註冊</button>
         </form>
+       
+        
       </div>
 
-      <div class="lineContainer">
-        <div class="registerformLine"></div>
-      </div>
     </div>
   </div>
 </template>
@@ -285,6 +287,13 @@ const submitForm = async () => {
     width: 80%;
     margin-top: 5%;
     margin-bottom: 5%;
+  }
+}
+
+
+@media (max-width: 2000px) {
+  .registerformContainer {
+    width: 30%;
   }
 }
 </style>
