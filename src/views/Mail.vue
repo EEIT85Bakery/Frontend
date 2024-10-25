@@ -1,4 +1,4 @@
-<!-- <template>
+<template>
   <div>
     <div class="sendok" :style="{ opacity: sendokOpacity, letterSpacing: sendokLetterSpacing }">
       <span class="bigok">{{ "紀念日提醒" }}</span><br><br>
@@ -11,7 +11,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, onMounted } from 'vue';
 
 const fullText = "記得到信箱看看你的紀念日哦～";
 const displayText = ref('');
@@ -61,7 +61,7 @@ const sendMail = () => {
   }, 1500);
 
   setTimeout(() => {
-    window.location="http://127.0.0.1:5173"
+    window.location="http://127.0.0.1:5174"
   }, 6000);
 };
 
@@ -254,4 +254,4 @@ h4.mainfield {
   min-width: 1em;
   font-size: 25px;
 }
-</style> -->
+</style>

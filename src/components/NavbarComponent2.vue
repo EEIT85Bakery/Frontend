@@ -104,14 +104,14 @@ const goToProducts = () => {
     <div class="navBar">
         <div class="AdContainer">
             <span class="Ad">
-                <!-- 「您記不住的，Bunny Sugar幫你記住」，趕緊加入會員， -->
-                消費每500元即可獲得一次小遊戲次數，
+                「您記不住的，Bunny Sugar幫你記住」，趕緊加入會員，
+                <!-- 消費每500元即可獲得一次小遊戲次數， -->
             </span><span>
 
-                <span to="">遊戲獲得的bunnyCoins還可以用來折抵消費哦！</span>
-                <!-- 前往會員中心
+                <!-- <span to="">遊戲獲得的bunnyCoins還可以用來折抵消費哦！</span> -->
+                前往會員中心
                 <RouterLink to="anniversary" style="color: white; font-weight: bold;">紀念日專區</RouterLink>
-                寫下屬於您的日子吧！ -->
+                寫下屬於您的日子吧！
             </span>
         </div>
 

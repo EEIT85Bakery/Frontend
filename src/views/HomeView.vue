@@ -59,9 +59,9 @@ anniversaryName: item.anniversaryName,
 anniversaryDate: item.anniversaryDate,
 userEmail: userEmail.value
 }).then((res) => {
-  // if(res.data == "信件已寄出") {
-  //   router.push('mail')
-  // }
+  if(res.data == "信件已寄出") {
+    router.push('mail')
+  }
 }).catch(err => console.log(err))
       }
       
