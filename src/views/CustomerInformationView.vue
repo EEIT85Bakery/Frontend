@@ -362,7 +362,7 @@ onMounted(() => {
 }
 
 .btns {
-    margin: 0% 7% 2% 4%;
+    margin: 2% 7% 2% 4%;
     text-align: right;
 }
 

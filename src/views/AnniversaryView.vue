@@ -159,8 +159,8 @@ onMounted(() => {
                 <div class="insideContentContainer">
 
                     <div class="introduction">
-                        <div class="introText">處在忙綠的生活步調中，您是否經常忘了許多紀念日是需要被好好慶祝的呢？</div>
-                        <div class="introText">不用擔心，<b>"您記不住的，BunnySugar幫您記住"</b></div>
+                        <!-- <div class="introText">處在忙綠的生活步調中，您是否經常忘了許多紀念日是需要被好好慶祝的呢？</div>
+                        <div class="introText">不用擔心，<b>"您記不住的，BunnySugar幫您記住"</b></div> -->
 
                         <div class="introImgContainer">
                             <img class="troImg" src="../../public/imgZip/decoration/anniversaryText.png" alt="">
@@ -303,7 +303,7 @@ onMounted(() => {
     padding: 1%;
     box-shadow: 0 4px 4px rgba(0, 0, 0, 0.15);
     margin-top: 1%;
-    margin-bottom: 5%;
+    margin-bottom: 3%;
 }
 
 .inputText {
@@ -514,4 +514,26 @@ td {
     height: 100%;
     padding: 0 3%;
 }
+
+
+@media (max-width: 2000px) {
+    
+    .outsideContainer {
+        padding: 3% 15%;   
+    }
+
+    .menuContainer {
+        font-size: larger;
+        font-weight: bolder;
+    }
+
+    .hintText {
+        font-size: medium;
+        margin-top: 1%;
+    }
+
+}
+
+
+
 </style>
